@@ -1,0 +1,129 @@
+/* --- Body wrapper --- */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: background 0.3s ease;
+}
+
+[data-bs-theme="dark"] .login-wrapper {
+  background: linear-gradient(135deg, #1a2a44 0%, #16213e 100%);
+}
+
+/* --- Card --- */
+.login-card {
+  max-width: 480px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+[data-bs-theme="dark"] .login-card {
+  background: rgba(30, 33, 48, 0.95);
+  color: #e0e0e0;
+}
+
+/* --- Logo --- */
+.logo-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+}
+
+.login-logo-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  height: 70px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+  transition: filter 0.3s ease;
+}
+
+[data-bs-theme="dark"] .logo-img {
+  filter: brightness(1.5);
+}
+
+/* --- Form inputs --- */
+.custom-input {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.custom-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.5);
+  border-color: #667eea;
+}
+
+/* Autofill */
+.custom-input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color: #1e293b !important;
+  caret-color: #1e293b;
+}
+
+[data-bs-theme="dark"] .custom-input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #2a2f45 inset !important;
+  -webkit-text-fill-color: #e0e0e0 !important;
+  caret-color: #e0e0e0;
+}
+
+/* --- Texts & links --- */
+.text-muted {
+  color: #6c757d !important;
+}
+
+[data-bs-theme="dark"] .text-muted {
+  color: #b0b0d0 !important;
+}
+
+.text-primary {
+  color: #667eea !important;
+}
+
+.text-primary:hover {
+  color: #5a67d8 !important;
+  text-decoration: underline;
+}
+
+/* --- Buttons --- */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* --- Alert --- */
+.alert {
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+}
+
+/* --- Responsive tweaks --- */
+@media (max-width: 400px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+  .logo-container {
+    width: 80px;
+    height: 80px;
+  }
+  .login-logo-img {
+    height: 60px;
+  }
+}

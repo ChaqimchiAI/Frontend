@@ -1,0 +1,30 @@
+#card-title {
+  font-weight: 600;
+}
+#body-card-index {
+  border-radius: 15px;
+  border:1px solid #E6ECF1;
+  overflow:hidden;
+}
+#body-card-main {
+  padding:25px 25px 0px 25px
+
+}
+html[data-bs-theme='dark'] #body-card-main td .index-item-title {
+  color: white;
+}
+html[data-bs-theme='dark'] #body-card-main {
+  background-color: #111C2D;
+}
+html[data-bs-theme='dark'] #body-card-index {
+  border:1px solid #333f55;
+}
+.flexCheckDefaultWrapper:focus {
+  box-shadow: none !important;
+}
+main {
+  padding-right: 20px;
+}
+html[data-bs-theme='dark'] main {
+  background-color: #15263A !important;
+}

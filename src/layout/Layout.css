@@ -1,0 +1,28 @@
+.site-layout {
+  width: 100%;
+  min-height: 100vh;
+  padding-right: 0px;
+  padding-left: 20px;
+}
+.layout-content {
+  padding-top: 20px;
+  padding-left: 270px;
+}
+
+body[data-sidebartype='mini-sidebar'] .layout-content {
+  padding-left: 70px;
+  transition: padding-left .2s ease;
+}
+
+@media (max-width:1299.9px) {
+  .layout-content {
+    padding-left: 0 !important;
+  }
+  .show-sidebar {
+    z-index: 123456 !important;
+  }
+  /* .show-sidebar #aside-menu-toggle {
+    width: 270px !important;
+    transition: width .2s ease;
+  } */
+}
