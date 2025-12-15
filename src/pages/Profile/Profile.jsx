@@ -28,20 +28,20 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [passwordStatus, setPasswordStatus] = useState(""); // Parol o'zgartirish natijasi uchun
 
-  // **********************************************
-  //             API SO'ROVI (GET)
-  // **********************************************
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const res = await axios.get("http://apichaqimchi.pythonanywhere.com/api/v1/user/me/", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        });
+        const res = await axios.get(
+          "http://apichaqimchi.pythonanywhere.com/api/v1/user/me/",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
 
         setEmployee(res.data.data);
       } catch (err) {
@@ -75,7 +75,6 @@ const Profile = () => {
     }
 
     try {
-      // Haqiqiy API chaqirig'i misoli
 
       await axios.post(
         "http://apichaqimchi.pythonanywhere.com/api/v1/user/change-password/",
@@ -116,14 +115,16 @@ const Profile = () => {
     );
   }
 
+  console.log(employee);
+
   return (
     <div className="row">
       <div className="col-12">
-        <BreadcrumbComponent currentPage="Profile" />
+        <BreadcrumbComponent currentPage="Hisob" />
 
-        <Tab.Container defaultActiveKey="profile">
+        <Tab.Container defaultActiveKey="profile" >
           {/* 1. Profil Sarlavhasi (Header) va Tab Navigatsiyasi */}
-          <div class="position-relative overflow-hidden">
+          <div className="position-relative overflow-hidden">
             <Card id="body-card-index" className="card">
               <Card.Body id="body-card-main" className="card-body pb-0">
                 <div className="d-md-flex align-items-center justify-content-between text-center text-md-start">
@@ -182,7 +183,7 @@ const Profile = () => {
                       cursor: "pointer",
                     }}
                   >
-                    Edit Profile
+                    Hisobni tahrirlash
                   </a>
                 </div>
 
@@ -198,7 +199,7 @@ const Profile = () => {
                       className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent py-6"
                     >
                       <IconUserCircle size={20} className="me-0 me-md-2" />
-                      <span className="d-none d-md-block">My Profile</span>
+                      <span className="d-none d-md-block">Mening hisobim</span>
                     </Nav.Link>
                   </Nav.Item>
 
@@ -224,21 +225,21 @@ const Profile = () => {
                 <Col lg={12}>
                   <div className="card">
                     <div className="p-4 card-body">
-                      <h4 className="fs-6 mb-3">About me</h4>
+                      <h4 className="fs-6 mb-3">Men haqimda</h4>
                       <p className="mb-3 text-dark">
                         {employee.about_me || "Ma'lumot kiritilmagan."}
                       </p>
 
                       {/* Contact */}
                       <div className="py-3 border-top">
-                        <h5 className="mb-3">Contact</h5>
+                        <h5 className="mb-3">Aloqa uchun</h5>
 
                         <p className="mb-1">
                           <strong
                             className="d-inline-block"
                             style={{ width: "120px" }}
                           >
-                            Phone:
+                            Telefon:
                           </strong>
                           <span className="text-muted">
                             {employee.phone || "-"}
@@ -250,7 +251,7 @@ const Profile = () => {
                             className="d-inline-block"
                             style={{ width: "120px" }}
                           >
-                            Email:
+                            Pochta:
                           </strong>
                           <span className="text-muted">
                             {employee.email || "-"}
@@ -262,24 +263,24 @@ const Profile = () => {
                             className="d-inline-block"
                             style={{ width: "120px" }}
                           >
-                            Address:
+                            Manzil:
                           </strong>
                           <span className="text-muted">
-                            {employee.address || "-"}
+                            {employee.branches.current.address || "-"}
                           </span>
                         </p>
                       </div>
 
                       {/* Other */}
                       <div className="pt-3 border-top">
-                        <h5 className="mb-3">Other</h5>
+                        <h5 className="mb-3">Boshqa</h5>
 
                         <p className="mb-1">
                           <strong
                             className="d-inline-block"
                             style={{ width: "120px" }}
                           >
-                            Birth Date:
+                            Tug'ilgan sana:
                           </strong>
                           <span className="text-muted">
                             {employee.birth_date || "-"}
@@ -291,7 +292,7 @@ const Profile = () => {
                             className="d-inline-block"
                             style={{ width: "120px" }}
                           >
-                            Hire Date:
+                            Boshlagan kun:
                           </strong>
                           <span className="text-muted">
                             {employee.hire_date || "-"}
