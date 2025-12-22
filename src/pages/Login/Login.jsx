@@ -49,6 +49,7 @@ export default function Login() {
       if (res.ok) {
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
+        localStorage.setItem("user_id", data.user.id);
         navigate("/profile");
       } else {
         setError(data.detail || "Username yoki parol noto‘g‘ri");
