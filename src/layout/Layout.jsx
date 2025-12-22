@@ -26,7 +26,7 @@ const Layout = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://apichaqimchi.pythonanywhere.com/api/v1/staff/${userId}//", {
+        const res = await axios.get('http://apichaqimchi.pythonanywhere.com/api/v1/staff/${userId}/', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
