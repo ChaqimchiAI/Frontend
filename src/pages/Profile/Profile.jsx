@@ -37,7 +37,7 @@ const Profile = () => {
         setLoading(true);
         setError(null);
 
-        const res = await axios.get("http://apichaqimchi.pythonanywhere.com/api/v1/user/me/", {
+        const res = await axios.get("http://apichaqimchi.pythonanywhere.com/api/v1/staff/", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
