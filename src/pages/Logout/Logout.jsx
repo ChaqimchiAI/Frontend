@@ -12,7 +12,7 @@ export default function Logout() {
 
       try {
         await axios.post(
-          "http://apichaqimchi.pythonanywhere.com/api/v1/user/logout/",
+          "http://apichaqimchi.pythonanywhere.com/api/v1/auth/logout/",
           { refresh: refreshToken || "" },
           {
             headers: {
