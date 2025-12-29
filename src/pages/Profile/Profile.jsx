@@ -13,19 +13,15 @@ import {
 import axios from "axios";
 // Tabler Icons
 import {
-  IconUser,
-  IconLockCheck,
   IconPlus,
   IconUserCircle,
   IconLock,
 } from "@tabler/icons-react";
-import "./Profile.css";
-import BreadcrumbComponent from "../../components/BreadcrumbComponent";
+import BreadcrumbComponent from "../../components/Ui/BreadcrumbComponent";
 
 const Profile = () => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [passwordStatus, setPasswordStatus] = useState(""); // Parol o'zgartirish natijasi uchun
 
   // **********************************************
@@ -35,21 +31,17 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const userId = localStorage.getItem("user_id");
-        const res = await axios.get("http://apichaqimchi.pythonanywhere.com/api/v1/staff/${userId.id}/", {
+        const res = await axios.get(`http://apichaqimchi.pythonanywhere.com/api/v1/staff/profile`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         });
 
-        setEmployee(res.data.data);
+        console.log(res);
+
+        setEmployee(res?.data.data);
       } catch (err) {
         console.error("Profil ma'lumotlarini olishda xato:", err);
-        setError(
-          "Ma'lumotlarni yuklashda xato yuz berdi. Mock data ishlatilmoqda."
-        );
-        setEmployee(mockEmployee); // Xato bo'lsa mock datani ishlatish
       } finally {
         setLoading(false);
       }
@@ -123,7 +115,7 @@ const Profile = () => {
 
         <Tab.Container defaultActiveKey="profile">
           {/* 1. Profil Sarlavhasi (Header) va Tab Navigatsiyasi */}
-          <div class="position-relative overflow-hidden">
+          <div className="position-relative overflow-hidden">
             <Card id="body-card-index" className="card">
               <Card.Body id="body-card-main" className="card-body pb-0">
                 <div className="d-md-flex align-items-center justify-content-between text-center text-md-start">
@@ -132,15 +124,15 @@ const Profile = () => {
                     <div className="rounded-circle position-relative mb-0 mb-md-0 d-inline-block">
                       <img
                         src={
-                          employee.photo_url ||
-                          "assets/images/profile/user-1.jpg"
+                          employee?.photo_url ||
+                          "/user-1.jpg"
                         }
                         alt="profile-img"
                         className="img-fluid rounded-circle"
                         width="100"
                         height="100"
                       />
-                      <span className="text-bg-primary rounded-circle text-white d-flex align-items-center justify-content-center position-absolute bottom-0 end-0 p-1 border border-2 border-white">
+                      <span className="text-bg-primary rounded-circle text-white d-flex align-items-center justify-content-center position-absolute bottom-0 end-0 p-1 border-2 border-white">
                         <IconPlus size={16} />
                       </span>
                     </div>
@@ -149,27 +141,27 @@ const Profile = () => {
                     <div className="ms-0 ms-md-3 mb-9 mb-md-0">
                       <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-1">
                         <h4 id="full-name" className="me-3 mb-0 fs-7 fw-bold">
-                          {employee.full_name}
+                          {employee?.full_name}
                         </h4>
                         <Badge
                           id="is-active-badge"
-                          bg={employee.is_active ? "primary" : "danger"}
+                          bg={employee?.is_active ? "primary" : "danger"}
                           className="badge fs-6 fw-bold rounded-pill  border"
                         >
-                          {employee.is_active ? "Active" : "Inactive"}
+                          {employee?.is_active ? "Active" : "Inactive"}
                         </Badge>
                       </div>
                       <p id="positions" className="fs-6 mb-1">
-                        {employee.positions?.current?.title || "-"}
+                        {employee?.positions?.current?.title || "-"}
                       </p>
                       <p id="branches" className="fs-6 mb-1">
-                        {employee.branches?.current?.name || "-"}
+                        {employee?.branches?.current?.name || "-"}
                       </p>
                     </div>
                   </div>
 
                   {/* Edit Profile tugmasi */}
-                  <a
+                  <h5
                     style={{
                       backgroundColor: "rgb(13,110,253)",
                       color: "white",
@@ -183,7 +175,7 @@ const Profile = () => {
                     }}
                   >
                     Edit Profile
-                  </a>
+                  </h5>
                 </div>
 
                 {/* Tablar (Navigatsiya) */}
@@ -222,82 +214,80 @@ const Profile = () => {
             <Tab.Pane eventKey="profile">
               <Row>
                 <Col lg={12}>
-                  <div className="card">
-                    <div className="p-4 card-body">
-                      <h4 className="fs-6 mb-3">About me</h4>
-                      <p className="mb-3 text-dark">
-                        {employee.about_me || "Ma'lumot kiritilmagan."}
+                  <div className="card border border-1 p-4">
+                    <h4 className="fs-6 mb-3">About me</h4>
+                    <p className="mb-3 text-dark">
+                      {employee?.about_me || "Ma'lumot kiritilmagan."}
+                    </p>
+
+                    {/* Contact */}
+                    <div className="py-3 border-top">
+                      <h5 className="mb-3">Contact</h5>
+
+                      <p className="mb-1">
+                        <strong
+                          className="d-inline-block"
+                          style={{ width: "120px" }}
+                        >
+                          Phone:
+                        </strong>
+                        <span className="text-muted">
+                          {employee?.phone || "-"}
+                        </span>
                       </p>
 
-                      {/* Contact */}
-                      <div className="py-3 border-top">
-                        <h5 className="mb-3">Contact</h5>
+                      <p className="mb-1">
+                        <strong
+                          className="d-inline-block"
+                          style={{ width: "120px" }}
+                        >
+                          Email:
+                        </strong>
+                        <span className="text-muted">
+                          {employee?.email || "-"}
+                        </span>
+                      </p>
 
-                        <p className="mb-1">
-                          <strong
-                            className="d-inline-block"
-                            style={{ width: "120px" }}
-                          >
-                            Phone:
-                          </strong>
-                          <span className="text-muted">
-                            {employee.phone || "-"}
-                          </span>
-                        </p>
+                      <p className="mb-0">
+                        <strong
+                          className="d-inline-block"
+                          style={{ width: "120px" }}
+                        >
+                          Address:
+                        </strong>
+                        <span className="text-muted">
+                          {employee?.address || "-"}
+                        </span>
+                      </p>
+                    </div>
 
-                        <p className="mb-1">
-                          <strong
-                            className="d-inline-block"
-                            style={{ width: "120px" }}
-                          >
-                            Email:
-                          </strong>
-                          <span className="text-muted">
-                            {employee.email || "-"}
-                          </span>
-                        </p>
+                    {/* Other */}
+                    <div className="pt-3 border-top">
+                      <h5 className="mb-3">Other</h5>
 
-                        <p className="mb-0">
-                          <strong
-                            className="d-inline-block"
-                            style={{ width: "120px" }}
-                          >
-                            Address:
-                          </strong>
-                          <span className="text-muted">
-                            {employee.address || "-"}
-                          </span>
-                        </p>
-                      </div>
+                      <p className="mb-1">
+                        <strong
+                          className="d-inline-block"
+                          style={{ width: "120px" }}
+                        >
+                          Birth Date:
+                        </strong>
+                        <span className="text-muted">
+                          {employee?.birth_date || "-"}
+                        </span>
+                      </p>
 
-                      {/* Other */}
-                      <div className="pt-3 border-top">
-                        <h5 className="mb-3">Other</h5>
-
-                        <p className="mb-1">
-                          <strong
-                            className="d-inline-block"
-                            style={{ width: "120px" }}
-                          >
-                            Birth Date:
-                          </strong>
-                          <span className="text-muted">
-                            {employee.birth_date || "-"}
-                          </span>
-                        </p>
-
-                        <p className="mb-0">
-                          <strong
-                            className="d-inline-block"
-                            style={{ width: "120px" }}
-                          >
-                            Hire Date:
-                          </strong>
-                          <span className="text-muted">
-                            {employee.hire_date || "-"}
-                          </span>
-                        </p>
-                      </div>
+                      <p className="mb-0">
+                        <strong
+                          className="d-inline-block"
+                          style={{ width: "120px" }}
+                        >
+                          Hire Date:
+                        </strong>
+                        <span className="text-muted">
+                          {employee?.hire_date || "-"}
+                        </span>
+                      </p>
                     </div>
                   </div>
                 </Col>
@@ -314,11 +304,10 @@ const Profile = () => {
 
                       {passwordStatus && (
                         <div
-                          className={`alert ${
-                            passwordStatus.includes("muvaffaqiyatli")
-                              ? "alert-success"
-                              : "alert-danger"
-                          } mb-3`}
+                          className={`alert ${passwordStatus.includes("muvaffaqiyatli")
+                            ? "alert-success"
+                            : "alert-danger"
+                            } mb-3`}
                           role="alert"
                         >
                           {passwordStatus}

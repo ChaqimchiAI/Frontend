@@ -1,22 +1,20 @@
 import "./Header.css";
 import { Icon } from "@iconify/react";
-import { IconDots } from '@tabler/icons-react';
-import { IconAlignJustified } from '@tabler/icons-react';
-import { NavLink } from "react-router-dom";
-import LogoutButton from '../LogoutButton';
+import { Link, NavLink } from "react-router-dom";
 
-const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowbar , setMedia}) => {
+const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowbar, setMedia }) => {
 
-  let handleToggle = () => {
+  const handleToggle = () => {
     let html = document.documentElement;
     setToggleTheme(!toggleTheme);
     if (toggleTheme) {
-      html.setAttribute('data-bs-theme',"dark")
+      html.setAttribute('data-bs-theme', "dark")
     } else {
-      html.setAttribute('data-bs-theme',"light")
+      html.setAttribute('data-bs-theme', "light")
     }
   }
-  let handleBar = () => {
+  const handleBar = () => {
+    setMedia(true)
     let body = document.body;
 
     setTogglebar((prev) => {
@@ -32,7 +30,7 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
       return newValue;
     });
   };
-  let HandleMedia = () => {
+  const HandleMedia = () => {
     document.body.setAttribute('data-sidebartype', 'full');
     setTogglebar(true);
   }
@@ -40,67 +38,45 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
     <header className="topbar sticky-top">
       <div className="with-vertical">
         <nav className="navbar navbar-expand-lg p-0">
-          <ul className="navbar-nav">
-            <li className="nav-item nav-icon-hover-bg rounded-circle">
-              <a
-                className="nav-link sidebartoggler desktop-menu"
-                id="headerCollapse"
-                href="javascript:void(0)"
-                onClick={handleBar}
-              >
-                <Icon icon="solar:list-bold-duotone" className="fs-7" />
-              </a>
-              <a
-                className="nav-link sidebartoggler mobile-menu"
-                id="headerCollapse"
-                href="javascript:void(0)"
-                onClick={() => setMedia(true)}
-              >
-                <Icon icon="solar:list-bold-duotone" onClick={HandleMedia} className="fs-7" />
-              </a>
-            </li>
-          </ul>
+          <li
+            className="nav-item nav-icon-hover-bg rounded-circle"
+            onClick={() => { handleBar(), setMedia(false) }}
+          >
+            <a
+              className="nav-link sidebartoggler desktop-menu"
+              id="headerCollapse"
+              href="javascript:void(0)"
+            >
+              <Icon icon="solar:list-bold-duotone" className="fs-7" />
+            </a>
+            <a
+              className="nav-link sidebartoggler mobile-menu"
+              id="headerCollapse"
+              href="javascript:void(0)"
+            >
+              <Icon icon="solar:list-bold-duotone" onClick={HandleMedia} className="fs-7" />
+            </a>
+          </li>
 
           <ul className="navbar-nav quick-links d-none d-lg-flex align-items-center">
             <li className="nav-item dropdown-hover d-none d-lg-block me-2">
-              <a className="nav-link header__blank-link">Chat</a>
+              <Link
+                to="/chats"
+                className="nav-link header__blank-link"
+              >
+                Chat
+              </Link>
             </li>
             <li className="nav-item dropdown-hover d-none d-lg-block me-2">
-              <a className="nav-link header__blank-link">Kalendar</a>
-            </li>
-            <li className="nav-item dropdown-hover d-none d-lg-block">
-              <a className="nav-link header__blank-link">Pochta</a>
+              <Link
+                to="/calendar"
+                className="nav-link header__blank-link"
+              >
+                Kalendar
+              </Link>
             </li>
           </ul>
 
-          <div className="d-block d-lg-none py-3">
-            <img
-              src="/logo-light.svg"
-              className="dark-logo"
-              alt="Logo-Dark"
-              style={{ display: "flex" }}
-            />
-            <img
-              src="/logo-dark.svg"
-              className="light-logo"
-              alt="Logo-light"
-              style={{ display: "none" }}
-            />
-          </div>
-
-          <a
-            className="navbar-toggler p-0 border-0"
-            href="javascript:void(0)"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="p-2">
-              <IconDots size={20} className="fs-7" />
-            </span>
-          </a>
           <div
             className="collapse navbar-collapse justify-content-end"
             id="navbarNav"
@@ -221,7 +197,7 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                   <div
                     className="dropdown-menu content-dd border-0 dropdown-menu-end dropdown-menu-animate-up p-0"
                     aria-labelledby="drop3"
-                    style={{ minWidth: "300px",borderRadius:'20px'}}
+                    style={{ minWidth: "300px", borderRadius: '20px' }}
                   >
                     <div className="modal-header border-bottom p-3">
                       <input
@@ -328,28 +304,34 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                   </div>
                 </li>
 
-                <li className="nav-item nav-icon-hover-bg rounded-circle">
-                 {toggleTheme ?  <a
-                    className="nav-link moon dark-layout"
-                    href="javascript:void(0)"
-                    style={{ display: "flex" }}
-                  >
-                    <Icon
-                      icon="solar:moon-line-duotone"
-                      className="moon" onClick={handleToggle}
-                      style={{ display: "flex", fontSize: "22px" }}
-                    />
-                  </a> : <a
-                    className="nav-link sun light-layout"
-                    href="javascript:void(0)"
-                    style={{ display: "flex" }}
-                  >
-                    <Icon
-                      icon="solar:sun-2-line-duotone"
-                      className="sun" onClick={handleToggle}
-                      style={{ display: "flex", fontSize: "22px" }}
-                    />
-                  </a> }
+                <li
+                  className="nav-item nav-icon-hover-bg rounded-circle"
+                  onClick={handleToggle}
+                >
+                  {toggleTheme
+                    ? <a
+                      className="nav-link moon dark-layout"
+                      href="javascript:void(0)"
+                      style={{ display: "flex" }}
+                    >
+                      <Icon
+                        icon="solar:moon-line-duotone"
+                        className="moon"
+                        style={{ display: "flex", fontSize: "22px" }}
+                      />
+                    </a>
+                    : <a
+                      className="nav-link sun light-layout"
+                      href="javascript:void(0)"
+                      style={{ display: "flex" }}
+                    >
+                      <Icon
+                        icon="solar:sun-2-line-duotone"
+                        className="sun"
+                        style={{ display: "flex", fontSize: "22px" }}
+                      />
+                    </a>
+                  }
                 </li>
 
                 <li className="nav-item  dropdown nav-icon-hover-bg rounded-circle">
@@ -373,7 +355,7 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                   <div
                     className="dropdown-menu border-0 content-dd dropdown-menu-end dropdown-menu-animate-up p-0"
                     aria-labelledby="drop3"
-                    style={{ minWidth: "350px",borderRadius:'24px'}}
+                    style={{ minWidth: "350px", borderRadius: '24px' }}
                   >
                     <div className="d-flex align-items-center py-3 px-4 border-bottom">
                       <h3 style={{ fontSize: "18px" }} className="mb-0">
@@ -578,12 +560,17 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                     </div>
 
                     <div className="py-3 px-4 border-top">
-                      <button style={{borderRadius:'34px',backgroundColor:'#0085DB'}} className="btn py-2 text-white w-100 log-btn">
+                      <Link
+                        style={{ borderRadius: '34px', backgroundColor: '#0085DB' }}
+                        className="btn py-2 text-white w-100 log-btn"
+                        to="/chats"
+                      >
                         Hamma xabarlarni ko'rish
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </li>
+
                 <li className="nav-item dropdown">
                   <a
                     className="nav-link position-relative ms-6"
@@ -595,7 +582,7 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                     <div className="d-flex align-items-center flex-shrink-0">
                       <div className="user-profile me-sm-3 me-2">
                         <img
-                          src={employee?.photo_url || "/assets/images/profile/user-1.jpg"}
+                          src={employee?.photo_url || "/user-1.jpg"}
                           width="40"
                           className="rounded-circle"
                           alt="user-img"
@@ -605,15 +592,15 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                         <Icon icon="solar:alt-arrow-down-line-duotone" />
                       </span>
                       <div className="d-none d-sm-block">
-                        <h6 style={{fontSize:'16px',fontWeight:600,marginBottom:'2px'}} className={`profile-name ${toggleTheme ? 'text-black' : 'text-white'}`}>{employee?.first_name} {employee?.last_name}</h6>
-                        <p style={{fontSize:"15px"}} className="lh-base mb-0 profile-subtext">
-                          { employee?.positions.current.title }
+                        <h6 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '2px' }} className={`profile-name ${toggleTheme ? 'text-black' : 'text-white'}`}>{employee?.first_name} {employee?.last_name}</h6>
+                        <p style={{ fontSize: "15px" }} className="lh-base mb-0 profile-subtext">
+                          {employee?.title}
                         </p>
                       </div>
                     </div>
                   </a>
 
-                  <div style={{borderRadius:'24px'}}
+                  <div style={{ borderRadius: '24px' }}
                     className="dropdown-menu border-0 content-dd dropdown-menu-end dropdown-menu-animate-up"
                     aria-labelledby="drop1"
                   >
@@ -622,23 +609,20 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                       data-simplebar
                     >
                       <div className="d-flex align-items-center justify-content-between pt-3 px-4">
-                        <h3 style={{fontSize:'19px',fontWeight:600}} className="mb-0">Foydalanuvchi profili</h3>
+                        <h3 style={{ fontSize: '19px', fontWeight: 600 }} className="mb-0">Foydalanuvchi profili</h3>
                       </div>
 
                       <div className="d-flex align-items-center mx-4 py-4 border-bottom">
                         <img
-                          src={
-                            employee.photo_url ||
-                            "assets/images/profile/user-1.jpg"
-                          }
+                          src={employee?.photo_url || "/user-1.jpg"}
                           alt="user"
                           width="60"
                           className="rounded-circle"
                         />
                         <div className="ms-3">
-                          <h4 style={{fontSize:'19px'}} className="mb-0 fw-medium">{ employee?.first_name } { employee?.last_name }</h4>
-                          <span style={{fontSize:'15.2px',fontWeight:500,color:'#AAAFB4'}} className="d-block">
-                            { employee?.positions.current.title }
+                          <h4 style={{ fontSize: '19px' }} className="mb-0 fw-medium">{employee?.first_name || "Foydalanuvchi"} {employee?.last_name}</h4>
+                          <span style={{ fontSize: '15.2px', fontWeight: 500, color: '#AAAFB4' }} className="d-block">
+                            {employee?.role || "Xodim"}
                           </span>
                         </div>
                       </div>
@@ -646,7 +630,7 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                       <div className="message-body">
                         <NavLink
                           to='/profile'
-                          className="dropdown-item px-4 d-flex align-items-center py-3"
+                          className="dropdown-item px-4 d-flex cursor-pointer align-items-center py-3"
                         >
                           <span className="btn px-2 py-1 bg-info-subtle rounded-1 text-info shadow-none">
                             <Icon
@@ -655,18 +639,17 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                             />
                           </span>
                           <div className="w-100 ps-3 ms- header-socials-link">
-                            <h5 style={{fontSize:'17.5px'}} className="mb-0 mt-1 fw-medium">
+                            <h5 style={{ fontSize: '17.5px' }} className="mb-0 mt-1 fw-medium">
                               Mening profilim
                             </h5>
-                            <span style={{fontSize:'15.2px',marginTop:'2px',color:'#AAAFB4'}} className="d-block">
+                            <span style={{ fontSize: '15.2px', marginTop: '2px', color: '#AAAFB4' }} className="d-block">
                               Hisob sozlamalari
                             </span>
                           </div>
                         </NavLink>
 
                         <a
-                          href="../main/app-email.html"
-                          className="dropdown-item px-4 d-flex align-items-center py-3"
+                          className="dropdown-item px-4 d-flex cursor-pointer align-items-center py-3"
                         >
                           <span className="btn px-2 py-1 bg-success-subtle rounded-1 text-success shadow-none">
                             <Icon
@@ -675,18 +658,17 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                             />
                           </span>
                           <div className="w-100 ps-3 ms-1">
-                            <h5 style={{fontSize:'17.5px'}} className="mb-0 mt-1 fw-medium">
+                            <h5 style={{ fontSize: '17.5px' }} className="mb-0 mt-1 fw-medium">
                               Xabarlar qutisi
                             </h5>
-                            <span style={{fontSize:'15.2px',marginTop:'2px',color:'#AAAFB4'}} className="d-block">
+                            <span style={{ fontSize: '15.2px', marginTop: '2px', color: '#AAAFB4' }} className="d-block">
                               Xabarlar & Pochta
                             </span>
                           </div>
                         </a>
 
                         <a
-                          href="../main/app-notes.html"
-                          className="dropdown-item px-4 d-flex align-items-center py-3"
+                          className="dropdown-item px-4 d-flex cursor-pointer align-items-center py-3"
                         >
                           <span className="btn px-2 py-1 bg-danger-subtle rounded-1 text-danger shadow-none">
                             <Icon
@@ -694,20 +676,23 @@ const Header = ({employee,toggleTheme , setToggleTheme , setTogglebar , setShowb
                               className="fs-7"
                             />
                           </span>
-                          <div className="w-100 ps-3 ms-1">
-                            <h5 style={{fontSize:'17.5px'}} className="mb-0 mt-1 fw-medium">
+                          <Link
+                            to="/notes"
+                            className="w-100 ps-3 ms-1"
+                          >
+                            <h5 style={{ fontSize: '17.5px' }} className="mb-0 mt-1 fw-medium">
                               Mening vazifam
                             </h5>
-                            <span style={{fontSize:'15.2px',marginTop:'2px',color:'#AAAFB4'}} className="d-block">
+                            <span style={{ fontSize: '15.2px', marginTop: '2px', color: '#AAAFB4' }} className="d-block">
                               Bajariladigan va kundalik vazifalar
                             </span>
-                          </div>
+                          </Link>
                         </a>
                       </div>
 
                       <div className="py-4 px-4 border-top">
                         <a
-                          href="/logout" style={{borderRadius:'34px',backgroundColor:'#0085DB',color:'#fff'}}
+                          href="/logout" style={{ borderRadius: '34px', backgroundColor: '#0085DB', color: '#fff' }}
                           className="btn w-100 py-2 log-btn"
                         >
                           Chiqish

@@ -46,10 +46,14 @@ export default function Login() {
       });
       const data = await res.json();
 
+      console.log(data);      
+      console.log(res);      
+
       if (res.ok) {
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
-        localStorage.setItem("user_id", data.user.id);
+        // localStorage.setItem("user_id", data.user.id);
+        window.location.reload(); // sahifani yangilaymiz, shunda ProtectedRoute ishlaydi
         navigate("/profile");
       } else {
         setError(data.detail || "Username yoki parol noto‘g‘ri");

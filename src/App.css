@@ -1,0 +1,53 @@
+.hover-white:hover {
+     color: #eaeff4;
+     transition: 0.3s;
+}
+
+.modalFadeIn {
+    animation: modalFadeIn 0.5s forwards;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modalFadeOut {
+    animation: modalFadeOut 0.5s ease-out;
+}
+
+@keyframes modalFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* Notification animations */
+.cp-notification {
+    animation: notifIn 560ms cubic-bezier(.22,.9,.36,1) both;
+}
+
+.cp-notification.hide {
+    animation: notifOut 460ms ease-in forwards;
+}
+
+@keyframes notifIn {
+    from { opacity: 0; transform: translateX(-8px) scale(.98); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes notifOut {
+    from { opacity: 1; transform: translateX(0) scale(1); }
+    to   { opacity: 0; transform: translateX(-6px) scale(.98); }
+}

@@ -10,7 +10,7 @@ const BreadcrumbComponent = ({ currentPage }) => {
         
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb mb-0">
-            
+
             {/* 1. Home Linki */}
             <li className="breadcrumb-item">
               <NavLink to="/index.html">Home</NavLink>
