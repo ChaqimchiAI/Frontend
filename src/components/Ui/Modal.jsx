@@ -1,16 +1,16 @@
 import { Icon } from "@iconify/react"
 import { Card } from "react-bootstrap"
 
-const Modal = ({ title, close, children, anima }) => {
+const Modal = ({ title, close, children, anima, width }) => {
      return (
-          <div className="d-flex justify-content-center align-content-start z-3">
+          <div className="d-flex justify-content-center">
                <div
                     style={{ width: "100%", height: "100vh", background: "rgba(0,0,0,0.5)", position: "fixed", top: 0, left: 0, zIndex: 100 }}
                     onClick={() => close(false)}
                ></div>
                <Card
-                    className={`d-flex modal-animation ${anima ? 'modalFadeIn' : 'modalFadeOut'}`}
-                    style={{ width: "50%", position: "fixed", top: "30px", zIndex: 101 }}
+                    className={`d-flex ${anima ? 'modalFadeIn' : 'modalFadeOut'}`}
+                    style={{width: width, position: "fixed", top: "30px", zIndex: 101, marginLeft: "-5%" }}
                >
                     <Card.Body>
                          <nav className="d-flex justify-content-between align-content-center">

@@ -9,13 +9,20 @@ html[data-bs-theme='dark'] #aside-menu-toggle {
 }
 body[data-sidebartype='mini-sidebar'] #aside-menu-toggle {
   width: 70px;
-  transition: width .2s ease;
+  transition: width .15s ease;
 }
 .index-mini-logo {
   width: 40px;
   height: 40px;
   object-fit: contain;
 }
+
+.sidebar-hover:hover{
+  z-index: 100;
+  width: 270px !important;
+}
+
+
 
 @media (max-width: 1299.9px) {
   html[data-bs-theme='dark'] .dark-logo {

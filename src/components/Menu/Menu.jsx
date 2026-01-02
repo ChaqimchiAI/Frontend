@@ -7,12 +7,18 @@ import { useState } from "react";
 
 const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
   const [exam, setExam] = useState(false);
+  const [mouseMove, setMouseMove] = useState(false)
 
   return (
-    <aside id="aside-menu-toggle" className="left-sidebar with-vertical">
+    <aside
+      id="aside-menu-toggle"
+      className={`left-sidebar with-vertical ${!togglebar ? "sidebar-hover" : ""}`}
+      onMouseMove={() => setMouseMove(true)}
+      onMouseLeave={() => setMouseMove(false)}
+    >
       <div className="brand-logo d-flex align-items-center justify-content-between">
         <Link className="text-nowrap logo-img" to="/">
-          {togglebar ? toggleTheme ? <img
+          {togglebar || mouseMove ? toggleTheme ? <img
             src="/logo-light.svg"
             className="dark-logo"
             alt="Logo-Dark"
@@ -55,7 +61,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         icon="solar:menu-dots-bold-duotone"
                         className="nav-small-cap-icon fs-5"
                       />
-                      {togglebar
+                      {togglebar || mouseMove
                         ? <span className="hide-menu">Bosh sahifa</span>
                         : <Icon
                           icon="mdi:dots-horizontal"
@@ -75,7 +81,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-primary-subtle rounded-1">
                           <Icon icon="solar:screencast-2-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Boshqaruv paneli</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Boshqaruv paneli</span> : ''}
                       </NavLink>
                     </li>
 
@@ -88,7 +94,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-info-subtle rounded-1">
                           <Icon icon="solar:user-circle-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Hisob</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Hisob</span> : ''}
                       </NavLink>
                     </li>
 
@@ -101,7 +107,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-info-subtle rounded-1">
                           <Icon icon="solar:calendar-add-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Kalendar</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Kalendar</span> : ''}
                       </NavLink>
                     </li>
 
@@ -114,7 +120,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-success-subtle rounded-1">
                           <Icon icon="solar:window-frame-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Kanban</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Kanban</span> : ''}
                       </NavLink>
                     </li>
 
@@ -127,7 +133,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-secondary-subtle rounded-1">
                           <Icon icon="solar:notification-unread-lines-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Izohlar</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Izohlar</span> : ''}
                       </NavLink>
                     </li>
 
@@ -136,7 +142,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         icon="solar:menu-dots-bold-duotone"
                         className="nav-small-cap-icon fs-5"
                       />
-                      {togglebar
+                      {togglebar || mouseMove
                         ? <span className="hide-menu">Maktab sahifalari</span>
                         : <Icon
                           icon="mdi:dots-horizontal"
@@ -155,7 +161,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-success-subtle rounded-1">
                           <Icon icon="solar:lightbulb-bolt-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Ustozlar</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Ustozlar</span> : ''}
                       </NavLink>
                     </li>
 
@@ -167,7 +173,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-danger-subtle rounded-1">
                           <Icon icon="solar:square-academic-cap-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Talabalar</span> : ""}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Talabalar</span> : ""}
                       </NavLink>
                     </li>
 
@@ -177,16 +183,16 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                           e.preventDefault();
                           setExam(!exam)
                         }}
-                        className={`sidebar-link warning-hover-bg ${togglebar ? 'has-arrow' : ""}`}
+                        className={`sidebar-link warning-hover-bg ${togglebar || mouseMove ? 'has-arrow' : ""}`}
                         aria-expanded={exam}
                       >
                         <span className="aside-icon p-2 bg-warning-subtle rounded-1">
                           <Icon icon="solar:file-text-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Imtihon</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Imtihon</span> : ''}
                       </a>
 
-                      {exam &&
+                      {exam || mouseMove &&
                         <ul className="first-level">
                           <li className="sidebar-item px-lg-13">
                             <Link to="/exam/schedule" className="sidebar-link">
@@ -211,7 +217,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-indigo-subtle rounded-1">
                           <Icon icon="solar:planet-3-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Darslar</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Darslar</span> : ''}
                       </NavLink>
                     </li>
 
@@ -224,7 +230,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-info-subtle rounded-1">
                           <Icon icon="solar:file-check-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar ? <span className="hide-menu ps-1">Davomat</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Davomat</span> : ''}
                       </NavLink>
                     </li>
                   </ul>
@@ -235,16 +241,14 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
         </div>
       </div>
 
-      {togglebar && <div className="fixed-profile mx-3 mt-3">
+      {togglebar || mouseMove ? <div className="fixed-profile mx-3 mt-3">
         <div className="card bg-primary-subtle mb-0 shadow-none">
           <div className="card-body p-4">
             <div className="d-flex align-items-center justify-content-between gap-3">
               <div className="d-flex align-items-center gap-3">
                 <img
                   src={employee?.photo_url || "/user-1.jpg"}
-                  width="45"
-                  height="45"
-                  className="img-fluid rounded-circle"
+                  style={{ borderRadius: "100%", width: "60px", height: "60px", objectFit: "cover" }}
                   alt="user"
                 />
                 <div>
@@ -267,14 +271,15 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
               >
                 <Icon
                   icon="solar:logout-line-duotone"
-                  style={{ fontSize: '20px' }}
+                  width={30}
+                  height={30}
                 />
               </NavLink>
 
             </div>
           </div>
         </div>
-      </div>}
+      </div> : ""}
     </aside>
   );
 };

@@ -5,7 +5,6 @@ import {
   Row,
   Col,
   Button,
-  Badge,
   Card,
   Form,
   Spinner,
@@ -18,10 +17,15 @@ import {
   IconLock,
 } from "@tabler/icons-react";
 import BreadcrumbComponent from "../../components/Ui/BreadcrumbComponent";
+import Modal from "../../components/Ui/Modal"
+import { Input } from "../../components/Ui/Input";
+import Notification from "../../components/Ui/Notification";
 
 const Profile = () => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [EditModal, setEditModal] = useState(false)
+  const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
   const [passwordStatus, setPasswordStatus] = useState(""); // Parol o'zgartirish natijasi uchun
 
   // **********************************************
@@ -70,7 +74,7 @@ const Profile = () => {
       // Haqiqiy API chaqirig'i misoli
 
       await axios.post(
-        "http://apichaqimchi.pythonanywhere.com/api/v1/user/change-password/",
+        "http://apichaqimchi.pythonanywhere.com/api/v1/staff/profile",
         {
           current_password: current,
           new_password: newPass,
@@ -93,6 +97,11 @@ const Profile = () => {
     }
   };
 
+  const handleSaveChanges = () => {
+    setEditModal(false)
+    setNotif({ show: true, type: 'edited', message: 'Teacher details saved' })
+  }
+
   if (loading) {
     return (
       <div className="text-center py-5">
@@ -109,256 +118,362 @@ const Profile = () => {
   }
 
   return (
-    <div className="row">
-      <div className="col-12">
-        <BreadcrumbComponent currentPage="Profile" />
+    <>
 
-        <Tab.Container defaultActiveKey="profile">
-          {/* 1. Profil Sarlavhasi (Header) va Tab Navigatsiyasi */}
-          <div className="position-relative overflow-hidden">
-            <Card id="body-card-index" className="card">
-              <Card.Body id="body-card-main" className="card-body pb-0">
-                <div className="d-md-flex align-items-center justify-content-between text-center text-md-start">
-                  <div className="d-md-flex align-items-center">
-                    {/* Profil rasmi va "+" belgisi */}
-                    <div className="rounded-circle position-relative mb-0 mb-md-0 d-inline-block">
-                      <img
-                        src={
-                          employee?.photo_url ||
-                          "/user-1.jpg"
-                        }
-                        alt="profile-img"
-                        className="img-fluid rounded-circle"
-                        width="100"
-                        height="100"
-                      />
-                      <span className="text-bg-primary rounded-circle text-white d-flex align-items-center justify-content-center position-absolute bottom-0 end-0 p-1 border-2 border-white">
-                        <IconPlus size={16} />
-                      </span>
-                    </div>
+      {EditModal && (
+        <Modal
+          title="Ma'lumotlarni tahrirlash"
+          close={setEditModal}
+          anima={EditModal}
+          width="60%"
+        >
+          <div className="d-flex justify-content-between gap-3 mt-2">
+            <div className="d-flex flex-column w-50 gap-2">
+              <span className="fw-bold fs-4 text-white-50">
+                Shaxsiy
+              </span>
+              <Input
+                label="Ism"
+                placeholder="Ismingiz..."
+                defaultValue={employee?.first_name}
+              />
+              <Input
+                label="Familya"
+                placeholder="Familiyangiz..."
+                defaultValue={employee?.last_name}
+              />
+              <Input
+                label="Telefon"
+                placeholder="Telifon raqam..."
+                defaultValue={employee?.phone}
+              />
+              <Input
+                type="email"
+                label="Email"
+                placeholder="Email manzilingiz..."
+                defaultValue={employee?.email}
+              />
+            </div>
+            <div
+              style={{ width: "1px", height: "auto", background: "#2b364cff" }}
+            >
 
-                    {/* Foydalanuvchi ma'lumotlari */}
-                    <div className="ms-0 ms-md-3 mb-9 mb-md-0">
-                      <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-1">
-                        <h4 id="full-name" className="me-3 mb-0 fs-7 fw-bold">
-                          {employee?.full_name}
-                        </h4>
-                        <Badge
-                          id="is-active-badge"
-                          bg={employee?.is_active ? "primary" : "danger"}
-                          className="badge fs-6 fw-bold rounded-pill  border"
-                        >
-                          {employee?.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                      </div>
-                      <p id="positions" className="fs-6 mb-1">
-                        {employee?.positions?.current?.title || "-"}
-                      </p>
-                      <p id="branches" className="fs-6 mb-1">
-                        {employee?.branches?.current?.name || "-"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Edit Profile tugmasi */}
-                  <h5
-                    style={{
-                      backgroundColor: "rgb(13,110,253)",
-                      color: "white",
-                      padding: "8px 22px",
-                      borderRadius: "34px",
-                      display: "inline-block",
-                      textDecoration: "none",
-                      fontSize: "15px",
-                      fontWeight: "500",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Edit Profile
-                  </h5>
-                </div>
-
-                {/* Tablar (Navigatsiya) */}
-                <Nav
-                  variant="pills"
-                  className="nav nav-pills pb-0 user-profile-tab mt-4 justify-content-center justify-content-md-start"
-                  id="pills-tab"
+            </div>
+            <div className="d-flex flex-column w-50 gap-2">
+              <span className="fw-bold fs-4 text-white-50">
+                Boshqa
+              </span>
+              <Input
+                label="Yashash manzili"
+                placeholder="(Farg'ona)"
+                defaultValue={employee?.address_date}
+              />
+              <Input
+                label="Tug'ilgan sana"
+                type="date"
+                defaultValue={employee?.birth_date}
+              />
+              <Input
+                label="Ishga olingan sana"
+                type="date"
+                defaultValue={employee?.hire_date}
+              />
+              <div className="d-flex flex-column gap-2">
+                <label htmlFor="disc">
+                  Izoh
+                </label>
+                <textarea
+                  id="disc"
+                  className="form-control"
+                  defaultValue={employee?.description}
+                  placeholder="Izoh..."
+                  style={{height: "90px"}}
                 >
-                  <Nav.Item className="nav-item me-2 me-md-3">
-                    <Nav.Link
-                      eventKey="profile"
-                      className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent py-6"
-                    >
-                      <IconUserCircle size={20} className="me-0 me-md-2" />
-                      <span className="d-none d-md-block">My Profile</span>
-                    </Nav.Link>
-                  </Nav.Item>
 
-                  <Nav.Item className="nav-item me-2 me-md-3">
-                    <Nav.Link
-                      eventKey="password"
-                      className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent py-6"
-                    >
-                      <IconLock size={20} className="me-0 me-md-2" />
-                      <span className="d-none d-md-block">Parol</span>
-                    </Nav.Link>
-                  </Nav.Item>
-                </Nav>
-              </Card.Body>
-            </Card>
+                </textarea>
+              </div>
+            </div>
           </div>
+          <div className="d-flex justify-content-end gap-3 mt-3">
+            <button
+              className="btn btn-outline-danger mt-1"
+              onClick={() => setEditModal(false)}
+            >
+              Close
+            </button>
+            <button
+              className="btn btn-outline-success mt-1"
+              onClick={handleSaveChanges}
+            >
+              Save Changes
+            </button>
+          </div>
+        </Modal>
+      )}
 
-          {/* 2. Tab Kontenti - Siz bergan HTML qismiga moslashtirildi */}
-          <Tab.Content className="mt-2">
-            {/* My Profile Tab */}
-            <Tab.Pane eventKey="profile">
-              <Row>
-                <Col lg={12}>
-                  <div className="card border border-1 p-4">
-                    <h4 className="fs-6 mb-3">About me</h4>
-                    <p className="mb-3 text-dark">
-                      {employee?.about_me || "Ma'lumot kiritilmagan."}
-                    </p>
 
-                    {/* Contact */}
-                    <div className="py-3 border-top">
-                      <h5 className="mb-3">Contact</h5>
+      {notif.show && (
+        <Notification
+          type={notif.type}
+          message={notif.message}
+          onClose={() => setNotif({ ...notif, show: false })}
+        />
+      )}
 
-                      <p className="mb-1">
-                        <strong
-                          className="d-inline-block"
-                          style={{ width: "120px" }}
-                        >
-                          Phone:
-                        </strong>
-                        <span className="text-muted">
-                          {employee?.phone || "-"}
+
+      <div className="row">
+        <div className="col-12">
+          <BreadcrumbComponent currentPage="Profile" />
+
+          <Tab.Container defaultActiveKey="profile">
+            {/* 1. Profil Sarlavhasi (Header) va Tab Navigatsiyasi */}
+            <div className="position-relative overflow-hidden">
+              <Card id="body-card-index" className="card">
+                <Card.Body id="body-card-main" className="card-body pb-0">
+                  <div className="d-md-flex align-items-center justify-content-between text-center text-md-start">
+                    <div className="d-md-flex align-items-center">
+                      {/* Profil rasmi va "+" belgisi */}
+                      <div className="rounded-circle position-relative mb-0 mb-md-0 d-inline-block">
+                        <img
+                          src={
+                            employee?.photo_url ||
+                            "/user-1.jpg"
+                          }
+                          alt="profile-img"
+                          className="img-fluid"
+                          style={{ borderRadius: "100%", width: "100px", height: "100px", objectFit: "cover" }}
+                        />
+                        <span className="text-bg-primary rounded-circle text-white d-flex align-items-center justify-content-center position-absolute bottom-0 end-0 p-1 border-2 border-white">
+                          <IconPlus size={16} />
                         </span>
-                      </p>
+                      </div>
 
-                      <p className="mb-1">
-                        <strong
-                          className="d-inline-block"
-                          style={{ width: "120px" }}
-                        >
-                          Email:
-                        </strong>
-                        <span className="text-muted">
-                          {employee?.email || "-"}
-                        </span>
-                      </p>
-
-                      <p className="mb-0">
-                        <strong
-                          className="d-inline-block"
-                          style={{ width: "120px" }}
-                        >
-                          Address:
-                        </strong>
-                        <span className="text-muted">
-                          {employee?.address || "-"}
-                        </span>
-                      </p>
-                    </div>
-
-                    {/* Other */}
-                    <div className="pt-3 border-top">
-                      <h5 className="mb-3">Other</h5>
-
-                      <p className="mb-1">
-                        <strong
-                          className="d-inline-block"
-                          style={{ width: "120px" }}
-                        >
-                          Birth Date:
-                        </strong>
-                        <span className="text-muted">
-                          {employee?.birth_date || "-"}
-                        </span>
-                      </p>
-
-                      <p className="mb-0">
-                        <strong
-                          className="d-inline-block"
-                          style={{ width: "120px" }}
-                        >
-                          Hire Date:
-                        </strong>
-                        <span className="text-muted">
-                          {employee?.hire_date || "-"}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-            </Tab.Pane>
-
-            {/* Password Tab */}
-            <Tab.Pane eventKey="password">
-              <Row>
-                <Col lg={6}>
-                  <Card className="shadow-sm">
-                    <Card.Body className="p-4">
-                      <h5 className="mb-4">Parolni o'zgartirish</h5>
-
-                      {passwordStatus && (
-                        <div
-                          className={`alert ${passwordStatus.includes("muvaffaqiyatli")
-                            ? "alert-success"
-                            : "alert-danger"
-                            } mb-3`}
-                          role="alert"
-                        >
-                          {passwordStatus}
+                      {/* Foydalanuvchi ma'lumotlari */}
+                      <div className="ms-0 ms-md-3 mb-9 mb-md-0">
+                        <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-1">
+                          <h4 id="full-name" className="me-3 mb-0 fs-6 fw-bold">
+                            {employee?.full_name}
+                          </h4>
+                          <span
+                            className="fs-2 rounded-4 fw-bold"
+                            style={{ color: "#0095db", padding: "1px 10px", background: "#0085db20", border: "1px solid #0095db" }}
+                          >
+                            {/* {employee?.is_active ? "Active" : "Inactive"} */}
+                            {employee?.positions?.current?.title || "-"}
+                          </span>
                         </div>
-                      )}
+                        <p id="positions" className={`fs-5 mt-2 ${employee?.is_active ? "text-success" : "text-danger"}`}>
+                          •
+                          <span
+                            className="text-white fs-3 fw-bold"
+                          >
+                            {employee?.is_active ? "  Active" : "  Inactive"}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
 
-                      <Form onSubmit={handleChangePassword}>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Hozirgi parol</Form.Label>
-                          <Form.Control
-                            type="password"
-                            name="currentPassword"
-                            required
-                          />
-                        </Form.Group>
+                    {/* Edit Profile tugmasi */}
+                    <h5
+                      style={{
+                        backgroundColor: "rgb(13,110,253)",
+                        color: "white",
+                        padding: "8px 22px",
+                        borderRadius: "34px",
+                        display: "inline-block",
+                        textDecoration: "none",
+                        fontSize: "15px",
+                        fontWeight: "500",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setEditModal(true)}
+                    >
+                      Edit Profile
+                    </h5>
+                  </div>
 
-                        <Form.Group className="mb-3">
-                          <Form.Label>Yangi parol</Form.Label>
-                          <Form.Control
-                            type="password"
-                            name="newPassword"
-                            required
-                          />
-                        </Form.Group>
+                  {/* Tablar (Navigatsiya) */}
+                  <Nav
+                    variant="pills"
+                    className="nav nav-pills pb-0 user-profile-tab mt-4 justify-content-center justify-content-md-start"
+                    id="pills-tab"
+                  >
+                    <Nav.Item className="nav-item me-2 me-md-3">
+                      <Nav.Link
+                        eventKey="profile"
+                        className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent py-6"
+                      >
+                        <IconUserCircle size={20} className="me-0 me-md-2" />
+                        <span className="d-none d-md-block">My Profile</span>
+                      </Nav.Link>
+                    </Nav.Item>
 
-                        <Form.Group className="mb-3">
-                          <Form.Label>Parolni tasdiqlash</Form.Label>
-                          <Form.Control
-                            type="password"
-                            name="confirmPassword"
-                            required
-                          />
-                        </Form.Group>
+                    <Nav.Item className="nav-item me-2 me-md-3">
+                      <Nav.Link
+                        eventKey="password"
+                        className="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent py-6"
+                      >
+                        <IconLock size={20} className="me-0 me-md-2" />
+                        <span className="d-none d-md-block">Parol</span>
+                      </Nav.Link>
+                    </Nav.Item>
+                  </Nav>
+                </Card.Body>
+              </Card>
+            </div>
 
-                        <Button
-                          variant="primary"
-                          type="submit"
-                          className="mt-2 fw-semibold"
-                        >
-                          O'zgartirish
-                        </Button>
-                      </Form>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-            </Tab.Pane>
-          </Tab.Content>
-        </Tab.Container>
+            {/* 2. Tab Kontenti - Siz bergan HTML qismiga moslashtirildi */}
+            <Tab.Content className="mt-2">
+              {/* My Profile Tab */}
+              <Tab.Pane eventKey="profile">
+                <Row>
+                  <Col lg={6}>
+                    <div className="card border border-1 p-4">
+                      <h4 className="fs-6 mb-3">About me</h4>
+                      <p className="mb-3 text-dark">
+                        {employee?.about_me || "Ma'lumot kiritilmagan."}
+                      </p>
+
+                      {/* Contact */}
+                      <div className="py-3 border-top">
+                        <h5 className="mb-3">Contact</h5>
+
+                        <p className="mb-1">
+                          <strong
+                            className="d-inline-block"
+                            style={{ width: "120px" }}
+                          >
+                            Phone:
+                          </strong>
+                          <span className="text-muted">
+                            {employee?.phone || "-"}
+                          </span>
+                        </p>
+
+                        <p className="mb-1">
+                          <strong
+                            className="d-inline-block"
+                            style={{ width: "120px" }}
+                          >
+                            Email:
+                          </strong>
+                          <span className="text-muted">
+                            {employee?.email || "-"}
+                          </span>
+                        </p>
+
+                        <p className="mb-0">
+                          <strong
+                            className="d-inline-block"
+                            style={{ width: "120px" }}
+                          >
+                            Address:
+                          </strong>
+                          <span className="text-muted">
+                            {employee?.branches?.current?.address || "-"}
+                          </span>
+                        </p>
+                      </div>
+
+                      {/* Other */}
+                      <div className="pt-3 border-top">
+                        <h5 className="mb-3">Other</h5>
+
+                        <p className="mb-1">
+                          <strong
+                            className="d-inline-block"
+                            style={{ width: "120px" }}
+                          >
+                            Birth Date:
+                          </strong>
+                          <span className="text-muted">
+                            {employee?.birth_date || "-"}
+                          </span>
+                        </p>
+
+                        <p className="mb-0">
+                          <strong
+                            className="d-inline-block"
+                            style={{ width: "120px" }}
+                          >
+                            Hire Date:
+                          </strong>
+                          <span className="text-muted">
+                            {employee?.hire_date || "-"}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </Tab.Pane>
+
+              {/* Password Tab */}
+              <Tab.Pane eventKey="password">
+                <Row>
+                  <Col lg={6}>
+                    <Card className="shadow-sm">
+                      <Card.Body className="p-4">
+                        <h5 className="mb-4">Parolni o'zgartirish</h5>
+
+                        {passwordStatus && (
+                          <div
+                            className={`alert ${passwordStatus.includes("muvaffaqiyatli")
+                              ? "alert-success"
+                              : "alert-danger"
+                              } mb-3`}
+                            role="alert"
+                          >
+                            {passwordStatus}
+                          </div>
+                        )}
+
+                        <Form onSubmit={handleChangePassword}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Hozirgi parol</Form.Label>
+                            <Form.Control
+                              type="password"
+                              name="currentPassword"
+                              required
+                            />
+                          </Form.Group>
+
+                          <Form.Group className="mb-3">
+                            <Form.Label>Yangi parol</Form.Label>
+                            <Form.Control
+                              type="password"
+                              name="newPassword"
+                              required
+                            />
+                          </Form.Group>
+
+                          <Form.Group className="mb-3">
+                            <Form.Label>Parolni tasdiqlash</Form.Label>
+                            <Form.Control
+                              type="password"
+                              name="confirmPassword"
+                              required
+                            />
+                          </Form.Group>
+
+                          <Button
+                            variant="primary"
+                            type="submit"
+                            className="mt-2 fw-semibold"
+                          >
+                            O'zgartirish
+                          </Button>
+                        </Form>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+              </Tab.Pane>
+            </Tab.Content>
+          </Tab.Container>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

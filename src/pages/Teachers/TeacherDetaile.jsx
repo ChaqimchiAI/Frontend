@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Icon } from "@iconify/react"
 import Modal from "../../components/Ui/Modal"
-import teachersData from "../../data/Array.json"
+import teachersData from "../../data/Teachers.json"
 import Notification from "../../components/Ui/Notification"
 
 const colorStyles = ["#4bd08b", "#fb977d", "#f6c85f", "#0085db"]
@@ -51,46 +51,63 @@ const TeacherDetaile = () => {
             title="Edit Teacher"
             close={setEditModal}
             anima={EditModal}
+            width="60%"
           >
-            <div className="d-flex flex-column gap-3 mt-2">
-              <div className="d-flex flex-column gap-1">
-                <label htmlFor="name">Name</label>
-                <input type="text" id="name" className="form-control" defaultValue={Teacher?.name} />
+            <div className="d-flex justify-content-between gap-3 mt-2">
+              <div className="d-flex flex-column w-50 gap-3">
+                <span className="fw-bold align-self-end text-white-50">
+                  Shaxsiy
+                </span>
+                <div className="d-flex flex-column gap-1">
+                  <label htmlFor="name">Name</label>
+                  <input type="text" id="name" className="form-control" defaultValue={Teacher?.name} />
+                </div>
+                <div className="d-flex flex-column gap-1">
+                  <label htmlFor="email">Email</label>
+                  <input type="email" id="email" className="form-control" defaultValue={Teacher?.email} />
+                </div>
+                <div className="d-flex flex-column gap-1">
+                  <label htmlFor="phone">Phone</label>
+                  <input type="text" id="phone" className="form-control" defaultValue={Teacher?.phone} />
+                </div>
               </div>
-              <div className="d-flex flex-column gap-1">
-                <label htmlFor="email">Email</label>
-                <input type="email" id="email" className="form-control" defaultValue={Teacher?.email} />
+              <div
+                style={{ width: "1px", height: "auto", background: "#2b364cff" }}
+              >
+
               </div>
-              <div className="d-flex flex-column gap-1">
-                <label htmlFor="phone">Phone</label>
-                <input type="text" id="phone" className="form-control" defaultValue={Teacher?.phone} />
+              <div className="d-flex flex-column w-50 gap-3">
+                <span className="fw-bold align-self-end text-white-50">
+                  Boshqa
+                </span>
+                <div className="d-flex flex-column gap-1">
+                  <label htmlFor="birthday">Birthday</label>
+                  <input type="date" id="birthday" className="form-control" defaultValue={Teacher?.birthday} />
+                </div>
+                <div className="d-flex flex-column gap-1">
+                  <label htmlFor="subject">Subject</label>
+                  <input type="text" id="subject" className="form-control" defaultValue={Teacher?.subject} />
+                </div>
+                <div className="d-flex flex-column gap-1">
+                  <label htmlFor="class">Class</label>
+                  <input type="text" id="class" className="form-control" defaultValue={Teacher?.class} />
+                </div>
               </div>
-              <div className="d-flex flex-column gap-1">
-                <label htmlFor="birthday">Birthday</label>
-                <input type="date" id="birthday" className="form-control" defaultValue={Teacher?.birthday} />
-              </div>
-              <div className="d-flex flex-column gap-1">
-                <label htmlFor="subject">Subject</label>
-                <input type="text" id="subject" className="form-control" defaultValue={Teacher?.subject} />
-              </div>
-              <div className="d-flex flex-column gap-1">
-                <label htmlFor="class">Class</label>
-                <input type="text" id="class" className="form-control" defaultValue={Teacher?.class} />
-              </div>
-              <div className="d-flex justify-content-end gap-3">
-                <button
-                  className="btn btn-outline-danger mt-1"
-                  onClick={() => setEditModal(false)}
-                >
-                  Close
-                </button>
-                <button
-                  className="btn btn-outline-success mt-1"
-                  onClick={handleSaveChanges}
-                >
-                  Save Changes
-                </button>
-              </div>
+
+            </div>
+            <div className="d-flex justify-content-end gap-3 mt-3">
+              <button
+                className="btn btn-outline-danger mt-1"
+                onClick={() => setEditModal(false)}
+              >
+                Close
+              </button>
+              <button
+                className="btn btn-outline-success mt-1"
+                onClick={handleSaveChanges}
+              >
+                Save Changes
+              </button>
             </div>
           </Modal>
         )
@@ -132,7 +149,7 @@ const TeacherDetaile = () => {
           onClose={() => setNotif({ ...notif, show: false })}
         />
       )}
-      
+
       <BreadcrumbComponent currentPage="Teacher Detail" />
 
       <div className="d-flex flex-column flex-md-row gap-5">

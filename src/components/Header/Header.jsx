@@ -583,8 +583,7 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                       <div className="user-profile me-sm-3 me-2">
                         <img
                           src={employee?.photo_url || "/user-1.jpg"}
-                          width="40"
-                          className="rounded-circle"
+                          style={{ borderRadius: "100%", width: "40px", height: "40px", objectFit: "cover" }}
                           alt="user-img"
                         />
                       </div>
@@ -594,7 +593,7 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                       <div className="d-none d-sm-block">
                         <h6 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '2px' }} className={`profile-name ${toggleTheme ? 'text-black' : 'text-white'}`}>{employee?.first_name} {employee?.last_name}</h6>
                         <p style={{ fontSize: "15px" }} className="lh-base mb-0 profile-subtext">
-                          {employee?.title}
+                          {employee?.positions?.current?.title || "-"}
                         </p>
                       </div>
                     </div>
@@ -616,13 +615,12 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                         <img
                           src={employee?.photo_url || "/user-1.jpg"}
                           alt="user"
-                          width="60"
-                          className="rounded-circle"
+                          style={{ borderRadius: "100%", width: "60px", height: "60px", objectFit: "cover" }}
                         />
                         <div className="ms-3">
                           <h4 style={{ fontSize: '19px' }} className="mb-0 fw-medium">{employee?.first_name || "Foydalanuvchi"} {employee?.last_name}</h4>
                           <span style={{ fontSize: '15.2px', fontWeight: 500, color: '#AAAFB4' }} className="d-block">
-                            {employee?.role || "Xodim"}
+                            {employee?.positions?.current?.title || "Xodim"}
                           </span>
                         </div>
                       </div>
@@ -638,7 +636,7 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                               className="fs-7"
                             />
                           </span>
-                          <div className="w-100 ps-3 ms- header-socials-link">
+                          <div className="w-100 ps-3">
                             <h5 style={{ fontSize: '17.5px' }} className="mb-0 mt-1 fw-medium">
                               Mening profilim
                             </h5>

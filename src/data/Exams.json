@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "class": "10",
+    "section": "C",
+    "start_time": "10:00",
+    "end_time": "13:00",
+    "date": "2022-07-28"
+  },
+  {
+    "id": 2,
+    "class": "9",
+    "section": "A",
+    "start_time": "09:00",
+    "end_time": "12:00",
+    "date": "2022-07-29"
+  },
+  {
+    "id": 3,
+    "class": "11",
+    "section": "B",
+    "start_time": "11:00",
+    "end_time": "14:00",
+    "date": "2022-07-30"
+  },
+  {
+    "id": 4,
+    "class": "8",
+    "section": "D",
+    "start_time": "08:30",
+    "end_time": "11:30",
+    "date": "2022-07-31"
+  },
+  {
+    "id": 5,
+    "class": "12",
+    "section": "A",
+    "start_time": "10:30",
+    "end_time": "13:30",
+    "date": "2022-08-01"
+  },
+  {
+    "id": 6,
+    "class": "7",
+    "section": "B",
+    "start_time": "09:30",
+    "end_time": "12:30",
+    "date": "2022-08-02"
+  },
+  {
+    "id": 7,
+    "class": "10",
+    "section": "D",
+    "start_time": "11:00",
+    "end_time": "14:00",
+    "date": "2022-08-03"
+  }
+]
