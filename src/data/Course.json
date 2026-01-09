@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "courseName": "Frontend Development",
+    "price": 1200000,
+    "duration": "6 oy",
+    "description": "HTML, CSS, JavaScript, React va zamonaviy frontend texnologiyalarini o‘rganish"
+  },
+  {
+    "id": 2,
+    "courseName": "Backend Development",
+    "price": 1400000,
+    "duration": "6 oy",
+    "description": "Node.js, Express, ma’lumotlar bazasi va API yaratish asoslari"
+  },
+  {
+    "id": 3,
+    "courseName": "Fullstack Development",
+    "price": 1800000,
+    "duration": "9 oy",
+    "description": "Frontend va backend texnologiyalarini birgalikda o‘rganish"
+  },
+  {
+    "id": 4,
+    "courseName": "UI/UX Design",
+    "price": 1000000,
+    "duration": "4 oy",
+    "description": "Foydalanuvchi interfeysi va tajribasini loyihalash asoslari"
+  },
+  {
+    "id": 5,
+    "courseName": "React.js Advanced",
+    "price": 900000,
+    "duration": "3 oy",
+    "description": "React hooklar, state management va real loyihalar"
+  },
+  {
+    "id": 6,
+    "courseName": "JavaScript Fundamentals",
+    "price": 700000,
+    "duration": "2 oy",
+    "description": "JavaScript asoslari va dasturlash mantiqi"
+  },
+  {
+    "id": 7,
+    "courseName": "Node.js & API",
+    "price": 950000,
+    "duration": "3 oy",
+    "description": "REST API, autentifikatsiya va backend servislar yaratish"
+  },
+  {
+    "id": 8,
+    "courseName": "Web Design Basics",
+    "price": 600000,
+    "duration": "2 oy",
+    "description": "Web dizayn, ranglar, layout va responsive dizayn asoslari"
+  }
+]

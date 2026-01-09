@@ -22,16 +22,18 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
             src="/logo-light.svg"
             className="dark-logo"
             alt="Logo-Dark"
+            width={180}
             style={{ display: "flex" }}
           /> : <img
             src="/logo-dark.svg"
             className="light-logo"
+            width={180}
             alt="Logo-light"
             style={{ display: "flex" }}
           /> : <img src="/favicon.png"
             className="index-mini-logo"
             alt="Logo-light"
-            width={40} height={40}
+            width={180}
             style={{ display: "flex" }} />}
         </Link>
         <a
@@ -54,7 +56,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
             >
               <div className="simplebar-content" style={{ padding: "0px 16px" }}>
                 <nav className="sidebar-nav">
-                  <ul id="sidebarnav" className="mb-0">
+                  <ul id="sidebarnav">
 
                     <li className="nav-small-cap">
                       <Icon
@@ -148,7 +150,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                           icon="mdi:dots-horizontal"
                           width="28"
                           height="28"
-                          style={{ marginLeft: '3px', cursor: 'pointer', color: '#808090' }}
+                          style={{ margin: '-15px 0px -5px 3px', cursor: 'pointer', color: '#808090' }}
                         />
                       }
                     </li>
@@ -178,6 +180,18 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                     </li>
 
                     <li className="sidebar-item">
+                      <NavLink
+                        to="/leads"
+                        className={`sidebar-link danger-hover-bg`}
+                      >
+                        <span className="aside-icon p-2 bg-danger-subtle rounded-1">
+                          <Icon icon="mdi:user-plus-outline" className="fs-6" />
+                        </span>
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Leads</span> : ""}
+                      </NavLink>
+                    </li>
+
+                    <li className="sidebar-item">
                       <a
                         onClick={(e) => {
                           e.preventDefault();
@@ -192,7 +206,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         {togglebar || mouseMove ? <span className="hide-menu ps-1">Imtihon</span> : ''}
                       </a>
 
-                      {exam || mouseMove &&
+                      {!exam || mouseMove &&
                         <ul className="first-level">
                           <li className="sidebar-item px-lg-13">
                             <Link to="/exam/schedule" className="sidebar-link">
@@ -243,7 +257,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
 
       {togglebar || mouseMove ? <div className="fixed-profile mx-3 mt-3">
         <div className="card bg-primary-subtle mb-0 shadow-none">
-          <div className="card-body p-4">
+          <div className="card-body p-3">
             <div className="d-flex align-items-center justify-content-between gap-3">
               <div className="d-flex align-items-center gap-3">
                 <img

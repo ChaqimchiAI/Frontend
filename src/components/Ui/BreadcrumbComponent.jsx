@@ -28,7 +28,7 @@ const BreadcrumbComponent = ({ currentPage }) => {
 
             {/* 1. Home Linki */}
             <li className="breadcrumb-item">
-              <NavLink to="/index.html">Home</NavLink>
+              <NavLink to="/">Home</NavLink>
             </li>
 
             {/* 2. Aktiv Sahifa */}

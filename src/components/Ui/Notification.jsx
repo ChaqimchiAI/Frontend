@@ -32,7 +32,7 @@ const Notification = ({ type = 'success', message = '', onClose, duration = 3000
                     borderLeft: `4px solid ${v.color}`,
                     boxShadow: `0 2px 8px rgba(0, 0, 0, 0.15)`,
                     position: 'fixed',
-                    top: '120px',
+                    top: '100px',
                     right: '20px',
                     zIndex: 1050
                }}

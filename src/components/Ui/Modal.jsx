@@ -5,7 +5,7 @@ const Modal = ({ title, close, children, anima, width }) => {
      return (
           <div className="d-flex justify-content-center">
                <div
-                    style={{ width: "100%", height: "100vh", background: "rgba(0,0,0,0.5)", position: "fixed", top: 0, left: 0, zIndex: 100 }}
+                    style={{ width: "100%", height: "100vh", background: "rgba(0,0,0,0.5)", position: "fixed", top: 0, left: 0, zIndex: 100, borderBottom: "1px solid #000000cc" }}
                     onClick={() => close(false)}
                ></div>
                <Card

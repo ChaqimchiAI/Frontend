@@ -1,26 +1,21 @@
 import Header from '../components/Header/Header'
 import Menu from '../components/Menu/Menu'
-import { useState , useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Layout.css'
 import { Outlet } from 'react-router-dom';
 import axios from "axios";
 
-const Layout = () => {
+const Layout = ({ toggleTheme, setToggleTheme }) => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  let [toggleTheme , setToggleTheme] = useState(() => {
-    let saved = localStorage.getItem("theme");
-    return saved ? JSON.parse(saved) : true;
-  });
-
-  let [togglebar , setTogglebar] = useState(() => {
+  let [togglebar, setTogglebar] = useState(() => {
     let saved = localStorage.getItem("sidebar");
     return saved ? JSON.parse(saved) : true;
   });
 
-  let [showbar , setShowbar] = useState(false);
-  let [media , setMedia] = useState(false);
+  let [showbar, setShowbar] = useState(false);
+  let [media, setMedia] = useState(false);
   const userId = localStorage.getItem("user_id");
 
   useEffect(() => {
@@ -45,9 +40,12 @@ const Layout = () => {
 
   useEffect(() => {
     localStorage.setItem("theme", JSON.stringify(toggleTheme));
-    let html = document.documentElement;
-    html.setAttribute("data-bs-theme", toggleTheme ? "light" : "dark");
+    document.documentElement.setAttribute(
+      "data-bs-theme",
+      toggleTheme ? "light" : "dark"
+    );
   }, [toggleTheme]);
+
 
 
   useEffect(() => {
@@ -64,23 +62,23 @@ const Layout = () => {
     <div id='main-wrapper' className={`site-layout ${media ? "show-sidebar" : ""}`}>
       <aside className="index-menu">
         {/* user ma’lumotlarini Menu ga yuboramiz */}
-        <Menu 
+        <Menu
           employee={employee}
-          toggleTheme={toggleTheme} 
-          togglebar={togglebar} 
-          setMedia={setMedia} 
+          toggleTheme={toggleTheme}
+          togglebar={togglebar}
+          setMedia={setMedia}
         />
       </aside>
 
       <main className="layout-content">
         {/* user ma’lumotlarini Header ga yuboramiz */}
-        <Header 
+        <Header
           employee={employee}
-          toggleTheme={toggleTheme} 
+          toggleTheme={toggleTheme}
           setToggleTheme={setToggleTheme}
-          setTogglebar={setTogglebar} 
-          setShowbar={setShowbar} 
-          setMedia={setMedia} 
+          setTogglebar={setTogglebar}
+          setShowbar={setShowbar}
+          setMedia={setMedia}
         />
 
         <Outlet />

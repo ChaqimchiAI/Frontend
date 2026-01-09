@@ -6,6 +6,7 @@ function DataTable({
      title,
      data,
      columns,
+     button,
      children,
      searchKeys = [],
      countOptions = [10, 25, 50, 100],
@@ -39,7 +40,11 @@ function DataTable({
      return (
           <div className="card-body">
                {/* TITLE */}
-               <h5>{title}</h5>
+               <div className="d-flex justify-content-between">
+                    {title ? <h5>{title}</h5> : ""}
+
+                    {button}
+               </div>
 
                {/* ENTRIES */}
                <EntriesSelect

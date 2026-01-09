@@ -192,12 +192,12 @@ const StudentDetaile = () => {
               <ul className="">
                 {
                   Student && Object.entries(Student).map(([key, value]) => {
-                    if (key === 'role' || key === 'image' || key === 'skils') {
+                    if (key === 'role' || key === 'image' || key === 'skils' || key === 'exam_result') {
                       return null
                     }
                     return (
                       <li key={key} className="d-flex justify-content-start gap-2 mb-4">
-                        <span className="text-capitalize">{key.replace('_', ' ')}:</span>
+                        <span className="text-capitalize">{key?.replace('_', ' ')}:</span>
                         <span>{value}</span>
                       </li>
                     )

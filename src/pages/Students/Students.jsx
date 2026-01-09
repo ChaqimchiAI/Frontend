@@ -4,11 +4,33 @@ import { Icon } from "@iconify/react"
 import { Link } from "react-router-dom"
 import studentsData from "../../data/Students.json"
 import DataTable from "../../components/Ui/DataTable"
-
+import { useState } from "react"
+import Modal from "../../components/Ui/Modal"
 
 const Students = () => {
+  const [addModal, setAddModal] = useState(false)
+
+  const handleAdd = () => {
+    setAddModal(true)
+  }
+
   return (
     <>
+
+      {/* yangi student qoshish uchun modal */}
+
+      {addModal &&
+        <Modal
+          title="Yangi o'quvchi qo'shish"
+          close={setAddModal}
+          anima={addModal}
+          width="50%"
+        >
+          
+        </Modal>
+      }
+
+
       <BreadcrumbComponent currentPage="All Students" />
 
       <Card>
@@ -24,6 +46,18 @@ const Students = () => {
             "View"
           ]}
           searchKeys={["name", "parent", "phone", "email"]}
+          button={
+            <button
+              className="btn btn-sm fs-3 text-white py-2"
+              style={{ background: "#0085DB" }}
+              onClick={handleAdd}
+            >
+              <span>
+                <Icon icon="mdi:plus" className="me-2" fontSize={20} />
+              </span>
+              Yangi qo'shish
+            </button>
+          }
         >
           {(currentStudent) =>
             currentStudent.map(student => (

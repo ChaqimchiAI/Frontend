@@ -77,3 +77,19 @@
     visibility: visible;
     opacity: 1;
 }
+
+.lidCard{
+    transition: 0.3s;
+    cursor: pointer;
+    border: 1px solid transparent !important;
+}
+
+.lidCard:hover{
+    border: 1px solid #0095db50 !important;
+}
+
+
+.dots:hover{
+    transition: 0.3s;
+    background: #7c8fac40;
+}

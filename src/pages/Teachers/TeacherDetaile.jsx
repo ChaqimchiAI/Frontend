@@ -150,6 +150,7 @@ const TeacherDetaile = () => {
         />
       )}
 
+
       <BreadcrumbComponent currentPage="Teacher Detail" />
 
       <div className="d-flex flex-column flex-md-row gap-5">
@@ -236,10 +237,10 @@ const TeacherDetaile = () => {
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link
-                  eventKey="salary"
-                  style={activeTab === 'salary' ? { background: '#0085db', color: '#fff', borderRadius: 24, padding: '8px 14px' } : { color: '#9fb0c0', background: 'transparent' }}
+                  eventKey="groups"
+                  style={activeTab === 'groups' ? { background: '#0085db', color: '#fff', borderRadius: 24, padding: '8px 14px' } : { color: '#9fb0c0', background: 'transparent' }}
                 >
-                  Salary
+                  Guruhlar
                 </Nav.Link>
               </Nav.Item>
             </Nav>
@@ -284,14 +285,11 @@ const TeacherDetaile = () => {
               </Tab.Pane>
 
 
-              <Tab.Pane eventKey="salary">
+              <Tab.Pane eventKey="groups">
                 <Row>
-                  <Card className="w-60">
-                    <Card.Body>
-                      <h5>Salary Information</h5>
-                      <p>Salary details will be displayed here.</p>
-                    </Card.Body>
-                  </Card>
+                  <span className="alert alert-warning">
+                    Bu yerda o'qituvchning guruhlari ko'rinadi!
+                  </span>
                 </Row>
               </Tab.Pane>
             </Tab.Content>

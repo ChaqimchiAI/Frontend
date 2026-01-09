@@ -19,9 +19,21 @@ import Schedule from "./pages/Exams/Schedule"
 import Result from "./pages/Exams/Result"
 import Lessons from "./pages/Lessons/Lessons";
 import Attendance from "./pages/Attendance/Attendance";
+import Leads from "./pages/Laeds/Leads";
+import { useEffect, useState } from "react";
 
 
 function App() {
+
+  const [theme, setTheme] = useState(() => {
+    return JSON.parse(localStorage.getItem("theme")) ?? true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("theme", JSON.stringify(theme));
+    document.documentElement.dataset.bsTheme = theme ? "light" : "dark";
+  }, [theme]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -30,7 +42,12 @@ function App() {
 
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Layout />}>
+          <Route path="/" element={
+            <Layout
+              toggleTheme={theme}
+              setToggleTheme={setTheme}
+            />
+          }>
             <Route index element={<Home />} />
             <Route path="chats" element={<Chats />} />
             <Route path="profile" element={<Profile />} />
@@ -39,6 +56,7 @@ function App() {
             <Route path="notes" element={<Notes />} />
             <Route path="teachers" element={<Teachers />} />
             <Route path="students" element={<Students />} />
+            <Route path="leads" element={<Leads />} />
             <Route path="exam/schedule" element={<Schedule />} />
             <Route path="exam/result" element={<Result />} />
             <Route path="lessons" element={<Lessons />} />

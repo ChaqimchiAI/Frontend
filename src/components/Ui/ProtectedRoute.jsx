@@ -27,10 +27,10 @@ const ProtectedRoute = () => {
     );
   }
 
-  // Token yo‘q → login ga
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
+  // // Token yo‘q → login ga
+  // if (!isLoggedIn) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   // Token bor → ichki sahifani ko‘rsat
   return <Outlet />;

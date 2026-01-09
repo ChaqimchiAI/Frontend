@@ -1,7 +1,9 @@
 // src/pages/Login/Login.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Input } from "../../components/Ui/Input"
 import "./Login.css";
+import axios from "axios";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -17,7 +19,7 @@ export default function Login() {
     }
   }, [navigate]);
   // Har safar localStorage o‘zgarsa – theme ni yangilaymiz
-  useEffect(() => { 
+  useEffect(() => {
     const checkTheme = () => {
       const saved = localStorage.getItem("theme");
       const light = saved ? JSON.parse(saved) : true;
@@ -33,37 +35,55 @@ export default function Login() {
     return () => window.removeEventListener("storage", checkTheme);
   }, []);
 
+
+  // login qilish funksiyasi
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    // 1. Ma'lumotlar borligini tekshiring (Input'laringiz nomi shu o'zgaruvchilarga mos bo'lsin)
+    const loginPayload = {
+      username: username, // state-dagi username
+      password: password  // state-dagi password
+    };
+
     try {
-      const res = await fetch("http://apichaqimchi.pythonanywhere.com/api/v1/auth/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username.trim(), password }),
+      const res = await axios({
+        method: 'post',
+        url: 'https://erpbackend.pythonanywhere.com/api/v1/auth/login/',
+        data: loginPayload,
+        headers: {
+          'Content-Type': 'application/json',
+          // Agar login uchun token shart bo'lmasa, bu yerda Authorization bo'lmasligi kerak!
+        }
       });
-      const data = await res.json();
 
-      console.log(data);      
-      console.log(res);      
+      console.log("Serverdan javob:", res);
 
-      if (res.ok) {
-        localStorage.setItem("access_token", data.access);
-        localStorage.setItem("refresh_token", data.refresh);
-        // localStorage.setItem("user_id", data.user.id);
-        window.location.reload(); // sahifani yangilaymiz, shunda ProtectedRoute ishlaydi
-        navigate("/profile");
-      } else {
-        setError(data.detail || "Username yoki parol noto‘g‘ri");
+      if (res.data.data.data && res.data.data.data.access) {
+        localStorage.setItem("access_token", res.data.data.data.access);
+        localStorage.setItem("refresh_token", res.data.data.data.refresh);
+        window.location.reload()
       }
-    } catch {
-      setError("Server bilan aloqa yo‘q");
+    } catch (err) {
+      // 500 xatosi bo'lganda server nima deyotganini ko'rish uchun:
+      console.log("Xato tafsiloti (Response):", err.response?.data);
+
+      if (err.response?.status === 500) {
+        setError("Serverda xatolik (500). Payload formatini tekshiring.");
+      } else {
+        setError(err.response?.data?.detail || "Login yoki parol noto'g'ri");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+
+
+
 
   return (
     <div className="login-wrapper">
@@ -99,11 +119,9 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4 text-start">
-              <label className="form-label fw-semibold">Username</label>
-              <input
-                type="text"
-                className="form-control form-control-lg rounded-4 custom-input"
-                placeholder="username"
+              <Input
+                label="Login"
+                placeholder="Login..."
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -112,11 +130,10 @@ export default function Login() {
             </div>
 
             <div className="mb-4 text-start">
-              <label className="form-label fw-semibold">Parol</label>
-              <input
+              <Input
+                label="Parol"
                 type="password"
-                className="form-control form-control-lg rounded-4 custom-input"
-                placeholder="••••••••"
+                placeholder="••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
