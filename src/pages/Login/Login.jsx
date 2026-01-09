@@ -10,7 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isLight, setIsLight] = useState(true); // ← bu bilan boshqaramiz
+  const [isLight, setIsLight] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +18,8 @@ export default function Login() {
       navigate("/", { replace: true });
     }
   }, [navigate]);
+
+
   // Har safar localStorage o‘zgarsa – theme ni yangilaymiz
   useEffect(() => {
     const checkTheme = () => {
@@ -43,10 +45,9 @@ export default function Login() {
     setError("");
     setLoading(true);
 
-    // 1. Ma'lumotlar borligini tekshiring (Input'laringiz nomi shu o'zgaruvchilarga mos bo'lsin)
     const loginPayload = {
-      username: username, // state-dagi username
-      password: password  // state-dagi password
+      username: username,
+      password: password 
     };
 
     try {
@@ -56,7 +57,6 @@ export default function Login() {
         data: loginPayload,
         headers: {
           'Content-Type': 'application/json',
-          // Agar login uchun token shart bo'lmasa, bu yerda Authorization bo'lmasligi kerak!
         }
       });
 
@@ -68,11 +68,10 @@ export default function Login() {
         window.location.reload()
       }
     } catch (err) {
-      // 500 xatosi bo'lganda server nima deyotganini ko'rish uchun:
-      console.log("Xato tafsiloti (Response):", err.response?.data);
+      console.log("Xato tafsiloti", err.response?.data);
 
       if (err.response?.status === 500) {
-        setError("Serverda xatolik (500). Payload formatini tekshiring.");
+        setError("Serverda xatolik");
       } else {
         setError(err.response?.data?.detail || "Login yoki parol noto'g'ri");
       }
@@ -90,7 +89,6 @@ export default function Login() {
       <div className="login-card shadow-lg p-4 p-lg-5 text-center">
         <div className="card-body p-5 p-lg-6 text-center">
 
-          {/* LOGO – endi 100% light va dark rejimda ishlaydi */}
           <div className="text-center mb-5">
             <div className="logo-container">
               <img

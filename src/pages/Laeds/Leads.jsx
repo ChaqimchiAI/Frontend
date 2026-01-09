@@ -170,6 +170,23 @@ const Leads = () => {
                                              ))}
                                         </select>
                                    </div>
+                                   <div className="d-flex flex-column mt-3">
+                                        <label htmlFor="time" className="form-label">
+                                             Vaqti
+                                        </label>
+                                        <select
+                                             id="time"
+                                             className="form-select"
+                                             value={changeData.time}
+                                             onChange={(e) => setChangeData({ ...changeData, time: e.target.value })}
+                                        >
+                                             <option hidden>Kun tanlash</option>
+                                             <option value="Juft Kunlar">Juft Kunlar</option>
+                                             <option value="Toq kunlar">Toq kunlar</option>
+                                             <option value="Ya, Pa, Sh">Ya, Pa, Sh</option>
+                                             <option value="Boshqa Kunlar">Boshqa Kunlar</option>
+                                        </select>
+                                   </div>
                               </div>
                               <div
                                    style={{ width: "1px", height: "auto", background: "#2b364cff" }}
@@ -203,7 +220,7 @@ const Leads = () => {
                               </button>
                               <button
                                    className="btn btn-outline-success mt-1"
-                                   // onClick={handleSaveChanges}
+                              // onClick={handleSaveChanges}
                               >
                                    Save Changes
                               </button>
@@ -619,7 +636,7 @@ const Leads = () => {
 
                                    <DataTable
                                         data={leadsData}
-                                        columns={["№", "Ism", "Telefon", "Holati", "Yaratilgan vaqti", "Kurs", "O'qituvchisi","Vaqti", "Amallar"]}
+                                        columns={["№", "Ism", "Telefon", "Holati", "Yaratilgan vaqti", "Kurs", "O'qituvchisi", "Vaqti", "Amallar"]}
                                         searchKeys={["name", "time"]}
                                    >
                                         {(currentDate) =>
@@ -642,7 +659,7 @@ const Leads = () => {
                                                        <td>{lid.date}</td>
                                                        <td>{lid.course}</td>
                                                        <td>{lid.teacher}</td>
-                                                       <td>{lid.time }</td>
+                                                       <td>{lid.time}</td>
                                                        <td className="d-flex align-items-center gap-1 text-center cursor-pointer">
                                                             <span
                                                                  className="py-2 px-2 d-flex justify-content-center align-items-center rounded-2 dots"
