@@ -119,7 +119,7 @@ export default function Login() {
             <div className="mb-4 text-start">
               <Input
                 label="Login"
-                placeholder="Login..."
+                placeholder="Login.."
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
