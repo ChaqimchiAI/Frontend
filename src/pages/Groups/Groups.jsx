@@ -7,36 +7,136 @@ import roomData from "../../data/Rooms.json"
 import { Input } from "../../components/Ui/Input"
 import { useNavigate } from "react-router-dom"
 import { useTheme } from "../../Context/Context"
+import axios from "axios"
+import Notification from "../../components/Ui/Notification"
 
 const Groups = () => {
   const navigate = useNavigate()
 
   const { theme } = useTheme()
 
+  const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
+
   const [addGroup, setAddGroup] = useState(false)
+
+  const [addNewGroup, setAddNewGroup] = useState({
+    name: "",
+    course_name: "",
+    started_date: "",
+    ended_date: "",
+    status: "",
+    description: "",
+    course: 0,
+    branch_name: "",
+    branch: 0,
+    attendance_kpi: 0,
+    exam_kpi: 0,
+    homework_kpi: 0,
+    students_count: 0,
+    schedule_items: "string"
+  })
+
   const [groupsData, setGroupsData] = useState([])
+  const [courseData, setCourseData] = useState([])
+
+  const getCourse = async () => {
+    try {
+      const res = await axios.get("https://erpbackend.pythonanywhere.com/api/v1/courses/", {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+        }
+      })
+
+      setCourseData(res?.data?.data)
+
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const getGroups = async () => {
+    try {
+      const res = await fetch("https://erpbackend.pythonanywhere.com/api/v1/groups/", {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+        }
+      })
+      const data = await res.json()
+      setGroupsData(data?.data)
+    }
+    catch (err) {
+      console.log(err);
+    }
+  }
 
   useEffect(() => {
-    const getGroups = async () => {
-      try {
-        const res = await fetch("https://erpbackend.pythonanywhere.com/api/v1/groups/", {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem("access_token")}`
-          }
-        })
-        const data = await res.json()
-        setGroupsData(data?.data)
-      }
-      catch (err) {
-        console.log(err);
-      }
-    }
     getGroups()
+    getCourse()
   }, [])
 
+  // statusni tog'ri olish
+  const Status = (s) => {
+    let status = s === "active" ? "Faol"
+      : s === "finished" ? "Tugallangan"
+        : s === "waiting" ? "Kutilmoqda"
+          : s === "paused" ? "To'xtatilgan"
+            : "▬"
+
+    return status
+  }
+
+  const handleAddNewGroup = async (e) => {
+    e.preventDefault()
+
+    if ((addNewGroup.course_name || addNewGroup.name || addNewGroup.start_date || addNewGroup.status) === "") {
+      alert("Barcha maydonlarni to'ldiring!")
+    }
+
+    try {
+      const payload = {
+        name: addNewGroup.name,
+        status: addNewGroup.status,
+        course: Number(addNewGroup.course),
+        branch: 1,
+        attendance_kpi: 0,
+        exam_kpi: 0,
+        homework_kpi: 0,
+        students_count: 0,
+        started_date: addNewGroup.started_date,
+        ended_date: addNewGroup.ended_date || null
+      }
+
+      const { data } = await axios.post(
+        "https://erpbackend.pythonanywhere.com/api/v1/groups/",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`
+          }
+        }
+      )
+
+      setGroupsData(prev => [...prev, data.data])
+      setNotif({ show: true, type: "success", message: "Guruh muvaffaqiyatli qo‘shildi" })
+      setAddGroup(false)
+
+    } catch (err) {
+      console.error("Backend error:", err.response?.data)
+      alert("Backend ma’lumotlarni qabul qilmadi (400)")
+    }
+  }
 
   return (
     <>
+
+      {/* Bildirishnoma */}
+      {notif.show && (
+        <Notification
+          type={notif.type}
+          message={notif.message}
+          onClose={() => setNotif({ ...notif, show: false })}
+        />
+      )}
 
       {/* Modal for add new group */}
       {addGroup && (
@@ -46,89 +146,75 @@ const Groups = () => {
           anima={addGroup}
           width="30%"
         >
-          <Form>
+          <Form
+            className="mt-3"
+            onSubmit={handleAddNewGroup}
+          >
             <Form.Group className="mb-3">
               <Input
                 label="Guruh nomi"
                 required
-                placeholder="Masalan: Frontend 1"
+                placeholder="Guruh nomi..."
+                onChange={(e) => setAddNewGroup({ ...addNewGroup, name: e.target.value })}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <label htmlFor="teacher" className="form-label">O'qituvchi</label>
-              <select className="form-select" id="teacher" required>
-                <option value="">O'qituvchi tanlang</option>
+              <label htmlFor="course" className="form-label">Kurs</label>
+              <select
+                required
+                id="course"
+                className="form-select"
+                onChange={(e) =>
+                  setAddNewGroup({ ...addNewGroup, course: e.target.value })
+                }
+              >
+                <option value="" hidden>Kurs tanlash</option>
 
-                {teacherData?.map((teacher) => (
-                  <option key={teacher.id} value={teacher.name}>
-                    {teacher.name}
-                  </option>
-                ))}
-              </select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <label htmlFor="day" className="form-label">Dars kunlari</label>
-              <select className="form-select" id="day" required>
-                <option value="Juft kunlar">Juft kunlar</option>
-                <option value="Toq kunlar">Toq kunlar</option>
-                <option value="Ya, Pa, Sh">Ya, Pa, Sh</option>
-                <option value="other">Boshqa kunlar</option>
+                {courseData.map(c =>
+                  <option value={c.id}>{c.name}</option>
+                )}
               </select>
             </Form.Group>
             <div className="d-flex justify-content-between gap-3">
-              <Form.Group className="w-50">
-                <Input
-                  label="Boshlanish sanasi"
-                  type="date"
-                  required
-                />
-              </Form.Group>
-              {/* <Form.Group className="w-50"> */}
               <Input
-                label="Tugash sanasi"
+                required
                 type="date"
+                label="Boshlanish sanasi"
                 containerClassName="w-50"
+                onChange={(e) => setAddNewGroup({ ...addNewGroup, started_date: e.target.value })}
               />
-              {/* </Form.Group> */}
+              <Input
+                type="date"
+                label="Tugash sanasi"
+                containerClassName="w-50"
+                onChange={(e) => setAddNewGroup({ ...addNewGroup, ended_date: e.target.value })}
+
+              />
             </div>
             <Form.Group className="mb-3">
-              <label htmlFor="time" className="form-label">Dars boshlanish vaqti</label>
-              <select className="form-select" id="time" required>
-                <option value="09:00">08:00</option>
-                <option value="09:00">09:00</option>
-                <option value="10:30">10:30</option>
-                <option value="12:00">12:00</option>
-                <option value="13:30">14:00</option>
-                <option value="15:00">15:30</option>
-                <option value="15:00">17:00</option>
-                <option value="15:00">18:30</option>
-                <option value="other-time">Boshqa vaqt</option>
-              </select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <label htmlFor="room" className="form-label">Xona</label>
-              <select className="form-select" id="room" required>
-                {roomData?.map((room) => (
-                  <option key={room.id} value={room.name}>
-                    {room.name}
-                  </option>
-                ))}
-              </select>
-            </Form.Group>
-            <Form.Group className="mb-3">
               <label htmlFor="status" className="form-label">Holati</label>
-              <select className="form-select" id="status" required>
-                <option value="Faol">Faol</option>
-                <option value="Faol emas">Faol emas</option>
-                <option value="Tugagan">Tugagan</option>
-                <option value="Arxivlangan">Arxivlangan</option>
-                <option value="Kutilmoqda">Kutilmoqda</option>
-                <option value="Muzlatilgan">Muzlatilgan</option>
+              <select
+                required
+                id="status"
+                className="form-select"
+                onChange={(e) => setAddNewGroup({ ...addNewGroup, status: e.target.value })}
+              >
+                <option value="active">Faol</option>
+                <option value="finished">Tugagan</option>
+                <option value="waiting">Kutilmoqda</option>
+                <option value="paused">To'xtatilgan</option>
               </select>
             </Form.Group>
             <Form.Group className="mb-3">
               <label htmlFor="desc" className="form-label">Izoh</label>
-              <textarea className="form-control" id="desc" rows="3" style={{ resize: "none" }} placeholder="Izoh..."></textarea>
+              <textarea
+                rows="3"
+                id="desc"
+                placeholder="Izoh..."
+                className="form-control"
+                style={{ resize: "none" }}
+                onChange={(e) => setAddNewGroup({ ...addNewGroup, description: e.target.value })}
+              ></textarea>
             </Form.Group>
             <div className="d-flex justify-content-end gap-2 mt-4">
               <button
@@ -143,6 +229,7 @@ const Groups = () => {
                 type="submit"
                 className="btn btn-sm py-2 px-4"
                 style={{ background: "#0085db", color: "#fff" }}
+                onClick={handleAddNewGroup}
               >
                 Saqlash
               </button>
@@ -212,30 +299,47 @@ const Groups = () => {
             </tr>
           </thead>
           <tbody>
-            {groupsData?.map((group) => (
-              <tr
-                key={group.id}
-                className="cursor-pointer"
-                onClick={() => navigate(`/groups/${group.id}`)}
-              >
-                <td className="text-capitalize">{group.id}</td>
-                <td className="text-capitalize">{group.name}</td>
-                <td className="text-capitalize">{group.course_name}</td>
-                <td className="text-capitalize">{group.day}</td>
-                <td className="text-capitalize">{group.time}</td>
-                <td className="text-capitalize">{group.teacher}</td>
-                <td className="text-capitalize">
-                  <Icon icon="radix-icons:people" className="fs-5 me-2" />
-                  {group.student_count || 0}
-                </td>
-                <td className="text-capitalize">{group.room}</td>
-                <td className="text-capitalize">
-                  <span className="px-3 fs-2 py-1 rounded-3 border" style={{ color: !theme ? "#fff" : "#000" }}>
-                    {group.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
+            {groupsData?.map((group) => {
+              const t = group.schedule_items?.active?.at(-1)
+              return (
+                <tr
+                  key={group.id}
+                  className="cursor-pointer"
+                  onClick={() => navigate(`/groups/${group.id}`)}
+                >
+                  <td className="text-capitalize">{group.id}</td>
+                  <td className="text-capitalize">{group.name}</td>
+                  <td className="text-capitalize">{group.course_name}</td>
+                  <td className="text-capitalize">
+                    {t?.days_of_week?.map(d => d.code).join(", ") || "-"}
+                  </td>
+                  <td className="text-capitalize">
+                    {
+                      t?.begin_time && t?.end_time ? t?.begin_time.slice(0, 5) + " - " + t?.end_time.slice(0, 5) : "-"
+                    }
+                  </td>
+                  <td className="text-capitalize">
+                    {
+                      t?.teacher?.first_name && t?.teacher?.last_name
+                        ? t?.teacher?.first_name + " " + t?.teacher?.last_name
+                        : "-"
+                    }
+                  </td>
+                  <td className="text-capitalize">
+                    <Icon icon="radix-icons:people" className="fs-5 me-2" />
+                    {group.student_count || 0}
+                  </td>
+                  <td className="text-capitalize">
+                    {t?.room?.name || "-"}
+                  </td>
+                  <td className="text-capitalize">
+                    <span className="px-3 fs-2 py-1 rounded-3 border" style={{ color: !theme ? "#fff" : "#000" }}>
+                      {Status(group.status)}
+                    </span>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </Table>
       </div>
@@ -243,4 +347,4 @@ const Groups = () => {
   )
 }
 
-export default Groups 
+export default Groups

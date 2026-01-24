@@ -1,11 +1,9 @@
 import { Icon } from "@iconify/react"
 import { useState } from "react"
 import { Dropdown, Table } from "react-bootstrap"
-import { useTheme } from "../../../Context/Context"
 import { Link } from "react-router-dom"
 
-const AttendenceTable = ({ currentStudents, studentsData, setCurrentStudents, days_of_week }) => {
-     const { theme } = useTheme()
+const AttendenceTable = ({ currentStudents = [], studentsData = [], setCurrentStudents, days_of_week = [] }) => {
 
      // Haftaning dushanbasi
      const [weekStart] = useState(() => {
@@ -20,36 +18,36 @@ const AttendenceTable = ({ currentStudents, studentsData, setCurrentStudents, da
      const [currentPage, setCurrentPage] = useState(1)
      const [openDropdown, setOpenDropdown] = useState(null)
 
-     const WEEKS_PER_PAGE = 2
-     const DAYS_PER_PAGE = WEEKS_PER_PAGE * days_of_week?.length
-
-     const monthNames = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentyabr", "Oktabr", "Noyabr", "Dekabr"]
-
      const dayCodeMap = {
           1: "Du",
           2: "Se",
           3: "Cho",
           4: "Pay",
           5: "Ju",
-          6: "Sha",
-          0: "Ya"
+          6: "Sha"
      }
 
-     const getFullDayName = (date) => {
-          const code = dayCodeMap[date.getDay()]
-          return days_of_week?.find(d => d.code === code)?.full
-     }
+     const monthNames = [
+          "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
+          "Iyul", "Avgust", "Sentyabr", "Oktabr", "Noyabr", "Dekabr"
+     ]
 
-     // ✅ FAQAT SHU PAGE UCHUN KUNLAR
      const lessonDates = []
      let d = new Date(weekStart)
-     d.setDate(d.getDate() + (currentPage - 1) * 7 * WEEKS_PER_PAGE)
+     d.setDate(d.getDate() + (currentPage - 1) * 7)
 
-     while (lessonDates.length < DAYS_PER_PAGE) {
+     const useAllDays = currentStudents.length === 0
+
+     while (lessonDates.length < 6) {
           const code = dayCodeMap[d.getDay()]
-          if (days_of_week?.some(day => day.code === code)) {
+
+          if (
+               d.getDay() !== 0 &&
+               (useAllDays || days_of_week.some(day => day.code === code))
+          ) {
                lessonDates.push(new Date(d))
           }
+
           d.setDate(d.getDate() + 1)
      }
 
@@ -80,15 +78,6 @@ const AttendenceTable = ({ currentStudents, studentsData, setCurrentStudents, da
                     }
                )
           )
-
-          const g = studentsData.find(st => st.id === studentId)
-          if (g) {
-               const att = Array.isArray(g.attendance) ? [...g.attendance] : []
-               const idx = att.findIndex(a => a.date === dateStr)
-               if (idx >= 0) att[idx].status = status
-               else att.push({ date: dateStr, status })
-               g.attendance = att
-          }
      }
 
      return (
@@ -100,8 +89,7 @@ const AttendenceTable = ({ currentStudents, studentsData, setCurrentStudents, da
                     </button>
 
                     <strong>
-                         {lessonDates[0]?.getDate()} {monthNames[lessonDates[0]?.getMonth()]}
-                         {" - "}
+                         {lessonDates[0]?.getDate()} {monthNames[lessonDates[0]?.getMonth()]} –
                          {lessonDates.at(-1)?.getDate()} {monthNames[lessonDates.at(-1)?.getMonth()]}
                     </strong>
 
@@ -117,7 +105,7 @@ const AttendenceTable = ({ currentStudents, studentsData, setCurrentStudents, da
                               <th>O‘quvchi</th>
                               {lessonDates.map((d, i) => (
                                    <th key={i} className="text-center">
-                                        {getFullDayName(d)}
+                                        {dayCodeMap[d.getDay()]}
                                         <div className="fs-3">{d.getDate()}</div>
                                    </th>
                               ))}
@@ -125,70 +113,75 @@ const AttendenceTable = ({ currentStudents, studentsData, setCurrentStudents, da
                     </thead>
 
                     <tbody>
-                         {currentStudents.map(student => (
-                              <tr key={student.id}>
-                                   <td>
-                                        <Link to={`/students/${student.id}`}>{student.name}</Link>
-                                   </td>
+                         {currentStudents.length > 0 ? (
+                              currentStudents.map(student => (
+                                   <tr key={student.id}>
+                                        <td>
+                                             <Link to={`/students/${student.id}`}>{student.name}</Link>
+                                        </td>
 
-                                   {lessonDates.map((d, i) => {
-                                        const status = getStatusForStudent(student, d)
-                                        const key = `${student.id}-${i}`
+                                        {lessonDates.map((d, i) => {
+                                             const status = getStatusForStudent(student, d)
+                                             const key = `${student.id}-${i}`
 
-                                        return (
-                                             <td key={i} className="text-center">
-                                                  <Dropdown
-                                                       show={openDropdown === key}
-                                                       onToggle={() => setOpenDropdown(openDropdown === key ? null : key)}
-                                                  >
-                                                       <Dropdown.Toggle className="no-caret" style={{ background: "transparent", border: "none" }}>
-                                                            <div
-                                                                 style={{
-                                                                      width: 26,
-                                                                      height: 26,
-                                                                      border: "1px solid #ccc",
-                                                                      borderRadius: "50%"
-                                                                 }}
+                                             return (
+                                                  <td key={i} className="text-center">
+                                                       <Dropdown
+                                                            show={openDropdown === key}
+                                                            onToggle={() =>
+                                                                 setOpenDropdown(openDropdown === key ? null : key)
+                                                            }
+                                                       >
+                                                            <Dropdown.Toggle
+                                                                 className="no-caret"
+                                                                 style={{ background: "transparent", border: "none" }}
                                                             >
-                                                                 <div style={{
-                                                                      width: "100%",
-                                                                      height: "100%",
-                                                                      borderRadius: "50%",
-                                                                      background: renderBadge(status)
-                                                                 }} />
-                                                            </div>
-                                                       </Dropdown.Toggle>
-
-                                                       <Dropdown.Menu>
-                                                            {[
-                                                                 { k: "bor", label: "Bor", c: "#00a854" },
-                                                                 { k: "yoq", label: "Yo‘q", c: "#ff4d4d" },
-                                                                 { k: "sababli", label: "Sababli", c: "#c48a07" }
-                                                            ].map(o => (
-                                                                 <Dropdown.Item
-                                                                      key={o.k}
-                                                                      onClick={() => handleSetAttendance(student.id, d, o.k)}
+                                                                 <div
+                                                                      style={{
+                                                                           width: 26,
+                                                                           height: 26,
+                                                                           border: "1px solid #ccc",
+                                                                           borderRadius: "50%"
+                                                                      }}
                                                                  >
                                                                       <div
-                                                                           className="d-flex align-items-center gap-2"
+                                                                           style={{
+                                                                                width: "100%",
+                                                                                height: "100%",
+                                                                                borderRadius: "50%",
+                                                                                background: renderBadge(status)
+                                                                           }}
+                                                                      />
+                                                                 </div>
+                                                            </Dropdown.Toggle>
+
+                                                            <Dropdown.Menu>
+                                                                 {[
+                                                                      { k: "bor", label: "Bor", c: "#00a854" },
+                                                                      { k: "yoq", label: "Yo‘q", c: "#ff4d4d" },
+                                                                      { k: "sababli", label: "Sababli", c: "#c48a07" }
+                                                                 ].map(o => (
+                                                                      <Dropdown.Item
+                                                                           key={o.k}
+                                                                           onClick={() => handleSetAttendance(student.id, d, o.k)}
                                                                       >
-                                                                           <span
-                                                                                className="px-1 py-1 rounded"
-                                                                                style={{background: o.c}}
-                                                                           >
-                                                                                {o.icon}
-                                                                           </span>
                                                                            <span style={{ color: o.c }}>{o.label}</span>
-                                                                      </div>
-                                                                 </Dropdown.Item>
-                                                            ))}
-                                                       </Dropdown.Menu>
-                                                  </Dropdown>
-                                             </td>
-                                        )
-                                   })}
+                                                                      </Dropdown.Item>
+                                                                 ))}
+                                                            </Dropdown.Menu>
+                                                       </Dropdown>
+                                                  </td>
+                                             )
+                                        })}
+                                   </tr>
+                              ))
+                         ) : (
+                              <tr>
+                                   <td colSpan={7} className="text-center border-bottom-0 fs-4">
+                                        Hozircha o‘quvchilar yo‘q!
+                                   </td>
                               </tr>
-                         ))}
+                         )}
                     </tbody>
                </Table>
           </>

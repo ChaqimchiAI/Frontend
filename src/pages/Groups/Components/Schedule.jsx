@@ -32,30 +32,38 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                               </tr>
                          </thead>
                          <tbody>
-                              {active.map((s, index) =>
-                                   <tr>
-                                        <td className="bg-transparent">{index + 1}</td>
-                                        <td className="bg-transparent">{s.teacher.first_name + " " + s.teacher.last_name}</td>
-                                        <td className="bg-transparent">{s.days_of_week.map(d => d.code + ", ")}</td>
-                                        <td className="bg-transparent">
-                                             {s.begin_time.slice(0, 5) + " - " + s.end_time.slice(0, 5)}
-                                        </td>
-                                        <td className="bg-transparent">{s.start_date} {"-"} {s.end_date !== null || undefined ? s.end_date : "Belgilanmagan"}</td>
-                                        <td className="bg-transparent">{s.room.name}</td>
-                                        <td
-                                             title={!isEdit ? "Bu jadvalni tahrirlab bo'lmaydi" : ""}
-                                             className="bg-transparent cursor-pointer"
-                                        >
-                                             <button
-                                                  disabled={!isEdit}
-                                                  className="btn btn-sm border-0"
-                                                  onClick={() => setChange_items(s.id)}
+                              {active.length > 0 ?
+                                   active.map((s, index) =>
+                                        <tr>
+                                             <td className="bg-transparent">{index + 1}</td>
+                                             <td className="bg-transparent">{s.teacher.first_name + " " + s.teacher.last_name}</td>
+                                             <td className="bg-transparent">{s.days_of_week.map(d => d.code + ", ")}</td>
+                                             <td className="bg-transparent">
+                                                  {s.begin_time.slice(0, 5) + " - " + s.end_time.slice(0, 5)}
+                                             </td>
+                                             <td className="bg-transparent">{s.start_date} {"-"} {s.end_date !== null || undefined ? s.end_date : "Belgilanmagan"}</td>
+                                             <td className="bg-transparent">{s.room?.name}</td>
+                                             <td
+                                                  title={!isEdit ? "Bu jadvalni tahrirlab bo'lmaydi" : ""}
+                                                  className="bg-transparent cursor-pointer"
                                              >
-                                                  <Icon icon="line-md:pencil" className="me-1 hover-orange" width="20" height="20" />
-                                             </button>
-                                        </td>
-                                   </tr>
-                              )}
+                                                  <button
+                                                       disabled={!isEdit}
+                                                       className="btn btn-sm border-0"
+                                                       onClick={() => setChange_items(s.id)}
+                                                  >
+                                                       <Icon icon="line-md:pencil" className="me-1 hover-orange" width="20" height="20" />
+                                                  </button>
+                                             </td>
+                                        </tr>
+                                   ) : (
+                                        <tr>
+                                             <td colSpan={7} className=" bg-transparent text-center border-bottom-0 fs-4">
+                                                  Hozircha jadvallar yo‘q!
+                                             </td>
+                                        </tr>
+                                   )
+                              }
                          </tbody>
                     </Table>
                </div>
@@ -76,18 +84,26 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                               </tr>
                          </thead>
                          <tbody>
-                              {history.map((s, index) =>
-                                   <tr>
-                                        <td className="bg-transparent">{index + 1}</td>
-                                        <td className="bg-transparent">{s.teacher.first_name + " " + s.teacher.last_name}</td>
-                                        <td className="bg-transparent">{s.days_of_week.map(d => d.code + ", ")}</td>
-                                        <td className="bg-transparent">
-                                             {s.begin_time.slice(0, 5) + " - " + s.end_time.slice(0, 5)}
-                                        </td>
-                                        <td className="bg-transparent">{s.start_date} {"-"} {s.end_date !== null || undefined ? s.end_date : "Belgilanmagan"}</td>
-                                        <td className="bg-transparent">{s.room.name}</td>
-                                   </tr>
-                              )}
+                              {history.length > 0 ?
+                                   history.map((s, index) =>
+                                        <tr>
+                                             <td className="bg-transparent">{index + 1}</td>
+                                             <td className="bg-transparent">{s.teacher.first_name + " " + s.teacher.last_name}</td>
+                                             <td className="bg-transparent">{s.days_of_week.map(d => d.code + ", ")}</td>
+                                             <td className="bg-transparent">
+                                                  {s.begin_time.slice(0, 5) + " - " + s.end_time.slice(0, 5)}
+                                             </td>
+                                             <td className="bg-transparent">{s.start_date} {"-"} {s.end_date !== null || undefined ? s.end_date : "Belgilanmagan"}</td>
+                                             <td className="bg-transparent">{s.room.name}</td>
+                                        </tr>
+                                   ) : (
+                                        <tr>
+                                             <td colSpan={7} className="text-center border-bottom-0 fs-4">
+                                                  Eski jadvallar yo‘q!
+                                             </td>
+                                        </tr>
+                                   )
+                              }
                          </tbody>
                     </Table>
                </div>

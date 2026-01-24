@@ -8,6 +8,7 @@ const LeadDetail = () => {
      const { id } = useParams()
      const navigate = useNavigate()
 
+
      const [addGroup, setAddGroup] = useState(false)
      const [removeLead, setRemoveLead] = useState(false)
 

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Pagination } from "@mui/material";
 import EntriesSelect from "./EntriesSelect";
+import { useTheme } from "../../Context/Context";
 
 function DataTable({
      title,
@@ -12,7 +13,7 @@ function DataTable({
      countOptions = [10, 25, 50, 100],
 }) {
 
-     const theme = JSON.parse(localStorage.getItem("theme"))    
+     const { theme } = useTheme()
 
      const [searchQuery, setSearchQuery] = useState("");
      const [entries, setEntries] = useState(countOptions[0]);
@@ -104,7 +105,7 @@ function DataTable({
                          shape="rounded"
                          sx={{
                               '& .MuiPaginationItem-root': {
-                                   color: theme ? '#ffffffd9' : '#000000d9',
+                                   color: !theme ? '#ffffffd9' : '#000000d9',
                                    backgroundColor: 'transparent',
                                    border: 'none'
                               },
@@ -120,7 +121,7 @@ function DataTable({
                               },
                               '& .Mui-disabled': {
                                    opacity: 0.65,
-                                   color: 'rgba(255,255,255,0.6)'
+                                   color: !theme ? "rgba(255,255,255,0.6)" : ""
                               }
                          }}
                     />

@@ -1,0 +1,163 @@
+/* --- Asosiy o'zgaruvchilar (Dark/Light) --- */
+.dark-theme {
+  --bg-color: #0f172a;       /* To'q ko'k fon */
+  --text-color: #e2e8f0;     /* Oqish matn */
+  --border-color: #1e293b;   /* Chegara rangi */
+  --hover-color: #1e293b;    /* Hover effekti */
+  --primary-color: #3b82f6;  /* Asosiy ko'k rang (selected) */
+  --secondary-bg: #1e293b;   /* Sidebar foni */
+}
+
+.light-theme {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #e6e6e6;
+  --hover-color: #f0f0f0;
+  --primary-color: #3d91ff;
+  --secondary-bg: #fff;
+}
+
+/* --- Konteyner --- */
+.calendar {
+  position: relative;
+  display: inline-block;
+  font-family: sans-serif;
+}
+
+/* --- Input Box (Sana tanlang tugmasi) --- */
+.input-box {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  padding: 10px 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-color);
+  width: 300px;
+}
+
+.input-box .date-input {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  margin-left: 10px;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* --- Dropdown joylashuvi --- */
+.calendar-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  z-index: 100;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+/* --- React Date Range Override (Muhim qism) --- */
+
+/* Asosiy fon */
+.rdrDateRangeWrapper {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Calendar qismi */
+.rdrCalendarWrapper {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Oylar va kunlar rangi */
+.rdrMonthAndYearPickers select,
+.rdrMonthName, 
+.rdrWeekDay {
+  color: var(--text-color) !important;
+}
+
+.rdrDayNumber span {
+  color: var(--text-color);
+}
+
+/* O'tgan kunlar rangi (Passiv) */
+.rdrDayPassive .rdrDayNumber span {
+  color: #64748b !important;
+  opacity: 0.5;
+}
+
+/* Sidebar (Static Ranges) */
+.rdrDefinedRangesWrapper {
+  background-color: var(--bg-color); /* Rasmda o'ng tomon ajralib turishi uchun */
+  width: 160px;
+  padding: 15px 0px 15px;
+  border: 0px;
+  border-left: 1px solid var(--border-color);
+}
+
+/* Sidebar tugmalari */
+.rdrStaticRange {
+  background-color: transparent;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.rdrStaticRangeLabel {
+  color: var(--text-color) !important;
+  font-weight: 500;
+}
+
+.rdrStaticRange:hover .rdrStaticRangeLabel {
+  background-color: var(--hover-color);
+}
+
+/* Tanlangan oraliq rangi */
+.rdrSelected, .rdrInRange, .rdrStartEdge, .rdrEndEdge {
+  background: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+.rdrDayHovered {
+    border: none !important;
+    background-color: var(--hover-color) !important;
+}
+
+/* Kunlar oralig'idagi fon rangi (biroz shaffof) */
+.rdrInRange {
+  opacity: 0.5;
+}
+
+.rdrDateDisplayWrapper {
+  display: none !important;
+}
+
+.rdrNextPrevButton {
+  background-color: var(--bg-color) !important;
+  border-radius: 5px;
+}
+
+.rdrNextPrevButton:hover {
+  background-color: var(--hover-color) !important;
+}
+
+.rdrNextPrevButton {
+  color: red !important; 
+}
+
+.rdrMonthAndYearPickers select {
+  color: var(--text-color) !important;
+}
+
+.rdrYearPicker select option{
+  color: #0f172a !important;
+}
+
+.rdrDateRangePickerWrapper {
+  display: flex !important;
+  flex-direction: row-reverse !important; /* Menyuni o'ngga suradi */
+  background-color: var(--hover-color);
+  border-radius: 12px;
+}

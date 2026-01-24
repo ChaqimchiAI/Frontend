@@ -3,6 +3,11 @@
      transition: 0.3s;
 }
 
+.no-hover-effect:hover {
+     background-color: transparent !important;
+     color: inherit !important;
+}
+
 .hover-orange:hover{
     color: #e8c91d;
     transition: 0.3s;

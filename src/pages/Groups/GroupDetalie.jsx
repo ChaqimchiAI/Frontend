@@ -41,8 +41,8 @@ const GroupDetalie = () => {
           days_of_week: "",
           begin_time: "",
           end_time: "",
-          teacher: {},
-          room: {},
+          teacher: "",
+          room: "",
           start_date: "",
           end_date: "",
           is_active: true
@@ -54,6 +54,9 @@ const GroupDetalie = () => {
      const [currentGroup, setCurrentGroup] = useState([])
      const [currentStudents, setCurrentStudents] = useState([])
      const [schedule_items, setSchedule_items] = useState([])
+     const [availabilitiyTeacher, setAvailabilitiyTeacher] = useState([])
+     const [teacherData, setTeacherData] = useState([])
+     const [roomData, setRoomData] = useState([])
 
      const [activeTab, setActiveTab] = useState("students")
      const [changeActiveItem, setChangeActiveItem] = useState(null)
@@ -92,9 +95,52 @@ const GroupDetalie = () => {
           }
      }
 
+     // bo'sh ustozlarni api dan chaqirish
+     // const getAvailabilitiyTeacher = async () => {
+     //      try {
+     //           const res = await axios.get("https://erpbackend.pythonanywhere.com/api/v1/teachers/availability/", {
+     //                headers: {
+     //                     'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+     //                }
+     //           })
+
+     //           setAvailabilitiyTeacher(res?.data.data)
+     //           console.log(res?.data?.data);
+
+     //      } catch (err) {
+     //           console.error(err);
+
+     //      }
+     // }
+
+     const getOtherThings = async () => {
+          try {
+               const resTeacher = await axios.get("https://erpbackend.pythonanywhere.com/api/v1/teachers/", {
+                    headers: {
+                         'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+                    }
+               })
+
+               const resRoom = await axios.get("https://erpbackend.pythonanywhere.com/api/v1/core/rooms/", {
+                    headers: {
+                         'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+                    }
+               })
+
+
+               setRoomData(resRoom?.data.data)
+               setTeacherData(resTeacher?.data.data)
+          } catch (err) {
+               console.error(err);
+
+          }
+     }
+
      useEffect(() => {
           getGroups()
           getCourse()
+          // getAvailabilitiyTeacher()
+          getOtherThings()
      }, [])
 
      useEffect(() => {
@@ -102,6 +148,18 @@ const GroupDetalie = () => {
           setCurrentStudents(studentsInGroup)
      }, [currentGroup])
 
+     // statusni tog'ri olish
+     const Status = (s) => {
+          let status = s === "active" ? "Faol"
+               : s === "finished" ? "Tugallangan"
+                    : s === "waiting" ? "Kutilmoqda"
+                         : s === "paused" ? "To'xtatilgan"
+                              : "▬"
+
+          return status
+     }
+
+     // lidlarni qidirish
      const handleSearch = (value) => {
           const filteredLeads = leadsData.filter(lead =>
                lead.name.toLowerCase().includes(value.toLowerCase()) ||
@@ -111,15 +169,36 @@ const GroupDetalie = () => {
      }
 
      // for edit group info
-     const saveGroupChanges = async () => {
+     const saveGroupChanges = async (e) => {
+          e.preventDefault()
           try {
-               const res = await axios.patch(`https://erpbackend.pythonanywhere.com/api/v1/groups/${id}/`, changeGroupDate)
+               const dataToSend = {
+                    name: changeGroupDate.name,
+                    course: changeGroupDate.course,
+                    branch: changeGroupDate.branch,
+                    started_date: changeGroupDate.started_date,
+                    ended_date: changeGroupDate.ended_date,
+                    status: changeGroupDate.status,
+                    attendance_kpi: changeGroupDate.attendance_kpi || 0,
+                    exam_kpi: changeGroupDate.exam_kpi || 0,
+                    homework_kpi: changeGroupDate.homework_kpi || 0,
+                    students_count: changeGroupDate.students_count || 0
+               }
+
+               const { data } = await axios.patch(`https://erpbackend.pythonanywhere.com/api/v1/groups/${id}/`, dataToSend, {
+                    headers: {
+                         'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+                    }
+               })
+
+               setCurrentGroup(data?.data)
 
                setNotif({ show: true, type: "edited", message: "Guruh ma'lumotlari tahrirlandi" })
 
                setChangeGroup(false)
           } catch (err) {
-               console.error(err);
+               console.error("Xato:", err?.response?.data || err.message);
+               setNotif({ show: true, type: 'error', message: err?.response?.data?.message || "Guruhni tahrirlashda xato" })
           }
      }
 
@@ -129,7 +208,7 @@ const GroupDetalie = () => {
           setCurrentSchedule(currentItem)
      }, [changeActiveItem])
 
-     const t = currentGroup?.schedule_items?.active?.at(-1);
+     const t = currentGroup?.schedule_items?.active?.at(-1); // ohirgi dars jadvalini olish
 
      // dars kunlarini togrilash
      const formatDays = (value) => {
@@ -214,16 +293,16 @@ const GroupDetalie = () => {
           });
      };
 
-     // yangi jadval un checkbox dan kun tanlash
+     // jadvalni tahrirlashda checkbox dan kun tanlash
      const toggleEditDay = (day) => {
-          const exists = currentSchedule.days_of_week.some(
+          const exists = currentSchedule?.days_of_week?.some(
                (d) => d.code === day.code
           );
 
-          setNewSchedlueItems({
+          setCurrentSchedule({
                ...newSchedlueItems,
                days_of_week: exists
-                    ? currentSchedule.days_of_week.filter(
+                    ? currentSchedule?.days_of_week?.filter(
                          (d) => d.code !== day.code
                     )
                     : [...currentSchedule.days_of_week, day],
@@ -233,30 +312,55 @@ const GroupDetalie = () => {
      // add new schedule
      const handleAddNewSchedule = async (e) => {
           e.preventDefault()
-          const randomId = Math.floor(Math.random() * 100)
 
-          try {
-               const reponse = await axios.post(`https://erpbackend.pythonanywhere.com/api/v1/groups/${id}/schedules/`, {
-                    ...newSchedlueItems,
-                    id: randomId
-               })
+          if (
+               !newSchedlueItems.begin_time ||
+               !newSchedlueItems.end_time ||
+               !newSchedlueItems.start_date ||
+               !newSchedlueItems.days_of_week?.length ||
+               !newSchedlueItems.room?.id ||
+               !newSchedlueItems.teacher?.id
+          ) {
+               alert("Barcha maydonlarni to'ldiring!")
+          }
+          else {
+               try {
+                    const dataToSend = {
+                         days_of_week: newSchedlueItems.days_of_week,
+                         begin_time: newSchedlueItems.begin_time,
+                         end_time: newSchedlueItems.end_time,
+                         teacher: newSchedlueItems.teacher,
+                         room: newSchedlueItems.room,
+                         start_date: newSchedlueItems.start_date,
+                         end_date: newSchedlueItems.end_date || null,
+                         is_active: newSchedlueItems.is_active
+                    }
 
-               setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli qo'shild" })
+                    const { data } = await axios.post(`https://erpbackend.pythonanywhere.com/api/v1/groups/${id}/schedules/`, dataToSend, {
+                         headers: {
+                              'Authorization': `Bearer ${localStorage.getItem("access_token")}`
+                         }
+                    })
 
-               setAddSchedule(false)
+                    setSchedule_items([...schedule_items, data?.data])
 
-               setNewSchedlueItems({
-                    days_of_week: "",
-                    begin_time: "",
-                    end_time: "",
-                    teacher: {},
-                    room: {},
-                    start_date: "",
-                    end_date: "",
-                    is_active: true
-               })
-          } catch (err) {
-               console.error("Xato:", err?.response?.data || err.message);
+                    setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli qo'shild" })
+
+                    setAddSchedule(false)
+
+                    setNewSchedlueItems({
+                         days_of_week: "",
+                         begin_time: "",
+                         end_time: "",
+                         teacher: {},
+                         room: {},
+                         start_date: "",
+                         end_date: "",
+                         is_active: true
+                    })
+               } catch (err) {
+                    console.error("Xato:", err?.response?.data || err.message);
+               }
           }
      }
 
@@ -278,10 +382,21 @@ const GroupDetalie = () => {
                setNotif({ show: true, type: 'error', message: "Guruhni o'chirishda xato" })
           }
      }
-     
 
-     console.log(currentSchedule);
-     
+     const teacher = (id) => {
+          const teacherObj = teacherData.find(t => t.id === Number(id))
+
+          setNewSchedlueItems({ ...newSchedlueItems, teacher: teacherObj })
+     }
+
+     const room = (id) => {
+          const roomObj = roomData.find(r => r.id === Number(id))
+
+          setNewSchedlueItems({ ...newSchedlueItems, room: roomObj })
+     }
+
+     console.log(newSchedlueItems)
+
 
      return (
           <div onClick={() => changeAttande ? setChangeAttande([]) : setChangeAttande(changeAttande)}>
@@ -320,13 +435,23 @@ const GroupDetalie = () => {
                                         required
                                         id="course"
                                         className="form-select"
-                                        value={changeGroupDate.course_name}
-                                        onChange={(e) => setChangeGroupDate({ ...changeGroupDate, course_name: e.target.value })}
+                                        value={changeGroupDate.course}
+                                        onChange={(e) => setChangeGroupDate({ ...changeGroupDate, course: e.target.value })}
                                    >
+                                        <option value="" hidden>Kurs tanlash</option>
                                         {courseData.map(c =>
-                                             <option value={c.name}>{c.name}</option>
+                                             <option key={c.id} value={c.id}>{c.name}</option>
                                         )}
                                    </select>
+                              </Form.Group>
+                              <Form.Group className="mb-3">
+                                   <Input
+                                        label="Filial"
+                                        required
+                                        placeholder="Filial nomi..."
+                                        value={changeGroupDate.branch}
+                                        onChange={(e) => setChangeGroupDate({ ...changeGroupDate, branch: e.target.value })}
+                                   />
                               </Form.Group>
                               <div className="d-flex justify-content-between gap-3">
                                    <Input
@@ -355,26 +480,52 @@ const GroupDetalie = () => {
                                         value={changeGroupDate.status}
                                         onChange={(e) => setChangeGroupDate({ ...changeGroupDate, status: e.target.value })}
                                    >
-                                        <option value="Faol">Faol</option>
-                                        <option value="Faol emas">Faol emas</option>
-                                        <option value="Tugagan">Tugagan</option>
-                                        <option value="Arxivlangan">Arxivlangan</option>
-                                        <option value="Kutilmoqda">Kutilmoqda</option>
-                                        <option value="Muzlatilgan">Muzlatilgan</option>
+                                        <option value="active">Faol</option>
+                                        <option value="finished">Tugagan</option>
+                                        <option value="waiting">Kutilmoqda</option>
+                                        <option value="paused">To'xtatilgan</option>
                                    </select>
                               </Form.Group>
-                              <Form.Group className="mb-3">
-                                   <label htmlFor="desc" className="form-label">Izoh</label>
-                                   <textarea
-                                        rows="3"
-                                        id="desc"
-                                        placeholder="Izoh..."
-                                        className="form-control"
-                                        style={{ resize: "none" }}
-                                        value={changeGroupDate.description}
-                                        onChange={(e) => setChangeGroupDate({ ...changeGroupDate, description: e.target.value })}
-                                   ></textarea>
-                              </Form.Group>
+                              <div className="d-flex justify-content-between gap-3">
+                                   <div style={{ flex: 1 }}>
+                                        <label className="form-label">Talabalar soni</label>
+                                        <input
+                                             type="number"
+                                             className="form-control"
+                                             value={changeGroupDate.students_count || 0}
+                                             onChange={(e) => setChangeGroupDate({ ...changeGroupDate, students_count: parseInt(e.target.value) || 0 })}
+                                        />
+                                   </div>
+                                   <div style={{ flex: 1 }}>
+                                        <label className="form-label">Davomat KPI (%)</label>
+                                        <input
+                                             type="number"
+                                             className="form-control"
+                                             value={changeGroupDate.attendance_kpi || 0}
+                                             onChange={(e) => setChangeGroupDate({ ...changeGroupDate, attendance_kpi: parseInt(e.target.value) || 0 })}
+                                        />
+                                   </div>
+                              </div>
+                              <div className="d-flex justify-content-between gap-3 mt-3">
+                                   <div style={{ flex: 1 }}>
+                                        <label className="form-label">Imtihon KPI (%)</label>
+                                        <input
+                                             type="number"
+                                             className="form-control"
+                                             value={changeGroupDate.exam_kpi || 0}
+                                             onChange={(e) => setChangeGroupDate({ ...changeGroupDate, exam_kpi: parseInt(e.target.value) || 0 })}
+                                        />
+                                   </div>
+                                   <div style={{ flex: 1 }}>
+                                        <label className="form-label">Uyga vazifa KPI (%)</label>
+                                        <input
+                                             type="number"
+                                             className="form-control"
+                                             value={changeGroupDate.homework_kpi || 0}
+                                             onChange={(e) => setChangeGroupDate({ ...changeGroupDate, homework_kpi: parseInt(e.target.value) || 0 })}
+                                        />
+                                   </div>
+                              </div>
                               <div className="d-flex justify-content-end gap-2 mt-4">
                                    <button
                                         type="button"
@@ -465,8 +616,8 @@ const GroupDetalie = () => {
                                                   className="form-select"
                                                   value={
                                                        currentSchedule?.days_of_week?.some((d) => d.code === "Du") ? "toqK" :
-                                                       currentSchedule?.days_of_week?.some((d) => d.code === "Se") ? "juftK" :
-                                                       currentSchedule?.days_of_week?.length > 0 ? "maxsusK" : ""
+                                                            currentSchedule?.days_of_week?.some((d) => d.code === "Se") ? "juftK" :
+                                                                 currentSchedule?.days_of_week?.length > 0 ? "maxsusK" : ""
                                                   }
                                                   onChange={(e) => handleEditDays(e.target.value)}
                                              >
@@ -487,7 +638,7 @@ const GroupDetalie = () => {
                                                             <input
                                                                  className="form-check-input"
                                                                  type="checkbox"
-                                                                 checked={currentSchedule.days_of_week.some(
+                                                                 checked={currentSchedule?.days_of_week?.some(
                                                                       (d) => d.code === day.code
                                                                  )}
                                                                  onChange={() => toggleEditDay(day)}
@@ -562,196 +713,225 @@ const GroupDetalie = () => {
                                    />
                               </div>
 
-                         </Form>
-                    </Modal>
-               )
-               }
-
-
-               {/* yangi jadval qoshish uchun */}
-               {
-                    addSchedule && (
-                         <Modal
-                              title="Yangi jadval qo'shish"
-                              close={setAddSchedule}
-                              anima={addSchedule}
-                              width="30%"
-                         >
-                              <Form className="d-flex flex-column gap-3" onSubmit={handleAddNewSchedule}>
-
-                                   <div className="mt-3">
-                                        {!special ? (
-                                             <>
-                                                  <label className="form-label">Dars kunlari</label>
-                                                  <select
-                                                       className="form-select"
-                                                       onChange={(e) => formatDays(e.target.value)}
-                                                  >
-                                                       <option hidden value="">Kun tanlash</option>
-                                                       <option value="toqK">Toq kunlar (Du, Cho, Ju)</option>
-                                                       <option value="juftK">Juft kunlar (Se, Pay, Sha)</option>
-                                                       <option value="maxsusK">Maxsus</option>
-                                                  </select>
-                                             </>
-                                        ) : (
-                                             <>
-                                                  <label className="form-label">Hafta kunlarini tanlang</label>
-
-                                                  <div className="d-flex flex-wrap gap-3 mb-2">
-                                                       {weekDays.map((day) => (
-                                                            <div className="form-check" key={day.code}>
-                                                                 <input
-                                                                      className="form-check-input"
-                                                                      type="checkbox"
-                                                                      checked={newSchedlueItems.days_of_week.some(
-                                                                           (d) => d.code === day.code
-                                                                      )}
-                                                                      onChange={() => toggleDay(day)}
-                                                                 />
-                                                                 <label className="form-check-label">
-                                                                      {day.full}
-                                                                 </label>
-                                                            </div>
-                                                       ))}
-                                                  </div>
-
-                                                  {/* Ortga tugma */}
-                                                  <button
-                                                       type="button"
-                                                       className="btn btn-sm btn-outline-secondary mt-2"
-                                                       onClick={() => setSpecial(false)} // select rejimiga qaytadi
-                                                  >
-                                                       Ortga
-                                                  </button>
-                                             </>
-                                        )}
-                                   </div>
-
-                                   <div className="d-flex align-items-center gap-2">
-                                        <Input
-                                             required
-                                             type="time"
-                                             label="Boshlanish vaqti"
-                                             containerClassName="w-50"
-                                             onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, begin_time: e.target.value })}
-                                        />
-                                        <span>
-                                             -
-                                        </span>
-                                        <Input
-                                             required
-                                             type="time"
-                                             label="Tugash vaqvi"
-                                             containerClassName="w-50"
-                                             onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, end_time: e.target.value })}
-                                        />
-                                   </div>
-
-                                   <div className="">
-                                        <label htmlFor="teacher" className="form-label">O'qituvchi</label>
-                                        <select id="teacher" required className="form-select">
-                                             <option hidden>
-                                                  O'qituvchi
-                                             </option>
-                                        </select>
-                                   </div>
-
-                                   <div className="">
-                                        <label htmlFor="room" className="form-label">Xona</label>
-                                        <select id="room" required className="form-select">
-                                             <option hidden>
-                                                  Xona
-                                             </option>
-                                        </select>
-                                   </div>
-
-                                   <div className="d-flex align-items-center gap-2">
-                                        <Input
-                                             required
-                                             type="date"
-                                             label="Boshlanish sanasi"
-                                             containerClassName="w-50"
-                                             onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, start_time: e.target.value })}
-
-                                        />
-                                        <span>
-                                             -
-                                        </span>
-                                        <Input
-                                             type="date"
-                                             label="Tugash sanasi"
-                                             containerClassName="w-50"
-                                             onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, end_date: e.target.value })}
-                                        />
-                                   </div>
-
-                                   <div className="d-flex justify-content-between align-items-center">
-                                        <span className="fs-4">
-                                             Joriy jadval
-                                        </span>
-
-                                        <Form.Check // prettier-ignore
-                                             type="switch"
-                                             id="custom-switch"
-                                             className="fs-5"
-                                             defaultChecked={newSchedlueItems.is_active}
-                                             onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, is_active: e.target.checked })}
-                                        />
-                                   </div>
-
-                                   <div className="d-flex justify-content-end gap-2 mt-4">
-                                        <button
-                                             type="button"
-                                             className="btn btn-sm py-2 px-4"
-                                             style={{ background: "#e5e5e5", color: "#000" }}
-                                             onClick={() => setAddSchedule(false)}
-                                        >
-                                             Orqaga
-                                        </button>
-                                        <button
-                                             type="submit"
-                                             className="btn btn-sm py-2 px-4"
-                                             style={{ background: "#0085db", color: "#fff" }}
-                                             onClick={handleAddNewSchedule}
-                                        >
-                                             Saqlash
-                                        </button>
-                                   </div>
-                              </Form>
-                         </Modal>
-                    )
-               }
-
-
-               {/* modal for delate group */}
-               {
-                    delateGroup && (
-                         <Modal
-                              title="Guruhni o'chirish"
-                              close={setDelateGroup}
-                              anima={delateGroup}
-                              width="30%"
-                         >
-                              <p>
-                                   Rostdan ham ushbu guruhni o'chirmoqchimisiz?
-                              </p>
-                              <div className="d-flex justify-content-end gap-3">
+                              <div className="d-flex justify-content-end gap-2 mt-4">
                                    <button
-                                        className="btn btn-outline-secondary mt-1"
-                                        onClick={() => setDelateGroup(false)}
+                                        type="button"
+                                        className="btn btn-sm py-2 px-4"
+                                        style={{ background: "#e5e5e5", color: "#000" }}
+                                        onClick={() => setChangeActiveItem(false)}
                                    >
                                         Orqaga
                                    </button>
                                    <button
-                                        className="btn btn-outline-danger mt-1"
-                                        onClick={DelateGroup}
+                                        type="submit"
+                                        className="btn btn-sm py-2 px-4"
+                                        style={{ background: "#0085db", color: "#fff" }}
+                                   // onClick={}
                                    >
-                                        O'chirish
+                                        Saqlash
                                    </button>
                               </div>
-                         </Modal>
-                    )
-               }
+                         </Form>
+                    </Modal>
+               )}
+
+
+               {/* yangi jadval qoshish uchun */}
+               {addSchedule && (
+                    <Modal
+                         title="Yangi jadval qo'shish"
+                         close={setAddSchedule}
+                         anima={addSchedule}
+                         width="30%"
+                    >
+                         <Form className="d-flex flex-column gap-3" onSubmit={handleAddNewSchedule}>
+
+                              <div className="mt-3">
+                                   {!special ? (
+                                        <>
+                                             <label className="form-label">Dars kunlari</label>
+                                             <select
+                                                  className="form-select"
+                                                  onChange={(e) => formatDays(e.target.value)}
+                                             >
+                                                  <option hidden value="">Kun tanlash</option>
+                                                  <option value="toqK">Toq kunlar (Du, Cho, Ju)</option>
+                                                  <option value="juftK">Juft kunlar (Se, Pay, Sha)</option>
+                                                  <option value="maxsusK">Maxsus</option>
+                                             </select>
+                                        </>
+                                   ) : (
+                                        <>
+                                             <label className="form-label">Hafta kunlarini tanlang</label>
+
+                                             <div className="d-flex flex-wrap gap-3 mb-2">
+                                                  {weekDays.map((day) => (
+                                                       <div className="form-check" key={day.code}>
+                                                            <input
+                                                                 className="form-check-input"
+                                                                 type="checkbox"
+                                                                 checked={newSchedlueItems.days_of_week.some(
+                                                                      (d) => d.code === day.code
+                                                                 )}
+                                                                 onChange={() => toggleDay(day)}
+                                                            />
+                                                            <label className="form-check-label">
+                                                                 {day.full}
+                                                            </label>
+                                                       </div>
+                                                  ))}
+                                             </div>
+
+                                             {/* Ortga tugma */}
+                                             <button
+                                                  type="button"
+                                                  className="btn btn-sm btn-outline-secondary mt-2"
+                                                  onClick={() => setSpecial(false)} // select rejimiga qaytadi
+                                             >
+                                                  Ortga
+                                             </button>
+                                        </>
+                                   )}
+                              </div>
+
+                              <div className="d-flex align-items-center gap-2">
+                                   <Input
+                                        required
+                                        type="time"
+                                        label="Boshlanish vaqti"
+                                        containerClassName="w-50"
+                                        onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, begin_time: e.target.value })}
+                                   />
+                                   <span>
+                                        -
+                                   </span>
+                                   <Input
+                                        required
+                                        type="time"
+                                        label="Tugash vaqvi"
+                                        containerClassName="w-50"
+                                        onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, end_time: e.target.value })}
+                                   />
+                              </div>
+
+                              <div className="">
+                                   <label htmlFor="teacher" className="form-label">O'qituvchi</label>
+                                   <select
+                                        required
+                                        id="teacher"
+                                        className="form-select"
+                                        onChange={(e) => teacher(e.target.value)}
+                                   >
+                                        <option hidden value="">
+                                             O'qituvchi
+                                        </option>
+                                        {teacherData.map(t => (
+                                             <option value={t.id}>{t.first_name + " " + t.last_name}</option>
+                                        ))}
+                                   </select>
+                              </div>
+
+                              <div className="">
+                                   <label htmlFor="room" className="form-label">Xona</label>
+                                   <select
+                                        required
+                                        id="room"
+                                        className="form-select"
+                                        onChange={(e) => room(e.target.value)}
+                                   >
+                                        <option hidden value="">
+                                             Xona
+                                        </option>
+                                        {roomData.map(r => (
+                                             <option value={r.id}>{r.name}</option>
+                                        ))}
+                                   </select>
+                              </div>
+
+                              <div className="d-flex align-items-center gap-2">
+                                   <Input
+                                        required
+                                        type="date"
+                                        label="Boshlanish sanasi"
+                                        containerClassName="w-50"
+                                        onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, start_date: e.target.value })}
+
+                                   />
+                                   <span>
+                                        -
+                                   </span>
+                                   <Input
+                                        type="date"
+                                        label="Tugash sanasi"
+                                        containerClassName="w-50"
+                                        onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, end_date: e.target.value })}
+                                   />
+                              </div>
+
+                              <div className="d-flex justify-content-between align-items-center">
+                                   <span className="fs-4">
+                                        Joriy jadval
+                                   </span>
+
+                                   <Form.Check // prettier-ignore
+                                        type="switch"
+                                        id="custom-switch"
+                                        className="fs-5"
+                                        defaultChecked={newSchedlueItems.is_active}
+                                        onChange={(e) => setNewSchedlueItems({ ...newSchedlueItems, is_active: e.target.checked })}
+                                   />
+                              </div>
+
+                              <div className="d-flex justify-content-end gap-2 mt-4">
+                                   <button
+                                        type="button"
+                                        className="btn btn-sm py-2 px-4"
+                                        style={{ background: "#e5e5e5", color: "#000" }}
+                                        onClick={() => setAddSchedule(false)}
+                                   >
+                                        Orqaga
+                                   </button>
+                                   <button
+                                        type="submit"
+                                        className="btn btn-sm py-2 px-4"
+                                        style={{ background: "#0085db", color: "#fff" }}
+                                        onClick={handleAddNewSchedule}
+                                   >
+                                        Saqlash
+                                   </button>
+                              </div>
+                         </Form>
+                    </Modal>
+               )}
+
+
+               {/* modal for delate group */}
+               {delateGroup && (
+                    <Modal
+                         title="Guruhni o'chirish"
+                         close={setDelateGroup}
+                         anima={delateGroup}
+                         width="30%"
+                    >
+                         <p>
+                              Rostdan ham ushbu guruhni o'chirmoqchimisiz?
+                         </p>
+                         <div className="d-flex justify-content-end gap-3">
+                              <button
+                                   className="btn btn-outline-secondary mt-1"
+                                   onClick={() => setDelateGroup(false)}
+                              >
+                                   Orqaga
+                              </button>
+                              <button
+                                   className="btn btn-outline-danger mt-1"
+                                   onClick={DelateGroup}
+                              >
+                                   O'chirish
+                              </button>
+                         </div>
+                    </Modal>
+               )}
 
 
 
@@ -774,7 +954,7 @@ const GroupDetalie = () => {
                                         className="fs-2 px-2 py-1 text-capitalize py-1 rounded-3 border"
                                         style={{ color: !theme ? "#fff" : "#000" }}
                                    >
-                                        {currentGroup?.status}
+                                        {Status(currentGroup?.status)}
                                    </span>
                               </h3>
                               <span>
@@ -839,8 +1019,10 @@ const GroupDetalie = () => {
                               Jadval
                          </spam>
                          <Dropdown autoClose="outside inside" className="mt-2">
-                              <Dropdown.Toggle className={`fs-5 ${!theme ? "text-white" : "text-black"}`} style={{ background: 'transparent', border: 'none', padding: '0' }}>
-                                   {t?.days_of_week.map(d => " " + d.code) + " | " + t?.begin_time.slice(0, 5)}
+                              <Dropdown.Toggle className={`fs-4 ${!theme ? "text-white" : "text-black"}`} style={{ background: 'transparent', border: 'none', padding: '0' }}>
+                                   {
+                                        t?.days_of_week.map(d => " " + d.code) && t?.begin_time.slice(0, 5) !== "undifined" ? t?.days_of_week.map(d => " " + d.code) + " | " + t?.begin_time.slice(0, 5) : "Belgilanmagan"
+                                   }
                               </Dropdown.Toggle>
 
                               <Dropdown.Menu>
@@ -861,8 +1043,8 @@ const GroupDetalie = () => {
                               <Icon icon="lucide:calendar" width="18" height="18" className="me-2" />
                               Boshlanish
                          </spam>
-                         <h6 className="fs-5 mt-2">
-                              {currentGroup?.started_date || "Belgilanmagan"}
+                         <h6 className="fs-3 mt-2">
+                              {currentGroup?.started_date || "Belgilanmagan"} {" | "} {currentGroup?.ended_date || "Belgilanmagan"}
                          </h6>
                     </div>
 
@@ -871,11 +1053,11 @@ const GroupDetalie = () => {
                          style={{ width: "33%" }}
                     >
                          <spam className="fs-2">
-                              <Icon icon="lucide:calendar" width="18" height="18" className="me-2" />
-                              Tugashi
+                              <Icon icon="simple-line-icons:diamond" width="16" height="15" className="me-2" />
+                              Kurs
                          </spam>
-                         <h6 className="fs-5 mt-2">
-                              {currentGroup?.ended_date || "Belgilanmagan"}
+                         <h6 className="fs-4 mt-2">
+                              {currentGroup?.course_name || "Belgilanmagan"}
                          </h6>
                     </div>
                </div>
