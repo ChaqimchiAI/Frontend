@@ -39,14 +39,13 @@ const sourcesD = [
 const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setSelectOtherD, setChangeData }) => {
      const navigate = useNavigate()
 
-     const { data: rawTeacherData } = useTeachersData()
-     const teacherData = Array.isArray(rawTeacherData) ? rawTeacherData : [];
+     const { data: teachers } = useTeachersData()
+     const teacherData = teachers?.results
+
      const { mutate: updateLead } = useUpdateLead();
      const { data: stats } = useLeadsStats(filters)
 
      const [openDropdown, setOpenDropdown] = useState(null)
-
-     const safeLeads = Array.isArray(leads) ? leads : [];
 
      // Handlers for server-side filters
      const handlePageChange = (event, value) => {
@@ -91,7 +90,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setS
 
      const handleChange = (e, id) => {
           e.stopPropagation()
-          const data = safeLeads.find(l => l.id === id)
+          const data = leads.find(l => l.id === id)
           setChangeData(data)
           setOpemModal(true)
           setSelectOtherD(false)
@@ -218,7 +217,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setS
                     </div>
 
                     <DataTable
-                         data={safeLeads}
+                         data={leads}
                          totalCount={totalCount}
                          onPageChange={handlePageChange}
                          onEntriesChange={handleLimitChange}
