@@ -30,19 +30,16 @@ const Leads = () => {
      const leads = data?.results || [];
      const totalCount = data?.count || 0;
 
-     const { data: stats } = useLeadsStats()     
+     const { data: stats } = useLeadsStats()
 
-     const { data: rawTeacherData } = useTeachersData()
-     const { data: rawCoursesData } = useCourses()
+     const { data: teachers } = useTeachersData()
+     const teacherData = teachers?.results
 
-     const teacherData = Array.isArray(rawTeacherData) ? rawTeacherData : [];
-     const coursesData = Array.isArray(rawCoursesData) ? rawCoursesData : [];
+     const { data: courses } = useCourses()
+     const coursesData = courses?.results
 
      if (isLoading) return <div>Loading...</div>
      if (error) return <div style={{ color: "red" }}>Xatolik: {error.message}</div>
-
-     const date = new Date()
-     const today = date.toISOString().split("T")[0]
 
      const [opemModal, setOpemModal] = useState(false)
      const [selectOtherD, setSelectOtherD] = useState(false)
@@ -52,11 +49,6 @@ const Leads = () => {
      const [activeTab, setActiveTab] = useState('add')
 
      const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
-
-     const safeLeads = Array.isArray(leads) ? leads : [];
-     const registered = safeLeads.filter(lead => lead.status === "registered")
-     const newLid = safeLeads.filter(lead => lead.status === "new")
-     const lost = safeLeads.filter(lead => lead.status === "lost")
 
      // lead malumotlarini tahrirlashda eski dars kunlarini aniqlash
      const findCurrentDays = (d) => {
@@ -106,7 +98,7 @@ const Leads = () => {
 
 
      }
-
+     
      return (
           <>
 
@@ -380,7 +372,7 @@ const Leads = () => {
                                         className="fs-8"
                                         style={{ color: "#9647fd", fontWeight: "900" }}
                                    >
-                                        {stats?.statuses?.today || 0}
+                                        {stats?.today || 0}
                                    </span>
                               </div>
                               <span
