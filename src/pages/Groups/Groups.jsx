@@ -9,11 +9,23 @@ import { useNavigate } from "react-router-dom"
 import { useTheme } from "../../Context/Context"
 import axios from "axios"
 import Notification from "../../components/Ui/Notification"
+import { useCreateGroup, useGroups } from "../../data/queries/group.queries"
+import { useCourses } from "../../data/queries/courses.queries"
 
 const Groups = () => {
   const navigate = useNavigate()
 
   const { theme } = useTheme()
+
+  // Guruhlarni chaqirish
+  const {data: groupsData, isLoading: groupsLoading} = useGroups()
+  if (groupsLoading) return <div>Loading...</div>
+
+  // kurslarni chaqirish
+  const {data: courses} = useCourses()
+  const courseData = courses?.results
+
+  const {mutateAsync: createGroup, isLoading: createGroupLoading} = useCreateGroup()
 
   const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
 
@@ -36,44 +48,6 @@ const Groups = () => {
     schedule_items: "string"
   })
 
-  const [groupsData, setGroupsData] = useState([])
-  const [courseData, setCourseData] = useState([])
-
-  const getCourse = async () => {
-    try {
-      const res = await axios.get("https://erpbackend.pythonanywhere.com/api/v1/courses/", {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
-        }
-      })
-
-      setCourseData(res?.data?.data)
-
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  const getGroups = async () => {
-    try {
-      const res = await fetch("https://erpbackend.pythonanywhere.com/api/v1/groups/", {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem("access_token")}`
-        }
-      })
-      const data = await res.json()
-      setGroupsData(data?.data)
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
-
-  useEffect(() => {
-    getGroups()
-    getCourse()
-  }, [])
-
   // statusni tog'ri olish
   const Status = (s) => {
     let status = s === "active" ? "Faol"
@@ -85,11 +59,12 @@ const Groups = () => {
     return status
   }
 
-  const handleAddNewGroup = async (e) => {
+  const handleAddNewGroup = (e) => {
     e.preventDefault()
 
     if ((addNewGroup.course_name || addNewGroup.name || addNewGroup.start_date || addNewGroup.status) === "") {
-      alert("Barcha maydonlarni to'ldiring!")
+      setNotif({ show: true, type: "warn", message: "Barcha maydonlarni to'ldiring!" })
+      return
     }
 
     try {
@@ -106,23 +81,32 @@ const Groups = () => {
         ended_date: addNewGroup.ended_date || null
       }
 
-      const { data } = await axios.post(
-        "https://erpbackend.pythonanywhere.com/api/v1/groups/",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`
-          }
-        }
-      )
+      createGroup(payload)
 
-      setGroupsData(prev => [...prev, data.data])
+      setAddNewGroup({
+        name: "",
+        course_name: "",
+        started_date: "",
+        ended_date: "",
+        status: "",
+        description: "",
+        course: 0,
+        branch_name: "",
+        branch: 0,
+        attendance_kpi: 0,
+        exam_kpi: 0,
+        homework_kpi: 0,
+        students_count: 0,
+        schedule_items: "string"
+      })
+      
       setNotif({ show: true, type: "success", message: "Guruh muvaffaqiyatli qo‘shildi" })
+      setAddGroup(createGroupLoading ? false : true)
       setAddGroup(false)
 
     } catch (err) {
-      console.error("Backend error:", err.response?.data)
-      alert("Backend ma’lumotlarni qabul qilmadi (400)")
+      console.error(err)
+      setNotif({ show: true, type: "error", message: "Guruh qo‘shishda xatolik!" })
     }
   }
 
@@ -269,33 +253,15 @@ const Groups = () => {
         <Table striped hover className="mt-4">
           <thead>
             <tr>
-              <th>
-                №
-              </th>
-              <th>
-                Guruh nomi
-              </th>
-              <th>
-                Kurs
-              </th>
-              <th>
-                Kun
-              </th>
-              <th>
-                Dars vaqti
-              </th>
-              <th>
-                O'qituvchi
-              </th>
-              <th>
-                O'quvchilar soni
-              </th>
-              <th>
-                Xona
-              </th>
-              <th>
-                Guruh holati
-              </th>
+              <th>№</th>
+              <th>Guruh nomi</th>
+              <th>Kurs</th>
+              <th>Kun</th>
+              <th>Dars vaqti</th>
+              <th>O'qituvchi</th>
+              <th>O'quvchilar soni</th>
+              <th>Xona</th>
+              <th>Guruh holati</th>
             </tr>
           </thead>
           <tbody>

@@ -6,8 +6,9 @@ import { useTheme } from "../../../Context/Context"
 const Schedule = ({ schedule_items, setChange_items }) => {
      const { theme } = useTheme()
      const [isEdit, setIsEdit] = useState(true)
-     const active = schedule_items?.active?.map(s => s) ?? []
-     const history = schedule_items?.history?.map(s => s) ?? []
+     const active = schedule_items?.active
+     const history = schedule_items?.history
+
      return (
           <div className="mt-3">
                <h6 className="fw-medium">
@@ -32,7 +33,7 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                               </tr>
                          </thead>
                          <tbody>
-                              {active.length > 0 ?
+                              {active?.length > 0 ?
                                    active.map((s, index) =>
                                         <tr>
                                              <td className="bg-transparent">{index + 1}</td>
@@ -41,7 +42,10 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                                              <td className="bg-transparent">
                                                   {s.begin_time.slice(0, 5) + " - " + s.end_time.slice(0, 5)}
                                              </td>
-                                             <td className="bg-transparent">{s.start_date} {"-"} {s.end_date !== null || undefined ? s.end_date : "Belgilanmagan"}</td>
+                                             <td className="bg-transparent">
+                                                  {s.start_date || s.end_date !== null || undefined ?
+                                                       s.start_date?.split("T")[0].split("-").reverse().join(".") + " - " + s.end_date?.split("T")[0].split("-").reverse().join(".") : "Belgilanmagan"}
+                                             </td>
                                              <td className="bg-transparent">{s.room?.name}</td>
                                              <td
                                                   title={!isEdit ? "Bu jadvalni tahrirlab bo'lmaydi" : ""}
@@ -84,7 +88,7 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                               </tr>
                          </thead>
                          <tbody>
-                              {history.length > 0 ?
+                              {history?.length > 0 ?
                                    history.map((s, index) =>
                                         <tr>
                                              <td className="bg-transparent">{index + 1}</td>
@@ -93,7 +97,10 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                                              <td className="bg-transparent">
                                                   {s.begin_time.slice(0, 5) + " - " + s.end_time.slice(0, 5)}
                                              </td>
-                                             <td className="bg-transparent">{s.start_date} {"-"} {s.end_date !== null || undefined ? s.end_date : "Belgilanmagan"}</td>
+                                             <td className="bg-transparent">
+                                                  {s.start_date || s.end_date !== null || undefined ?
+                                                       s.start_date?.split("T")[0].split("-").reverse().join(".") + " - " + s.end_date?.split("T")[0].split("-").reverse().join(".") : "Belgilanmagan"}
+                                             </td>
                                              <td className="bg-transparent">{s.room.name}</td>
                                         </tr>
                                    ) : (

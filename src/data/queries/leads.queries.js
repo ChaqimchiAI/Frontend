@@ -5,17 +5,19 @@ import {
   getLeadHistory,
   createLead,
   updateLead,
-  deleteLead
+  deleteLead,
+  getLead,
+  createLeadHistory
 } from "../api/leads.api";
 
 
 
 // LIST
-export const useLeads = () =>
+export const useLeads = (filters) =>
   useQuery({
-    queryKey: ["leads", "list"],
-    queryFn: getLeadsData,
-    initialData: []
+    queryKey: ["leads", "list", filters],
+    queryFn: () => getLeadsData(filters),
+    initialData: { results: [], count: 0 }
   });
 
 
@@ -32,10 +34,10 @@ export const useLead = (id) =>
 
 
 // STATS
-export const useLeadsStats = () =>
+export const useLeadsStats = (filters) =>
   useQuery({
-    queryKey: ["leads", "stats"],
-    queryFn: getLeadsStats,
+    queryKey: ["leads", "stats", filters],
+    queryFn: () => getLeadsStats(filters),
     initialData: []
   });
 
@@ -65,6 +67,17 @@ export const useCreateLead = () => {
   });
 };
 
+// CREATE History 
+export const useCreateLeadHistory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createLeadHistory,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["leads", "history"]);
+    },
+  });
+};
 
 
 // UPDATE

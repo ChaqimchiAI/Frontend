@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Pagination } from "@mui/material";
 import EntriesSelect from "./EntriesSelect";
 import { useTheme } from "../../Context/Context";
+import { Table } from "react-bootstrap";
 
 function DataTable({
      title,
@@ -9,6 +10,9 @@ function DataTable({
      columns,
      button,
      children,
+     totalCount,
+     onPageChange,
+     onEntriesChange,
      searchKeys = [],
      countOptions = [10, 25, 50, 100],
 }) {
@@ -19,46 +23,55 @@ function DataTable({
      const [entries, setEntries] = useState(countOptions[0]);
      const [currentPage, setCurrentPage] = useState(1);
 
+     // Server-side yoki Local paginatsiyani aniqlash
+     const isServerSide = totalCount !== undefined;
+
      /* 🔍 SEARCH */
      const filteredData = useMemo(() => {
-          if (!searchQuery) return data;
+          const safeData = Array.isArray(data) ? data : [];
+          if (!searchQuery || isServerSide) return safeData;
 
-          return data.filter(item =>
+          return safeData.filter(item =>
                searchKeys.some(key =>
                     String(item[key]).toLowerCase().includes(searchQuery.toLowerCase())
                )
           );
-     }, [data, searchQuery, searchKeys]);
+     }, [data, searchQuery, searchKeys, isServerSide]);
 
      /* 📄 PAGINATION */
-     const totalPages = Math.ceil(filteredData.length / entries);
+     const total = isServerSide ? totalCount : filteredData.length;
+     const pagesCount = Math.ceil(total / entries);
+
      const indexOfLast = currentPage * entries;
      const indexOfFirst = indexOfLast - entries;
-     const currentData = filteredData.slice(indexOfFirst, indexOfLast);
+
+     const currentData = isServerSide ? (Array.isArray(data) ? data : []) : filteredData.slice(indexOfFirst, indexOfLast);
 
      const handleEntriesChange = (e) => {
           setEntries(e);
           setCurrentPage(1);
+          if (onEntriesChange) onEntriesChange(e);
+     };
+
+     const handlePageChangeInternal = (e, value) => {
+          setCurrentPage(value);
+          if (onPageChange) onPageChange(e, value);
      };
 
      return (
           <div className="card-body">
-               {/* TITLE */}
                <div className="d-flex justify-content-between">
                     {title ? <h5>{title}</h5> : ""}
-
                     {button}
                </div>
 
-               {/* ENTRIES */}
-               <EntriesSelect
-                    options={countOptions}
-                    value={entries}
-                    onChange={handleEntriesChange}
-               />
+               <div className="d-flex justify-content-between border-bottom">
+                    <EntriesSelect
+                         options={countOptions}
+                         value={entries}
+                         onChange={handleEntriesChange}
+                    />
 
-               {/* SEARCH */}
-               <div className="d-flex justify-content-end">
                     <input
                          type="search"
                          className="form-control my-3 w-25"
@@ -71,9 +84,8 @@ function DataTable({
                     />
                </div>
 
-               {/* TABLE */}
                <div className="table-responsive">
-                    <table className="table table-hover align-middle">
+                    <Table hover className="align-middle">
                          <thead>
                               <tr>
                                    {columns.map(col => (
@@ -85,22 +97,21 @@ function DataTable({
                          <tbody>
                               {children(currentData)}
                          </tbody>
-                    </table>
+                    </Table>
                </div>
 
-               {/* FOOTER */}
                <div className="d-flex justify-content-between align-items-center">
                     <span className="text-muted">
-                         Showing {filteredData.length === 0 ? 0 : indexOfFirst + 1}
+                         Showing {total === 0 ? 0 : indexOfFirst + 1}
                          {" "}to{" "}
-                         {Math.min(indexOfLast, filteredData.length)}
-                         {" "}of {filteredData.length} entries
+                         {Math.min(indexOfLast, total)}
+                         {" "}of {total} entries
                     </span>
 
                     <Pagination
-                         count={totalPages}
+                         count={pagesCount}
                          page={currentPage}
-                         onChange={(e, value) => setCurrentPage(value)}
+                         onChange={handlePageChangeInternal}
                          size="small"
                          shape="rounded"
                          sx={{

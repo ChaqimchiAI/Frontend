@@ -1,0 +1,21 @@
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* dot ranglari (o‘zgarmaydi) */
+.dot-blue { background: #3b82f6; }
+.dot-green { background: #22c55e; }
+.dot-yellow { background: #facc15; }
+.dot-red { background: #ef4444; }
+.dot-gray { background: #9ca3af; }
+.dot-muted { background: #6b7280; }
+
+/* LIGHT MODE hover */
+.dropdown-menu:not(.dropdown-menu-dark) .dropdown-item:hover {
+  background-color: #3d91ff;
+  color: #111c2d;
+}
+

@@ -37,12 +37,18 @@ const staticRangesLabels = [
   },
 ];
 
-const CalendarSelector = ({ onRangeSelect }) => {
+const CalendarSelector = ({ onRangeSelect, filters }) => {
   const { theme } = useTheme();
   const [open, setOpen] = useState(false);
 
-  // Sahifa yangilanganda tanlanmagan holat uchun
-  const [isDateSelected, setIsDateSelected] = useState(false);
+  // filters.start_date bo'sh bo'lsa tanlovni bekor qilish
+  useEffect(() => {
+    if (!filters?.start_date) {
+      setIsDateSelected(false);
+    }
+  }, [filters?.start_date]);
+
+  const [isDateSelected, setIsDateSelected] = useState(!!filters?.start_date);
 
   const [state, setState] = useState([
     {
@@ -68,16 +74,23 @@ const CalendarSelector = ({ onRangeSelect }) => {
     setIsDateSelected(true); // Tanlov bajarildi
 
     if (onRangeSelect) {
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
       onRangeSelect({
-        start: startOfDay(selection.startDate).toISOString(),
-        end: endOfDay(selection.endDate).toISOString()
+        start: formatDate(selection.startDate),
+        end: formatDate(selection.endDate)
       });
     }
   };
 
   return (
-    <div className={`calendar mt-4 ${!theme ? 'dark-theme' : 'light-theme'}`} ref={ref}>
-      <div className="input-box" onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
+    <div className={`calendar ${!theme ? 'dark-theme' : 'light-theme'}`} ref={ref}>
+      <div className="input-box border" onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
         <span className="icon">
           <Icon icon="famicons:calendar-outline" width="20" height="20" />
         </span>

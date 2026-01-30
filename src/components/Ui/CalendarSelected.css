@@ -1,11 +1,11 @@
 /* --- Asosiy o'zgaruvchilar (Dark/Light) --- */
 .dark-theme {
-  --bg-color: #0f172a;       /* To'q ko'k fon */
-  --text-color: #e2e8f0;     /* Oqish matn */
-  --border-color: #1e293b;   /* Chegara rangi */
-  --hover-color: #1e293b;    /* Hover effekti */
-  --primary-color: #3b82f6;  /* Asosiy ko'k rang (selected) */
-  --secondary-bg: #1e293b;   /* Sidebar foni */
+  --bg-color: #0f172a;       
+  --text-color: #e2e8f0;     
+  --border-color: #1e293b;   
+  --hover-color: #1e293b;    
+  --primary-color: #3b82f6; 
+  --secondary-bg: #1e293b;   
 }
 
 .light-theme {
@@ -29,7 +29,7 @@
   background-color: var(--bg-color);
   border: 1px solid var(--border-color);
   padding: 10px 15px;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   cursor: pointer;

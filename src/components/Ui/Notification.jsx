@@ -4,9 +4,10 @@ import './Notification.css'
 
 const variants = {
      success: { color: '#3ad97a', icon: 'mdi:check-circle' },
-     warn: { color: '#f6c85f', icon: 'mdi:alert-circle' },
+     warn: { color: '#f6c85f', icon: 'cuida:warning-outline' },
      edited: { color: '#0085db', icon: 'mdi:pencil' },
-     deleted: { color: '#fb6b6b', icon: 'mdi:delete' }
+     deleted: { color: '#fb6b6b', icon: 'mdi:delete' },
+     error: { color: '#fb6b6b', icon: 'material-symbols:error-outline-rounded' }
 }
 
 const Notification = ({ type = 'success', message = '', onClose, duration = 3000 }) => {

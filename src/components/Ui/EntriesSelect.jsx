@@ -1,5 +1,3 @@
-import React from 'react';
-
 const EntriesSelect = ({ value, onChange, options = [10, 25, 50, 100], id = 'entries-select', className = '' }) => {
   const controlled = value !== undefined;
 

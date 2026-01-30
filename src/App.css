@@ -17,6 +17,28 @@
     animation: modalFadeIn 0.5s forwards;
 }
 
+.button-delate{
+    transition: 0.3s;
+}
+
+.button-delate:hover{
+    background: #cd3232 !important;
+    color: #fff !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @keyframes modalFadeIn {
     from {
         opacity: 0;
