@@ -16,6 +16,9 @@ export const deleteLead = (id) =>
      api.delete(`/leads/${id}/`).then(res => res.data.data)
 
 export const updateLead = ({ id, data }) =>
+     api.put(`/leads/${id}/`, data).then(res => res.data.data)
+
+export const editLead = ({ id, data }) =>
      api.patch(`/leads/${id}/`, data).then(res => res.data.data)
 
 export const getLeadHistory = (id) =>

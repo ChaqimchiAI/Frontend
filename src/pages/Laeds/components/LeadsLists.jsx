@@ -43,6 +43,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setS
      const teacherData = teachers?.results
 
      const { mutate: updateLead } = useUpdateLead();
+
      const { data: stats } = useLeadsStats(filters)
 
      const [openDropdown, setOpenDropdown] = useState(null)
@@ -294,18 +295,17 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setS
                                         </td>
                                         <td>{lid?.created_at?.split("T")[0].split("-").reverse().join(".")}</td>
                                         <td>
-                                             {teacherData.find(t => t.id === Number(lid.teacher))?.first_name}
+                                             {teacherData?.find(t => t.id === Number(lid.teacher))?.first_name}
                                              {" "}
-                                             {teacherData.find(t => t.id === Number(lid.teacher))?.last_name}
+                                             {teacherData?.find(t => t.id === Number(lid.teacher))?.last_name}
                                         </td>
                                         <td>{lid?.course?.name}</td>
                                         <td className="text-capitalize">
                                              {lid?.week_days?.map(d => d.code + ", ")}
                                         </td>
-                                        <td className="d-flex align-items-center gap-1 text-center cursor-pointer">
+                                        <td>
                                              <span
-                                                  className="py-2 px-2 d-flex justify-content-center align-items-center rounded-2 dots"
-                                                  title="Tahrirlash"
+                                                  className="py-2 px-2 d-flex justify-content-center align-items-center rounded-2 dots cursor-pointer"
                                                   onClick={(e) => handleChange(e, lid.id)}
                                              >
                                                   <Icon icon="line-md:pencil-twotone" height="22" />

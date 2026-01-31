@@ -7,7 +7,8 @@ import {
   updateLead,
   deleteLead,
   getLead,
-  createLeadHistory
+  createLeadHistory,
+  editLead
 } from "../api/leads.api";
 
 
@@ -80,12 +81,27 @@ export const useCreateLeadHistory = () => {
 };
 
 
+
 // UPDATE
 export const useUpdateLead = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: updateLead,
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries(["leads", "list"]);
+      queryClient.invalidateQueries(["leads", "detail", id]);
+    },
+  });
+};
+
+
+// EDIT
+export const useEditLead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: editLead,
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries(["leads", "list"]);
       queryClient.invalidateQueries(["leads", "detail", id]);
@@ -101,8 +117,9 @@ export const useDeleteLead = () => {
 
   return useMutation({
     mutationFn: deleteLead,
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries(["leads", "list"]);
+      queryClient.invalidateQueries(["leads", "detail", id]);
       queryClient.invalidateQueries(["leads", "stats"]);
     },
   });

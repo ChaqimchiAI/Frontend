@@ -284,6 +284,7 @@ const LeadDetail = () => {
                                         Barchasini ko'rish
                                    </Button>
                               </Card.Header>
+                              
                               <Card.Body className="px-4 py-4">
                                    {isHistoryLoading ? (
                                         <div className="text-center py-4"><Spinner size="sm" animation="border" /></div>

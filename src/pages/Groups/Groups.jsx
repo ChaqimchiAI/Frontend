@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react"
 import { useEffect, useState } from "react"
-import { Form, Table } from "react-bootstrap"
+import { Form, Spinner, Table } from "react-bootstrap"
 import Modal from "../../components/Ui/Modal"
 import teacherData from "../../data/Teachers.json"
 import roomData from "../../data/Rooms.json"
@@ -18,14 +18,14 @@ const Groups = () => {
   const { theme } = useTheme()
 
   // Guruhlarni chaqirish
-  const {data: groupsData, isLoading: groupsLoading} = useGroups()
+  const { data: groupsData, isLoading: groupsLoading } = useGroups()
   if (groupsLoading) return <div>Loading...</div>
 
   // kurslarni chaqirish
-  const {data: courses} = useCourses()
+  const { data: courses } = useCourses()
   const courseData = courses?.results
 
-  const {mutateAsync: createGroup, isLoading: createGroupLoading} = useCreateGroup()
+  const { mutateAsync: createGroup, isPending: createGroupLoading } = useCreateGroup()
 
   const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
 
@@ -67,47 +67,45 @@ const Groups = () => {
       return
     }
 
-    try {
-      const payload = {
-        name: addNewGroup.name,
-        status: addNewGroup.status,
-        course: Number(addNewGroup.course),
-        branch: 1,
-        attendance_kpi: 0,
-        exam_kpi: 0,
-        homework_kpi: 0,
-        students_count: 0,
-        started_date: addNewGroup.started_date,
-        ended_date: addNewGroup.ended_date || null
-      }
-
-      createGroup(payload)
-
-      setAddNewGroup({
-        name: "",
-        course_name: "",
-        started_date: "",
-        ended_date: "",
-        status: "",
-        description: "",
-        course: 0,
-        branch_name: "",
-        branch: 0,
-        attendance_kpi: 0,
-        exam_kpi: 0,
-        homework_kpi: 0,
-        students_count: 0,
-        schedule_items: "string"
-      })
-      
-      setNotif({ show: true, type: "success", message: "Guruh muvaffaqiyatli qo‘shildi" })
-      setAddGroup(createGroupLoading ? false : true)
-      setAddGroup(false)
-
-    } catch (err) {
-      console.error(err)
-      setNotif({ show: true, type: "error", message: "Guruh qo‘shishda xatolik!" })
+    const payload = {
+      name: addNewGroup.name,
+      status: addNewGroup.status,
+      course: Number(addNewGroup.course),
+      branch: 1,
+      attendance_kpi: 0,
+      exam_kpi: 0,
+      homework_kpi: 0,
+      students_count: 0,
+      started_date: addNewGroup.started_date,
+      ended_date: addNewGroup.ended_date || null
     }
+
+    createGroup(payload, {
+      onSuccess: () => {
+        setNotif({ show: true, type: "success", message: "Guruh muvaffaqiyatli qo‘shildi" })
+        setAddGroup(false)
+        setAddNewGroup({
+          name: "",
+          course_name: "",
+          started_date: "",
+          ended_date: "",
+          status: "",
+          description: "",
+          course: 0,
+          branch_name: "",
+          branch: 0,
+          attendance_kpi: 0,
+          exam_kpi: 0,
+          homework_kpi: 0,
+          students_count: 0,
+          schedule_items: "string"
+        })
+      },
+      onError: (err) => {
+        console.error(err)
+        setNotif({ show: true, type: "error", message: "Guruh qo‘shishda xatolik!" })
+      }
+    })
   }
 
   return (
@@ -215,7 +213,7 @@ const Groups = () => {
                 style={{ background: "#0085db", color: "#fff" }}
                 onClick={handleAddNewGroup}
               >
-                Saqlash
+                {createGroupLoading ? <Spinner animation="border" size="sm"/> :  "Saqlash"}
               </button>
             </div>
           </Form>

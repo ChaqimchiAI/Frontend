@@ -1,4 +1,4 @@
-import { Card, Nav, Row, Tab } from "react-bootstrap"
+import { Card, Nav, Row, Spinner, Tab } from "react-bootstrap"
 import { Icon } from "@iconify/react"
 import { useState } from "react";
 import { Input } from "../../components/Ui/Input";
@@ -6,13 +6,12 @@ import Notification from "../../components/Ui/Notification"
 import Modal from "../../components/Ui/Modal"
 
 // API malumotlarini olish
-import { useLeads, useLeadsStats } from "../../data/queries/leads.queries"
+import { useEditLead, useLeads, useLeadsStats } from "../../data/queries/leads.queries"
 import { useTeachersData } from "../../data/queries/teachers.queries";
 import { useCourses } from "../../data/queries/courses.queries";
 import NewLead from "./components/NewLead";
 import LeadsLists from "./components/LeadsLists";
-
-const d = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"];
+import SelectDay from "../../components/Ui/SelectDay";
 
 const Leads = () => {
 
@@ -26,15 +25,22 @@ const Leads = () => {
           period: ""
      });
 
+     // lidlarni royxati
      const { data, isLoading, error } = useLeads(filters);
      const leads = data?.results || [];
      const totalCount = data?.count || 0;
 
+     // lidlar boyicha statistika 
      const { data: stats } = useLeadsStats()
 
+     // lidlarni o'zgartirish
+     const { mutate: editLead, isPending: editLeadPending } = useEditLead()
+
+     // guruhlarni olish
      const { data: teachers } = useTeachersData()
      const teacherData = teachers?.results
 
+     // kurslarni olish
      const { data: courses } = useCourses()
      const coursesData = courses?.results
 
@@ -50,36 +56,7 @@ const Leads = () => {
 
      const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
 
-     // lead malumotlarini tahrirlashda eski dars kunlarini aniqlash
-     const findCurrentDays = (d) => {
-          const days = d.map(d => d.code)
-
-          if (days.join(",") === "Du,Cho,Ju") {
-               return "t"
-          }
-
-          if (days.join(",") === "Se,Pay,Sha") {
-               return "j"
-          }
-
-          setSelectOtherD(true)
-          return
-     }
-
-     // yangi kunlarni aniqlash
-     const changeDays = (id, isChecked) => {
-          setChangeData(prev => {
-               const currentDays = Array.isArray(prev.week_days) ? prev.week_days : [];
-
-               const filtered = currentDays.filter(item => item.id !== id);
-
-               return {
-                    ...prev,
-                    week_days: isChecked ? [...filtered, { id: id }] : filtered
-               };
-          });
-     };
-
+     // lead malumotlarini o'zgartirish
      const changeLeadsData = (e) => {
           e.preventDefault()
 
@@ -91,14 +68,34 @@ const Leads = () => {
                changeData.teacher ||
                changeData.week_days
           )) {
-               alert("Asosiy joylarni to'ldiring!")
+               setNotif({ show: true, type: "warn", message: "Asosiy joylarni to'ldiring!" })
                return
           }
 
+          const dataToSend = {
+               first_name: changeData.first_name,
+               last_name: changeData.last_name,
+               phone: changeData.phone,
+               course: Number(changeData.course.id || changeData.course),
+               teacher: Number(changeData.teacher),
+               week_days: changeData.week_days.map(d => d?.id || d)
+          }
 
-
+          editLead(
+               { id: changeData.id, data: dataToSend },
+               {
+                    onSuccess: () => {
+                         setNotif({ show: true, type: "success", message: "Ma'lumotlar yangilandi!" })
+                         setOpemModal(false)
+                         setChangeData({})
+                    },
+                    onError: () => {
+                         setNotif({ show: true, type: "error", message: "Xatolik yuz berdi!" })
+                    }
+               }
+          )
      }
-     
+
      return (
           <>
 
@@ -119,6 +116,7 @@ const Leads = () => {
                          close={setOpemModal}
                          anima={opemModal}
                          width="50%"
+                         zIndex={100}
                     >
                          <div className="d-flex justify-content-between gap-3 mt-2">
                               <div className="d-flex flex-column w-50">
@@ -183,47 +181,13 @@ const Leads = () => {
                                         <label htmlFor="time" className="form-label">
                                              Vaqti
                                         </label>
-                                        {!selectOtherD ? (
-                                             <select
-                                                  id="time"
-                                                  className="form-select"
-                                                  value={findCurrentDays(changeData.week_days)}
-                                                  onChange={(e) => changeDays(e.target.value)}
-                                             >
-                                                  <option hidden value="">Kun tanlash</option>
-                                                  <option value="t">Toq kunlar</option>
-                                                  <option value="j">Juft Kunlar</option>
-                                                  <option value="b">Boshqa Kunlar</option>
-                                             </select>
-                                        ) : (
-                                             <div className="d-flex flex-column align-items-start ms-3">
-                                                  <div className="d-flex flex-wrap">
-                                                       {d.map((day, i) => {
-                                                            const dayId = i + 1;
-                                                            return (
-                                                                 <div className="d-flex align-items-center gap-1" key={i}>
-                                                                      <label className="form-label" htmlFor={`day-${i}`}>{day}</label>
-                                                                      <input
-                                                                           id={`day-${i}`}
-                                                                           type="checkbox"
-                                                                           className="form-check"
-                                                                           checked={changeData?.week_days?.some(item => item.id === dayId)}
-                                                                           onChange={(e) => changeDays(dayId, e.target.checked)}
-                                                                      />
-                                                                      &nbsp;
-                                                                 </div>
-                                                            );
-                                                       })}
-                                                  </div>
-                                                  <button
-                                                       type="button"
-                                                       className="btn btn-sm btn-outline-secondary mt-2"
-                                                       onClick={() => setSelectOtherD(false)}
-                                                  >
-                                                       Ortga
-                                                  </button>
-                                             </div>
-                                        )}
+
+                                        <SelectDay
+                                             data={changeData}
+                                             setData={setChangeData}
+                                             field="week_days"
+                                        />
+
                                    </div>
                               </div>
                               <div
@@ -274,7 +238,7 @@ const Leads = () => {
                                    style={{ background: "#0085db", color: "#fff" }}
                                    onClick={changeLeadsData}
                               >
-                                   Saqlash
+                                   {editLeadPending ? <Spinner size="sm" type="border" /> : "Saqlash"}
                               </button>
                          </div>
                     </Modal>

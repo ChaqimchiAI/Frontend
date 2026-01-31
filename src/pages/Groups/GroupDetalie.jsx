@@ -67,7 +67,7 @@ const GroupDetalie = () => {
      const [searchLead, setSearchLead] = useState(leadsData)
      const [changeGroupDate, setChangeGroupDate] = useState({})
      const [currentSchedule, setCurrentSchedule] = useState({})
-     
+
 
      const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
 
@@ -116,30 +116,32 @@ const GroupDetalie = () => {
                return
           }
 
-          try {
-               const dataToSend = {
-                    name: changeGroupDate.name,
-                    course: changeGroupDate.course,
-                    branch: changeGroupDate.branch,
-                    started_date: changeGroupDate.started_date,
-                    ended_date: changeGroupDate.ended_date,
-                    status: changeGroupDate.status,
-                    attendance_kpi: changeGroupDate.attendance_kpi || 0,
-                    exam_kpi: changeGroupDate.exam_kpi || 0,
-                    homework_kpi: changeGroupDate.homework_kpi || 0,
-                    students_count: changeGroupDate.students_count || 0
-               }
-
-               editGroup({ id: id, data: dataToSend });
-
-
-               setNotif({ show: true, type: "edited", message: "Guruh ma'lumotlari tahrirlandi" })
-
-               setChangeGroup(false)
-          } catch (err) {
-               console.error(err)
-               setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+          const dataToSend = {
+               name: changeGroupDate.name,
+               course: changeGroupDate.course,
+               branch: changeGroupDate.branch,
+               started_date: changeGroupDate.started_date,
+               ended_date: changeGroupDate.ended_date,
+               status: changeGroupDate.status,
+               attendance_kpi: changeGroupDate.attendance_kpi || 0,
+               exam_kpi: changeGroupDate.exam_kpi || 0,
+               homework_kpi: changeGroupDate.homework_kpi || 0,
+               students_count: changeGroupDate.students_count || 0
           }
+
+          editGroup(
+               { id: id, data: dataToSend },
+               {
+                    onSuccess: () => {
+                         setNotif({ show: true, type: "edited", message: "Guruh ma'lumotlari tahrirlandi" })
+                         setChangeGroup(false)
+                    },
+                    onError: (err) => {
+                         console.error(err)
+                         setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                    }
+               }
+          );
      }
 
      useEffect(() => {
@@ -264,9 +266,6 @@ const GroupDetalie = () => {
                          </div>
                     </Modal>
                )}
-
-
-
 
                <Back />
 

@@ -3,6 +3,7 @@ import Modal from "../../../components/Ui/Modal"
 import { Input } from "../../../components/Ui/Input"
 import { useDeleteGroupSchedule, useEditGroupSchedule } from "../../../data/queries/group.queries";
 import { useState } from "react";
+import SelectDay from "../../../components/Ui/SelectDay";
 
 const EditGroupSchedule = ({
     changeActiveItem,
@@ -22,7 +23,6 @@ const EditGroupSchedule = ({
     // dars jadvalini o'chirish
     const { mutate: deleteGroupSchedule, isLoading: deletingSchedule } = useDeleteGroupSchedule();
 
-    const [special, setSpecial] = useState(false);
     const [delate, setDelate] = useState(false);
 
     // kunni raqamlarga o'tkazish
@@ -66,80 +66,55 @@ const EditGroupSchedule = ({
             setNotif({ show: true, type: "error", message: "Guruh IDsi topilmadi" });
             return;
         }
-
-        try {
-
-            const dataToSend = {
-                days_of_week: normalizeDays(currentSchedule.days_of_week),
-                begin_time: currentSchedule.begin_time,
-                end_time: currentSchedule.end_time,
-                teacher:
-                    typeof currentSchedule.teacher === "object"
-                        ? currentSchedule.teacher.id
-                        : currentSchedule.teacher,
-                room:
-                    typeof currentSchedule.room === "object"
-                        ? currentSchedule.room.id
-                        : currentSchedule.room,
-                start_date: currentSchedule.start_date,
-                end_date: currentSchedule.end_date || null,
-                is_active: currentSchedule.is_active
-            };
+        const dataToSend = {
+            days_of_week: normalizeDays(currentSchedule.days_of_week),
+            begin_time: currentSchedule.begin_time,
+            end_time: currentSchedule.end_time,
+            teacher:
+                typeof currentSchedule.teacher === "object"
+                    ? currentSchedule.teacher.id
+                    : currentSchedule.teacher,
+            room:
+                typeof currentSchedule.room === "object"
+                    ? currentSchedule.room.id
+                    : currentSchedule.room,
+            start_date: currentSchedule.start_date,
+            end_date: currentSchedule.end_date || null,
+            is_active: currentSchedule.is_active
+        };
 
 
-            editGroupSchedule({ id, scheduleId: currentSchedule.id, data: dataToSend })
-            setChangeActiveItem(!editingSchedule ? false : true)
-            setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli tahrirlandi" })
-        } catch (err) {
-            setNotif({ show: true, type: 'error', message: "Jadval tahrirlanmadi!" })
-        }
-
-    };
-
-    const toggleEditDay = (id, checked) => {
-        setCurrentSchedule(p => ({
-            ...p,
-            days_of_week: checked
-                ? [...p.days_of_week, id]
-                : p.days_of_week.filter(d => d !== id)
-        }));
-    };
-
-    const handleEditDays = (value) => {
-        if (value === "toqK") {
-            setCurrentSchedule({
-                ...currentSchedule,
-                days_of_week: [1, 3, 5],
-            });
-            setSpecial(false);
-        } else if (value === "juftK") {
-            setCurrentSchedule({
-                ...currentSchedule,
-                days_of_week: [2, 4, 6],
-            });
-            setSpecial(false);
-        } else if (value === "maxsusK") {
-            setCurrentSchedule({
-                ...currentSchedule,
-                days_of_week: [],
-            });
-            setSpecial(true);
-        }
+        editGroupSchedule(
+            { id, scheduleId: currentSchedule.id, data: dataToSend },
+            {
+                onSuccess: () => {
+                    setChangeActiveItem(false)
+                    setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli tahrirlandi" })
+                },
+                onError: (err) => {
+                    console.error(err);
+                    setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                }
+            }
+        )
     };
 
     const deleteSchedule = () => {
-        try {
-            deleteGroupSchedule({ id, scheduleId: currentSchedule.id })
-            setDelate(false)
-            setChangeActiveItem(false)
-            setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli o'chirildi" })
-        } catch (err) {
-            console.error(err);
-            setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
-        }
+        deleteGroupSchedule(
+            { id, scheduleId: currentSchedule.id },
+            {
+                onSuccess: () => {
+                    setDelate(false)
+                    setChangeActiveItem(false)
+                    setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli o'chirildi" })
+                },
+                onError: (err) => {
+                    console.error(err);
+                    setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                }
+            }
+        )
     }
-
-    console.log(currentSchedule)
 
     return (
         <>
@@ -181,55 +156,11 @@ const EditGroupSchedule = ({
                 <Form className="d-flex flex-column gap-3">
 
                     <div className="mt-3">
-                        {!special ? (
-                            <>
-                                <label htmlFor="days" className="form-label">
-                                    Dars kunlari
-                                </label>
-                                <select
-                                    id="days"
-                                    className="form-select"
-                                    value={
-                                        currentSchedule?.days_of_week?.every((d) => d.code === "Du" || d.code === "Cho" || d.code === "Ju") || currentSchedule?.days_of_week?.some((d) => d === 1) ? "toqK" :
-                                            currentSchedule?.days_of_week?.every((d) => d.code === "Se" || d.code === "Pay" || d.code === "Sha") || currentSchedule?.days_of_week?.some((d) => d === 2) ? "juftK" :
-                                                currentSchedule?.days_of_week?.length > 0 ? "maxsusK" : ""
-                                    }
-                                    onChange={(e) => handleEditDays(e.target.value)}
-                                >
-                                    <option hidden value="">
-                                        Kun tanlash
-                                    </option>
-                                    <option value="toqK">Toq kunlar (Du, Cho, Ju)</option>
-                                    <option value="juftK">Juft Kunlar (Se, Pay, Sha)</option>
-                                    <option value="maxsusK">Maxsus</option>
-                                </select>
-                            </>
-                        ) : (
-                            <>
-                                <label className="form-label">Hafta kunlarini tanlang</label>
-                                <div className="d-flex flex-wrap gap-3 mb-2">
-                                    {d.map((day, i) => (
-                                        <div className="form-check cursor-pointer" key={day}>
-                                            <input
-                                                id={day}
-                                                type="checkbox"
-                                                className="form-check-input cursor-pointer"
-                                                checked={currentSchedule?.days_of_week?.includes(i + 1)}
-                                                onChange={e => toggleEditDay(i + 1, e.target.checked)}
-                                            />
-                                            <label htmlFor={day} className="form-check-label cursor-pointer">{day}</label>
-                                        </div>
-                                    ))}
-                                </div>
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-secondary mt-2"
-                                    onClick={() => setSpecial(false)} // Ortga
-                                >
-                                    Ortga
-                                </button>
-                            </>
-                        )}
+                        <SelectDay
+                            data={currentSchedule}
+                            setData={setCurrentSchedule}
+                            field="days_of_week"
+                        />
                     </div>
 
                     <div className="d-flex align-items-center gap-2">
@@ -358,6 +289,7 @@ const EditGroupSchedule = ({
                 </Form>
             </Modal>
 
+            {/* Style */}
             <style>
                 {`.delete {
                     transition: 0.3s;

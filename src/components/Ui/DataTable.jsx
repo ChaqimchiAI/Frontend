@@ -28,16 +28,15 @@ function DataTable({
 
      /* 🔍 SEARCH */
      const filteredData = useMemo(() => {
-          const safeData = Array.isArray(data) ? data : [];
-          if (!searchQuery || isServerSide) return safeData;
+          if (!searchQuery) return data;
 
-          return safeData.filter(item =>
+          return data.filter(item =>
                searchKeys.some(key =>
                     String(item[key]).toLowerCase().includes(searchQuery.toLowerCase())
                )
           );
-     }, [data, searchQuery, searchKeys, isServerSide]);
-
+     }, [data, searchQuery, searchKeys]);
+     
      /* 📄 PAGINATION */
      const total = isServerSide ? totalCount : filteredData.length;
      const pagesCount = Math.ceil(total / entries);
@@ -45,7 +44,7 @@ function DataTable({
      const indexOfLast = currentPage * entries;
      const indexOfFirst = indexOfLast - entries;
 
-     const currentData = isServerSide ? (Array.isArray(data) ? data : []) : filteredData.slice(indexOfFirst, indexOfLast);
+     const currentData = isServerSide ? data : filteredData.slice(indexOfFirst, indexOfLast);
 
      const handleEntriesChange = (e) => {
           setEntries(e);

@@ -17,6 +17,7 @@ const EditGroup = ({
             close={setChangeGroup}
             anima={changeGroup}
             width="30%"
+            zIndex={100}
         >
             <Form className="mt-3" onSubmit={saveGroupChanges}>
                 <Form.Group className="mb-3">

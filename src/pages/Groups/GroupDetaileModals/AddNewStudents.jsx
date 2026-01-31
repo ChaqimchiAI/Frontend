@@ -14,6 +14,7 @@ const AddNewStudents = ({
             close={setAddNewUser}
             anima={addNewUser}
             width="35%"
+            zIndex={100}
         >
             <Input
                 label="O'quvchini Lidlar ro'yxatidan tanlang"

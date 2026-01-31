@@ -3,6 +3,7 @@ import Modal from "../../../components/Ui/Modal";
 import { Input } from "../../../components/Ui/Input";
 import { useCreateGroupSchedule } from "../../../data/queries/group.queries";
 import { useState } from "react";
+import SelectDay from "../../../components/Ui/SelectDay";
 
 const AddNewSchedule = ({
     addSchedule,
@@ -16,8 +17,6 @@ const AddNewSchedule = ({
 
 
     const { mutate: createGroupSchedule, isPending: creatingSchedule } = useCreateGroupSchedule()
-
-    const [special, setSpecial] = useState(false)
 
     const [newSchedlueItems, setNewSchedlueItems] = useState({
         days_of_week: [],
@@ -59,66 +58,30 @@ const AddNewSchedule = ({
             is_active: newSchedlueItems.is_active
         }
 
-        try {
-            createGroupSchedule({ id, data: dataToSend })
+        createGroupSchedule(
+            { id, data: dataToSend },
+            {
+                onSuccess: () => {
+                    setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli qo'shildi" })
+                    setAddSchedule(false)
 
-            setNotif({ show: true, type: 'success', message: "Jadval muvoffaqyatli qo'shildi" })
-
-            setAddSchedule(!creatingSchedule ? true : false)
-
-            setNewSchedlueItems({
-                days_of_week: [],
-                begin_time: "",
-                end_time: "",
-                teacher: "",
-                room: "",
-                start_date: "",
-                end_date: "",
-                is_active: true
-            })
-        }
-        catch (err) {
-            console.error(err);
-            setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
-        }
-    }
-
-    const formatDays = (value) => {
-        if (value === "toqK") {
-            setNewSchedlueItems({
-                ...newSchedlueItems,
-                days_of_week: [1, 3, 5],
-            });
-            setSpecial(false);
-        }
-
-        if (value === "juftK") {
-            setNewSchedlueItems({
-                ...newSchedlueItems,
-                days_of_week: [2, 4, 6],
-            });
-            setSpecial(false);
-        }
-
-        if (value === "maxsusK") {
-            setCurrentSchedule({
-                ...currentSchedule,
-                days_of_week: [],
-            });
-            setSpecial(true);
-        }
-    };
-
-    // yangi jadval un checkbox dan kun tanlash
-    const otherDays = ({ i, checked }) => {
-        setNewSchedlueItems(prev => {
-            const filteredDays = (prev.days_of_week || []).filter(id => id !== i);
-
-            return {
-                ...prev,
-                days_of_week: checked ? [...filteredDays, i] : filteredDays
-            };
-        });
+                    setNewSchedlueItems({
+                        days_of_week: [],
+                        begin_time: "",
+                        end_time: "",
+                        teacher: "",
+                        room: "",
+                        start_date: "",
+                        end_date: "",
+                        is_active: true
+                    })
+                },
+                onError: (err) => {
+                    console.error(err)
+                    setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                }
+            }
+        )
     }
 
     return (
@@ -132,44 +95,11 @@ const AddNewSchedule = ({
 
                 <div className="mt-3">
                     <label className="form-label">Dars kunlari</label>
-                    {!special ? (
-                        <select
-                            className="form-select"
-                            onChange={(e) => formatDays(e.target.value)}
-                        >
-                            <option hidden value="">Kun tanlash</option>
-                            <option value="toqK">Toq kunlar (Du, Cho, Ju)</option>
-                            <option value="juftK">Juft kunlar (Se, Pay, Sha)</option>
-                            <option value="maxsusK">Maxsus</option>
-                        </select>
-                    ) : (
-                        <div className="d-flex flex-column align-items-start ms-3">
-                            <div className="d-flex flex-wrap">
-                                {d.map((day, i) => (
-                                    <div className="d-flex align-items-center gap-1">
-                                        <label className="form-label" htmlFor={i}>{day}</label>
-                                        <input
-                                            id={i}
-                                            type="checkbox"
-                                            className="form-check"
-                                            onChange={(e) => otherDays({ i: i + 1, checked: e.target.checked })}
-                                        />
-                                        &nbsp;
-                                    </div>
-                                ))}
-                            </div>
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-outline-secondary mt-2"
-                                onClick={() => {
-                                    setSpecial(false);
-                                    setNewSchedlueItems({ ...newSchedlueItems, days_of_week: [] })
-                                }}
-                            >
-                                Ortga
-                            </button>
-                        </div>
-                    )}
+                    <SelectDay 
+                        data={addSchedule}
+                        setData={setAddSchedule}
+                        field="days_of_week"
+                    />
                 </div>
 
                 <div className="d-flex align-items-center gap-2">

@@ -3,6 +3,8 @@ import { useTeachersData } from "../../../data/queries/teachers.queries";
 import { useCourses } from "../../../data/queries/courses.queries";
 import { useCreateLead } from "../../../data/queries/leads.queries";
 import { Input } from "../../../components/Ui/Input";
+import SelectDay from "../../../components/Ui/SelectDay";
+import { Spinner } from "react-bootstrap";
 
 const d = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"]
 
@@ -25,7 +27,7 @@ const NewLead = ({ setNotif }) => {
      const coursesData = AllCoursesData?.results
 
      // yangi lid yaratish uchun
-     const { mutate: createLead, isLoading: creating } = useCreateLead();
+     const { mutate: createLead, isPending: creating } = useCreateLead();
 
 
      const [newLidData, setNewLidData] = useState({
@@ -37,7 +39,6 @@ const NewLead = ({ setNotif }) => {
           status: "new",
           create_at: date,
           week_days: [],
-          days_type: "",
           comment: "",
           parent_name: "",
           parent_phone: "",
@@ -45,8 +46,6 @@ const NewLead = ({ setNotif }) => {
           updated_at: null,
           deleted_at: null
      })
-
-     const [otherD, setOtherD] = useState(false)
 
      // Yangi lid qoshish
      const handleSubmit = (e) => {
@@ -56,61 +55,38 @@ const NewLead = ({ setNotif }) => {
                return;
           }
 
-          const { days_type, ...payload } = newLidData;
-
-          createLead(payload)
-
-          setNewLidData({
-               first_name: "",
-               last_name: "",
-               phone: "",
-               course: 2,
-               source: "",
-               status: "new",
-               create_at: date,
-               week_days: [],
-               days_type: "",
-               comment: "",
-               parent_name: "",
-               parent_phone: "",
-               teacher: "",
-          });
-          setOtherD(false)
-
-          // bidirishnoma
-          setNotif({ show: true, type: 'success', message: "Yangi lid muvoffaqyatli qo'shildi" })
-     }
-
-     // kun tanlash
-     const days = (d) => {
-
-          if (d === "b") {
-               setOtherD(true)
-               return
-          }
-
-          let selectedDays = d === "t" ? [1, 3, 5]
-               : d === "j" ? [2, 4, 6]
-                    : []
-
-          setNewLidData(prev => ({
-               ...prev,
-               days_type: d,
-               week_days: selectedDays
-          }));
-     }
+          console.log(newLidData);
 
 
-     const otherDays = ({ i, checked }) => {
-          setNewLidData(prev => {
-               const filteredDays = (prev.week_days || []).filter(id => id !== i);
+          createLead(
+               newLidData,
+               {
+                    onSuccess: () => {
+                         setNewLidData({
+                              first_name: "",
+                              last_name: "",
+                              phone: "",
+                              course: 0,
+                              source: "",
+                              status: "new",
+                              create_at: date,
+                              week_days: [],
+                              comment: "",
+                              parent_name: "",
+                              parent_phone: "",
+                              teacher: "",
+                         })
 
-               return {
-                    ...prev,
-                    days_type: i,
-                    week_days: checked ? [...filteredDays, i] : filteredDays
-               };
-          });
+                         // bidirishnoma
+                         setNotif({ show: true, type: 'success', message: "Yangi lid muvoffaqyatli qo'shildi" })
+                    },
+                    onError: (err) => {
+                         console.error(err)
+                         setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                    }
+               }
+          )
+
      }
 
      return (
@@ -192,43 +168,11 @@ const NewLead = ({ setNotif }) => {
                               <label htmlFor="days" className="form-label">
                                    Dars Kunlari
                               </label>
-                              {!otherD ? (
-                                   <select
-                                        id="days"
-                                        className="form-select"
-                                        value={newLidData.days_type}
-                                        onChange={(e) => days(e.target.value)}
-                                   >
-                                        <option hidden value="">Kun tanlash</option>
-                                        <option value="t">Toq kunlar</option>
-                                        <option value="j">Juft Kunlar</option>
-                                        <option value="b">Boshqa Kunlar</option>
-                                   </select>
-                              ) : (
-                                   <div className="d-flex flex-column align-items-start ms-3">
-                                        <div className="d-flex">
-                                             {d.map((day, i) => (
-                                                  <div className="d-flex align-items-center gap-1">
-                                                       <label className="form-label" htmlFor={i}>{day}</label>
-                                                       <input
-                                                            id={i}
-                                                            type="checkbox"
-                                                            className="form-check"
-                                                            onChange={(e) => otherDays({ i: i + 1, checked: e.target.checked })}
-                                                       />
-                                                       &nbsp;
-                                                  </div>
-                                             ))}
-                                        </div>
-                                        <button
-                                             type="button"
-                                             className="btn btn-sm btn-outline-secondary mt-2"
-                                             onClick={() => setOtherD(false)}
-                                        >
-                                             Ortga
-                                        </button>
-                                   </div>
-                              )}
+                              <SelectDay
+                                   data={newLidData}
+                                   setData={setNewLidData}
+                                   field="week_days"
+                              />
                          </div>
 
                          <div className="col d-flex flex-column">
@@ -286,10 +230,11 @@ const NewLead = ({ setNotif }) => {
                               type="submit"
                               style={{ background: "#0085db" }}
                               disabled={
-                                   !(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.teacher && newLidData.source && newLidData.week_days)}
+                                   !(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.teacher && newLidData.source && newLidData.week_days) || creating
+                              }
                               className="btn btn-sm px-3 py-2 fs-3 text-white"
                          >
-                              {creating ? "Saqlanmoqda..." : "Saqlash"}
+                              {creating ? <Spinner animation="border" size="sm" /> : "Saqlash"}
                          </button>
                     </div>
                </form>
