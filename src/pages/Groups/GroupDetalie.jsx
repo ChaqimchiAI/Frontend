@@ -3,21 +3,16 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useTheme } from "../../Context/Context"
 import Back from "../../components/Ui/Back";
-import { Card, Dropdown, Form, Nav, Spinner, Tab } from "react-bootstrap";
-import studentsData from "../../data/Students.json"
-import leadsData from "../../data/Leads.json"
+import { Card, Dropdown, Nav, Spinner, Tab } from "react-bootstrap";
 import Modal from "../../components/Ui/Modal";
-import { Input } from "../../components/Ui/Input";
 import StudentsTable from "./Components/StudentsTable";
 import AttendenceTable from "./Components/AttendenceTable";
 import Schedule from "./Components/Schedule";
-import axios from "axios";
 import Notification from "../../components/Ui/Notification";
 
-import { useDeleteGroup, useEditGroup, useEditGroupSchedule, useGroup, useGroupSchedule, useGroupScheduleById } from "../../data/queries/group.queries"
+import { useDeleteGroup, useEditGroup, useGroup, useGroupSchedule } from "../../data/queries/group.queries"
 import { useRoomsData } from "../../data/queries/room.queries"
 import { useTeachersData } from "../../data/queries/teachers.queries"
-import { useCreateGroupSchedule } from "../../data/queries/group.queries"
 import { useCourses } from "../../data/queries/courses.queries"
 import EditGroup from "./GroupDetaileModals/EditGroup";
 import AddNewStudents from "./GroupDetaileModals/AddNewStudents";
@@ -154,18 +149,20 @@ const GroupDetalie = () => {
 
      // delate group
      const DelateGroup = () => {
-          try {
-               deleteGroup(id)
-
-               setNotif({ show: true, type: 'deleted', message: "Guruh muvoffaqyatli o'chirildi" })
-               setDelateGroup(deleting ? false : true)
-
-               // Bosh sahifaga yo'naltiritish
-               window.history.back()
-          } catch (err) {
-               console.error(err)
-               setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
-          }
+          deleteGroup(
+               id,
+               {
+                    onSuccess: () => {
+                         setNotif({ show: true, type: 'deleted', message: "Guruh muvoffaqyatli o'chirildi" })
+                         setDelateGroup(false)
+                         window.history.back()
+                    },
+                    onError: (err) => {
+                         console.error(err)
+                         setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                    }
+               }
+          )
      }
 
      return (

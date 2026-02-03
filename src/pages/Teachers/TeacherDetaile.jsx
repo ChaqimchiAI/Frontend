@@ -1,304 +1,320 @@
-import { Card, Nav, Row, Tab } from "react-bootstrap"
-import BreadcrumbComponent from "../../components/Ui/BreadcrumbComponent"
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { Icon } from "@iconify/react"
-import Modal from "../../components/Ui/Modal"
-import teachersData from "../../data/Teachers.json"
-import Notification from "../../components/Ui/Notification"
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Container, Row, Col, Card, Badge, Button, Spinner, Table } from "react-bootstrap";
+import { Icon } from "@iconify/react";
+import { useTheme } from "../../Context/Context";
+import { useDeleteTeacher, useTeacher } from "../../data/queries/teachers.queries";
+import TeacherModal from "./modals/TeacherModal";
+import Notification from "../../components/Ui/Notification";
+import Modal from "../../components/Ui/Modal";
 
-const colorStyles = ["#4bd08b", "#fb977d", "#f6c85f", "#0085db"]
+const TeacherDetail = () => {
+  const { id } = useParams();
 
-const TeacherDetaile = () => {
-  const navigate = useNavigate()
-  const { id } = useParams()
-  const [Teacher, setTeacher] = useState(null)
-  const [EditModal, setEditModal] = useState(false)
-  const [DelateModal, setDelateModal] = useState(false)
-  const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
-  const [activeTab, setActiveTab] = useState('skills')
-  useEffect(() => {
-    const teacher = teachersData.find(t => t.id === parseInt(id))
-    setTeacher(teacher)
-  }, [id])
+  const { data: teacher, isLoading: getting, isError } = useTeacher(id);
 
-  const getGrade = (v) => {
-    if (v >= 90) return { letter: 'A', color: '#3ad97a' }
-    if (v >= 75) return { letter: 'B', color: '#f6c85f' }
-    if (v >= 50) return { letter: 'C', color: '#ff8a72' }
-    return { letter: 'E', color: '#2fb3ff' }
+  const { mutate: deleteTeacher, isPending: deleting } = useDeleteTeacher()
+
+  const [editTeacher, setEditTeacher] = useState(false);
+  const [deleteTeacHer, setDeleteTeacher] = useState(false);
+  const [notif, setNotif] = useState({ show: false, type: "", message: "" });
+
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isDark = !theme;
+
+  if (getting) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
   }
 
-  const delateTeacher = (teacherId) => {
-    const delateData = teachersData.findIndex(t => t.id === teacherId)
-    teachersData.splice(delateData, 1)
-    console.log(teachersData);
-    setNotif({ show: true, type: 'deleted', message: 'Teacher deleted' })
-    setTimeout(() => navigate("/teachers"), 700)
+  if (isError) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <p>Ma'lumot topilmadi</p>
+      </div>
+    );
   }
 
-  const handleSaveChanges = () => {
-    setEditModal(false)
-    setNotif({ show: true, type: 'edited', message: 'Teacher details saved' })
-  }
+  const styles = {
+    cardBg: isDark ? "#15263a" : "#ffffff",
+    textColor: isDark ? "#f8fafc" : "#15263a",
+    mutedText: isDark ? "#94a3b8" : "#64748b",
+    borderColor: isDark ? "#334155" : "#e2e8f0",
+    pageBg: isDark ? "#0f172a" : "#f8fafc"
+  };
+
+  const delateTeacher = () => {
+    deleteTeacher(
+      id,
+      {
+        onSuccess: () => {
+          setDeleteTeacher(false);
+          setNotif({ show: true, type: "deleted", message: "O'qituvchi o'chirildi" });
+          navigate("/teachers");
+        },
+        onError: (err) => {
+          console.error(err)
+          setNotif({ show: true, type: "error", message: "O'qituvchi o'chirilmadi" });
+        }
+      }
+    )
+  };
 
   return (
     <>
 
-      {
-        EditModal && (
-          <Modal
-            title="Edit Teacher"
-            close={setEditModal}
-            anima={EditModal}
-            width="60%"
-          >
-            <div className="d-flex justify-content-between gap-3 mt-2">
-              <div className="d-flex flex-column w-50 gap-3">
-                <span className="fw-bold align-self-end text-white-50">
-                  Shaxsiy
-                </span>
-                <div className="d-flex flex-column gap-1">
-                  <label htmlFor="name">Name</label>
-                  <input type="text" id="name" className="form-control" defaultValue={Teacher?.name} />
-                </div>
-                <div className="d-flex flex-column gap-1">
-                  <label htmlFor="email">Email</label>
-                  <input type="email" id="email" className="form-control" defaultValue={Teacher?.email} />
-                </div>
-                <div className="d-flex flex-column gap-1">
-                  <label htmlFor="phone">Phone</label>
-                  <input type="text" id="phone" className="form-control" defaultValue={Teacher?.phone} />
-                </div>
-              </div>
-              <div
-                style={{ width: "1px", height: "auto", background: "#2b364cff" }}
-              >
+      {notif.show && <Notification type={notif.type} message={notif.message} onClose={() => setNotif({ ...notif, show: false })} />}
 
-              </div>
-              <div className="d-flex flex-column w-50 gap-3">
-                <span className="fw-bold align-self-end text-white-50">
-                  Boshqa
-                </span>
-                <div className="d-flex flex-column gap-1">
-                  <label htmlFor="birthday">Birthday</label>
-                  <input type="date" id="birthday" className="form-control" defaultValue={Teacher?.birthday} />
-                </div>
-                <div className="d-flex flex-column gap-1">
-                  <label htmlFor="subject">Subject</label>
-                  <input type="text" id="subject" className="form-control" defaultValue={Teacher?.subject} />
-                </div>
-                <div className="d-flex flex-column gap-1">
-                  <label htmlFor="class">Class</label>
-                  <input type="text" id="class" className="form-control" defaultValue={Teacher?.class} />
-                </div>
-              </div>
+      {editTeacher && <TeacherModal show={editTeacher} setShow={setEditTeacher} setNotif={setNotif} editData={teacher} />}
 
-            </div>
-            <div className="d-flex justify-content-end gap-3 mt-3">
-              <button
-                className="btn btn-outline-danger mt-1"
-                onClick={() => setEditModal(false)}
-              >
-                Close
-              </button>
-              <button
-                className="btn btn-outline-success mt-1"
-                onClick={handleSaveChanges}
-              >
-                Save Changes
-              </button>
-            </div>
-          </Modal>
-        )
-      }
-
-      {
-        DelateModal && (
-          <Modal
-            title="Delete Teacher"
-            close={setDelateModal}
-            anima={DelateModal}
-          >
-            <div className="d-flex flex-column gap-3 mt-2">
-              <p>Are you sure you want to delete {Teacher?.name}?</p>
-              <div className="d-flex justify-content-end gap-3">
-                <button
-                  className="btn btn-outline-secondary mt-1"
-                  onClick={() => setDelateModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-outline-danger mt-1"
-                  onClick={() => delateTeacher(Teacher.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </Modal>
-        )
-      }
-
-
-      {notif.show && (
-        <Notification
-          type={notif.type}
-          message={notif.message}
-          onClose={() => setNotif({ ...notif, show: false })}
-        />
+      {deleteTeacHer && (
+        <Modal
+          title="O'qituvchini o'chirish"
+          close={setDeleteTeacher}
+          anima={deleteTeacHer}
+          width="30%"
+          zIndex={100}
+        >
+          <p className="fs-4 mt-2">
+            {teacher?.first_name} ni rostdan ham o'chirmoqchimisiz?
+          </p>
+          <div className="d-flex justify-content-end gap-3 mt-3">
+            <button
+              className="btn btn-sm text-black py-2 px-4"
+              style={{ background: "#c5c5c5" }}
+              onClick={() => setDeleteTeacher(false)}
+            >
+              Orqaga
+            </button>
+            <button
+              className="btn btn-sm text-white py-2 px-4"
+              style={{ background: "#cd3232" }}
+              onClick={delateTeacher}
+            >
+              {deleting ? <Spinner animation="border" size="sm" /> : "Ha"}
+            </button>
+          </div>
+        </Modal>
       )}
 
+      <Container fluid className="card card-body" style={{ minHeight: "100vh" }}>
 
-      <BreadcrumbComponent currentPage="Teacher Detail" />
-
-      <div className="d-flex flex-column flex-md-row gap-5">
-        <Card className="w-30">
-          <Card.Body>
-            <div className="d-flex flex-column justify-content-center align-items-center text-center gap-3">
-              <img
-                src={Teacher?.image}
-                alt={Teacher?.name}
-                className="rounded-24 "
-                width={110}
-                height={110}
-              />
-              <h5>
-                {Teacher?.name}<br />
-                <small
-                  className="fw-normal"
-                  style={{
-                    borderRadius: '20px',
-                    padding: "5px 8px",
-                    background: "#0f273e",
-                    color: "#338bf0ff",
-                    fontSize: "13px"
-                  }}
-                >
-                  {Teacher?.role}
-                </small>
-              </h5>
-            </div>
-
-            <div className="d-flex flex-column gap-3">
-              <h6 className="border-bottom py-2">
-                Details
-              </h6>
-              <ul className="">
-                {
-                  Teacher && Object.entries(Teacher).map(([key, value]) => {
-                    if (key === 'role' || key === 'image' || key === 'skils') {
-                      return null
-                    }
-                    return (
-                      <li key={key} className="d-flex justify-content-start gap-2 mb-4">
-                        <span className="text-capitalize">{key.replace('_', ' ')}:</span>
-                        <span>{value}</span>
-                      </li>
-                    )
-                  })
-                }
-              </ul>
-            </div>
-
-            <div className="d-flex justify-content-between">
-              <button
-                className="btn w-45 text-white"
-                style={{ background: "#0085db" }}
-                onClick={() => setEditModal(true)}
-              >
-                <Icon icon="tabler:edit" width="24" height="24" />
-                Tahrirlash
-              </button>
-              <button
-                className="btn w-45 text-white"
-                style={{ background: "#fb977d" }}
-                onClick={() => setDelateModal(true)}
-              >
-                <Icon icon="tabler:trash" width="24" height="24" />
-                O'chirish
-              </button>
-            </div>
-          </Card.Body>
-        </Card>
-
-        <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
-          <div className="d-flex flex-column gap-4" style={{ width: "65.5%" }}>
-
-            <Nav variant="pills" className="mb-3 d-flex" style={{ gap: 12 }}>
-              <Nav.Item>
-                <Nav.Link
-                  eventKey="skills"
-                  style={activeTab === 'skills' ? { background: '#0085db', color: '#fff', borderRadius: 24, padding: '8px 14px' } : { color: '#9fb0c0', background: 'transparent' }}
-                >
-                  O'qituvchilik mahorati
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link
-                  eventKey="groups"
-                  style={activeTab === 'groups' ? { background: '#0085db', color: '#fff', borderRadius: 24, padding: '8px 14px' } : { color: '#9fb0c0', background: 'transparent' }}
-                >
-                  Guruhlar
-                </Nav.Link>
-              </Nav.Item>
-            </Nav>
-
-            <Tab.Content className="w-100">
-
-              <Tab.Pane eventKey="skills">
-                <Row>
-                  <Card >
-                    <Card.Body>
-                      <h5>Skills</h5>
-                      {Teacher && Object.entries(Teacher.skils).map(([skill, value], index) => {
-                        const { letter, color } = getGrade(value)
-                        return (
-                          <div key={skill} className="d-flex align-items-center justify-content-between mb-3">
-                            <div style={{ flex: 1 }}>
-                              <div className="d-flex justify-content-between align-items-center mb-1">
-                                <h6 className="text-capitalize mb-0">{skill}</h6>
-                                <span style={{ color: color, fontWeight: 700 }}>{letter}</span>
-                              </div>
-
-                              <div className="d-flex align-items-center gap-3">
-                                <small className="text-muted">{value}%</small>
-                                <div className="progress flex-fill" style={{ height: '12px', background: '#0c2733', borderRadius: '10px' }}>
-                                  <div
-                                    className="progress-bar"
-                                    role="progressbar"
-                                    style={{ width: `${value}%`, background: colorStyles[index], borderRadius: '10px' }}
-                                    aria-valuenow={value}
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </Card.Body>
-                  </Card>
-                </Row>
-              </Tab.Pane>
-
-
-              <Tab.Pane eventKey="groups">
-                <Row>
-                  <span className="alert alert-warning">
-                    Bu yerda o'qituvchning guruhlari ko'rinadi!
-                  </span>
-                </Row>
-              </Tab.Pane>
-            </Tab.Content>
+        {/* Back Button & Header */}
+        <div className="d-flex align-items-center gap-3 mb-4">
+          <Button
+            variant="light"
+            onClick={() => navigate(-1)}
+            className="rounded-circle shadow-sm p-2 d-flex align-items-center justify-content-center"
+            style={{ backgroundColor: styles.cardBg, color: styles.textColor, border: `1px solid ${styles.borderColor}` }}
+          >
+            <Icon icon="lucide:arrow-left" className="fs-4" />
+          </Button>
+          <div>
+            <h4 className="fw-bold mb-0" style={{ color: styles.textColor }}>O'qituvchi Profili</h4>
+            <small style={{ color: styles.mutedText }}>ID: #{id || "3"}</small>
           </div>
-        </Tab.Container>
-      </div>
+        </div>
 
+        <Row className="g-4">
+          {/* LEFT SIDE: Profile Card */}
+          <Col lg={4} xl={3}>
+            <Card className="shadow-md text-center py-4 px-3" style={{ background: styles.cardBg }}>
+              <div className="position-relative d-inline-block mx-auto mb-3">
+                {teacher.photo_url ? (
+                  <img
+                    src={teacher.photo_url}
+                    alt="Profile"
+                    className="rounded-circle border border-4 border-primary shadow-sm"
+                    style={{ width: "130px", height: "130px", objectFit: "cover" }}
+                  />
+                ) : (
+                  <div
+                    className="rounded-circle border border-4 border-primary shadow-sm d-flex align-items-center justify-content-center"
+                    style={{ width: "130px", height: "130px", backgroundColor: styles.cardBg }}
+                  >
+                    <span
+                      className="fs-8 text-uppercase"
+                      style={{ color: styles.mutedText }}
+                    >
+                      {teacher.first_name?.charAt(0) + teacher.last_name?.charAt(0)}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <h5 className="fw-bold mb-1" style={{ color: styles.textColor }}>{teacher.first_name} {teacher.last_name}</h5>
+              <p className="small mb-3" style={{ color: styles.mutedText }}>O'qituvchi</p>
+
+              <div className="d-flex justify-content-center gap-2 mb-4">
+                <Badge bg="primary" className="bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                  {teacher.status}
+                </Badge>
+                <Badge bg="info" className="bg-opacity-10 text-info px-3 py-2 rounded-pill">
+                  Farg'ona filiali
+                </Badge>
+              </div>
+
+              <hr style={{ borderColor: styles.borderColor }} />
+
+              <div className="text-start mt-3">
+                <div className="mb-3 d-flex align-items-center gap-3">
+                  <div className="p-2 rounded-3 bg-primary bg-opacity-10 text-primary">
+                    <Icon icon="lucide:phone" />
+                  </div>
+                  <div>
+                    <small className="d-block text-muted" style={{ fontSize: "11px" }}>Telefon</small>
+                    <span className="fw-medium small" style={{ color: styles.textColor }}>{teacher.phone}</span>
+                  </div>
+                </div>
+                <div className="mb-3 d-flex align-items-center gap-3">
+                  <div className="p-2 rounded-3 bg-danger bg-opacity-10 text-danger">
+                    <Icon icon="lucide:mail" />
+                  </div>
+                  <div className="text-truncate">
+                    <small className="d-block text-muted" style={{ fontSize: "11px" }}>Email</small>
+                    <span className="fw-medium small text-truncate d-block" style={{ color: styles.textColor }}>{teacher.email}</span>
+                  </div>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="p-2 rounded-3 bg-warning bg-opacity-10 text-warning">
+                    <Icon icon="lucide:map-pin" />
+                  </div>
+                  <div>
+                    <small className="d-block text-muted" style={{ fontSize: "11px" }}>Manzil</small>
+                    <span className="fw-medium small" style={{ color: styles.textColor }}>{teacher.address}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="d-flex gap-3">
+                <button
+                  className="btn px-4 py-2 w-100 mt-4 hover-btn"
+                  style={{ background: "#cd323220", border: "2px solid #cd3232", color: "#cd3232" }}
+                  onClick={() => setDeleteTeacher(true)}
+                >
+                  O'chirish
+                </button>
+                <button
+                  className="btn px-4 py-2 w-100 mt-4 text-white"
+                  style={{ background: "#0085db" }}
+                  onClick={() => setEditTeacher(true)}
+                >
+                  Tahrirlash
+                </button>
+              </div>
+            </Card>
+          </Col>
+
+          {/* RIGHT SIDE: Detailed Info & Stats */}
+          <Col lg={8} xl={9}>
+            <Row className="g-4">
+              {/* Stats row */}
+              <Col md={4}>
+                <Card className="border-0 shadow-sm p-3" style={{ backgroundColor: styles.cardBg, borderRadius: "20px" }}>
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="p-3 rounded-4 bg-info bg-opacity-10 text-info">
+                      <Icon icon="lucide:briefcase" className="fs-5" />
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold" style={{ color: styles.textColor }}>{teacher.experience_duration}</h6>
+                      <small style={{ color: styles.mutedText }}>Ish tajribasi</small>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+              <Col md={4}>
+                <Card className="border-0 shadow-sm p-3" style={{ backgroundColor: styles.cardBg, borderRadius: "20px" }}>
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="p-3 rounded-4 bg-success bg-opacity-10 text-success">
+                      <Icon icon="lucide:calendar-check" className="fs-5" />
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold" style={{ color: styles.textColor }}>{teacher.hire_date}</h6>
+                      <small style={{ color: styles.mutedText }}>Ishga kirgan</small>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+              <Col md={4}>
+                <Card className="border-0 shadow-sm p-3" style={{ backgroundColor: styles.cardBg, borderRadius: "20px" }}>
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="p-3 rounded-4 bg-primary bg-opacity-10 text-primary">
+                      <Icon icon="lucide:cake" className="fs-6" />
+                    </div>
+                    <div>
+                      <h6 className="mb-0 fw-bold" style={{ color: styles.textColor }}>{teacher.date_of_birth}</h6>
+                      <small style={{ color: styles.mutedText }}>Tug'ilgan sana</small>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+
+              {/* General Info Tabs/Sections */}
+              <Col md={12}>
+                <Card className="border-0 shadow-sm p-4" style={{ backgroundColor: styles.cardBg, borderRadius: "24px" }}>
+                  <h5 className="fw-bold mb-4" style={{ color: styles.textColor }}>Batafsil ma'lumot</h5>
+
+                  <Row className="g-4">
+                    <Col md={6}>
+                      <div className="p-3 rounded-4 border d-flex justify-content-between align-items-center" style={{ borderColor: styles.borderColor }}>
+                        <div>
+                          <small className="text-muted d-block">To'liq ism (Sharifi bilan)</small>
+                          <span className="fw-semibold" style={{ color: styles.textColor }}>{teacher.last_name} {teacher.first_name} {teacher.middle_name}</span>
+                        </div>
+                        <Icon icon="lucide:user" className="text-primary fs-6" />
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      <div className="p-3 rounded-4 border d-flex justify-content-between align-items-center" style={{ borderColor: styles.borderColor }}>
+                        <div>
+                          <small className="text-muted d-block">Hozirgi lavozimi</small>
+                          <span className="fw-semibold" style={{ color: styles.textColor }}>O'qituvchi</span>
+                        </div>
+                        <Icon icon="lucide:shield-check" className="text-success fs-6" />
+                      </div>
+                    </Col>
+                  </Row>
+
+                  <h6 className="fw-bold mt-5 mb-3" style={{ color: styles.textColor }}>Filiallar tarixi</h6>
+                  <div className="table-responsive">
+                    <Table borderless hover className="align-middle">
+                      <thead className="small text-muted border-bottom">
+                        <tr>
+                          <th>FILIAL NOMI</th>
+                          <th>HOLATI</th>
+                          <th>BIRIKTIRILGAN SANA</th>
+                        </tr>
+                      </thead>
+                      <tbody className="small">
+                        <tr>
+                          <td className="fw-medium">Farg'ona filiali</td>
+                          <td><Badge bg="success">Faol</Badge></td>
+                          <td>{teacher.hire_date}</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+
+
+      <style>
+        {`
+          .hover-btn:hover {
+            background: #cd323230 !important;
+          }
+        `}
+      </style>
     </>
-  )
-}
+  );
+};
 
-export default TeacherDetaile
+export default TeacherDetail;

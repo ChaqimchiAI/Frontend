@@ -1,0 +1,598 @@
+
+> edu-point@0.0.0 build
+> vite build
+
+[36mvite v6.4.1 [32mbuilding for production...[36m[39m
+transforming...
+
+../fonts/tabler-icons/fonts/tabler-icons.eot referenced in ../fonts/tabler-icons/fonts/tabler-icons.eot didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/tabler-icons/fonts/tabler-icons.eot?#iefix referenced in ../fonts/tabler-icons/fonts/tabler-icons.eot? didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/tabler-icons/fonts/tabler-icons.svg#tabler-icons referenced in ../fonts/tabler-icons/fonts/tabler-icons.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/crypto-icons/cryptocoins.woff2 referenced in ../fonts/crypto-icons/cryptocoins.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ad.svg referenced in ../fonts/flag-icon-css/flags/ad.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ae.svg referenced in ../fonts/flag-icon-css/flags/ae.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/af.svg referenced in ../fonts/flag-icon-css/flags/af.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ag.svg referenced in ../fonts/flag-icon-css/flags/ag.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ai.svg referenced in ../fonts/flag-icon-css/flags/ai.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/al.svg referenced in ../fonts/flag-icon-css/flags/al.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/am.svg referenced in ../fonts/flag-icon-css/flags/am.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ao.svg referenced in ../fonts/flag-icon-css/flags/ao.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/aq.svg referenced in ../fonts/flag-icon-css/flags/aq.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ar.svg referenced in ../fonts/flag-icon-css/flags/ar.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/as.svg referenced in ../fonts/flag-icon-css/flags/as.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/at.svg referenced in ../fonts/flag-icon-css/flags/at.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/au.svg referenced in ../fonts/flag-icon-css/flags/au.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/aw.svg referenced in ../fonts/flag-icon-css/flags/aw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ax.svg referenced in ../fonts/flag-icon-css/flags/ax.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/az.svg referenced in ../fonts/flag-icon-css/flags/az.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ba.svg referenced in ../fonts/flag-icon-css/flags/ba.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bb.svg referenced in ../fonts/flag-icon-css/flags/bb.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bd.svg referenced in ../fonts/flag-icon-css/flags/bd.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/be.svg referenced in ../fonts/flag-icon-css/flags/be.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bf.svg referenced in ../fonts/flag-icon-css/flags/bf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bg.svg referenced in ../fonts/flag-icon-css/flags/bg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bh.svg referenced in ../fonts/flag-icon-css/flags/bh.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bi.svg referenced in ../fonts/flag-icon-css/flags/bi.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bj.svg referenced in ../fonts/flag-icon-css/flags/bj.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bl.svg referenced in ../fonts/flag-icon-css/flags/bl.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bm.svg referenced in ../fonts/flag-icon-css/flags/bm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bn.svg referenced in ../fonts/flag-icon-css/flags/bn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bo.svg referenced in ../fonts/flag-icon-css/flags/bo.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bq.svg referenced in ../fonts/flag-icon-css/flags/bq.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/br.svg referenced in ../fonts/flag-icon-css/flags/br.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bs.svg referenced in ../fonts/flag-icon-css/flags/bs.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bt.svg referenced in ../fonts/flag-icon-css/flags/bt.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bv.svg referenced in ../fonts/flag-icon-css/flags/bv.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bw.svg referenced in ../fonts/flag-icon-css/flags/bw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/by.svg referenced in ../fonts/flag-icon-css/flags/by.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/bz.svg referenced in ../fonts/flag-icon-css/flags/bz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ca.svg referenced in ../fonts/flag-icon-css/flags/ca.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cc.svg referenced in ../fonts/flag-icon-css/flags/cc.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cd.svg referenced in ../fonts/flag-icon-css/flags/cd.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cf.svg referenced in ../fonts/flag-icon-css/flags/cf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cg.svg referenced in ../fonts/flag-icon-css/flags/cg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ch.svg referenced in ../fonts/flag-icon-css/flags/ch.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ci.svg referenced in ../fonts/flag-icon-css/flags/ci.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ck.svg referenced in ../fonts/flag-icon-css/flags/ck.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cl.svg referenced in ../fonts/flag-icon-css/flags/cl.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cm.svg referenced in ../fonts/flag-icon-css/flags/cm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cn.svg referenced in ../fonts/flag-icon-css/flags/cn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/co.svg referenced in ../fonts/flag-icon-css/flags/co.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cr.svg referenced in ../fonts/flag-icon-css/flags/cr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cu.svg referenced in ../fonts/flag-icon-css/flags/cu.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cv.svg referenced in ../fonts/flag-icon-css/flags/cv.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cw.svg referenced in ../fonts/flag-icon-css/flags/cw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cx.svg referenced in ../fonts/flag-icon-css/flags/cx.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cy.svg referenced in ../fonts/flag-icon-css/flags/cy.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/cz.svg referenced in ../fonts/flag-icon-css/flags/cz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/de.svg referenced in ../fonts/flag-icon-css/flags/de.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/dj.svg referenced in ../fonts/flag-icon-css/flags/dj.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/dk.svg referenced in ../fonts/flag-icon-css/flags/dk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/dm.svg referenced in ../fonts/flag-icon-css/flags/dm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/do.svg referenced in ../fonts/flag-icon-css/flags/do.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/dz.svg referenced in ../fonts/flag-icon-css/flags/dz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ec.svg referenced in ../fonts/flag-icon-css/flags/ec.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ee.svg referenced in ../fonts/flag-icon-css/flags/ee.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/eg.svg referenced in ../fonts/flag-icon-css/flags/eg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/eh.svg referenced in ../fonts/flag-icon-css/flags/eh.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/er.svg referenced in ../fonts/flag-icon-css/flags/er.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/es.svg referenced in ../fonts/flag-icon-css/flags/es.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/et.svg referenced in ../fonts/flag-icon-css/flags/et.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/fi.svg referenced in ../fonts/flag-icon-css/flags/fi.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/fj.svg referenced in ../fonts/flag-icon-css/flags/fj.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/fk.svg referenced in ../fonts/flag-icon-css/flags/fk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/fm.svg referenced in ../fonts/flag-icon-css/flags/fm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/fo.svg referenced in ../fonts/flag-icon-css/flags/fo.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/fr.svg referenced in ../fonts/flag-icon-css/flags/fr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ga.svg referenced in ../fonts/flag-icon-css/flags/ga.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gb.svg referenced in ../fonts/flag-icon-css/flags/gb.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gd.svg referenced in ../fonts/flag-icon-css/flags/gd.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ge.svg referenced in ../fonts/flag-icon-css/flags/ge.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gf.svg referenced in ../fonts/flag-icon-css/flags/gf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gg.svg referenced in ../fonts/flag-icon-css/flags/gg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gh.svg referenced in ../fonts/flag-icon-css/flags/gh.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gi.svg referenced in ../fonts/flag-icon-css/flags/gi.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gl.svg referenced in ../fonts/flag-icon-css/flags/gl.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gm.svg referenced in ../fonts/flag-icon-css/flags/gm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gn.svg referenced in ../fonts/flag-icon-css/flags/gn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gp.svg referenced in ../fonts/flag-icon-css/flags/gp.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gq.svg referenced in ../fonts/flag-icon-css/flags/gq.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gr.svg referenced in ../fonts/flag-icon-css/flags/gr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gs.svg referenced in ../fonts/flag-icon-css/flags/gs.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gt.svg referenced in ../fonts/flag-icon-css/flags/gt.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gu.svg referenced in ../fonts/flag-icon-css/flags/gu.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gw.svg referenced in ../fonts/flag-icon-css/flags/gw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/gy.svg referenced in ../fonts/flag-icon-css/flags/gy.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/hk.svg referenced in ../fonts/flag-icon-css/flags/hk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/hm.svg referenced in ../fonts/flag-icon-css/flags/hm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/hn.svg referenced in ../fonts/flag-icon-css/flags/hn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/hr.svg referenced in ../fonts/flag-icon-css/flags/hr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ht.svg referenced in ../fonts/flag-icon-css/flags/ht.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/hu.svg referenced in ../fonts/flag-icon-css/flags/hu.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/id.svg referenced in ../fonts/flag-icon-css/flags/id.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ie.svg referenced in ../fonts/flag-icon-css/flags/ie.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/il.svg referenced in ../fonts/flag-icon-css/flags/il.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/im.svg referenced in ../fonts/flag-icon-css/flags/im.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/in.svg referenced in ../fonts/flag-icon-css/flags/in.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/io.svg referenced in ../fonts/flag-icon-css/flags/io.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/iq.svg referenced in ../fonts/flag-icon-css/flags/iq.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ir.svg referenced in ../fonts/flag-icon-css/flags/ir.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/is.svg referenced in ../fonts/flag-icon-css/flags/is.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/it.svg referenced in ../fonts/flag-icon-css/flags/it.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/je.svg referenced in ../fonts/flag-icon-css/flags/je.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/jm.svg referenced in ../fonts/flag-icon-css/flags/jm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/jo.svg referenced in ../fonts/flag-icon-css/flags/jo.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/jp.svg referenced in ../fonts/flag-icon-css/flags/jp.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ke.svg referenced in ../fonts/flag-icon-css/flags/ke.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/kg.svg referenced in ../fonts/flag-icon-css/flags/kg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/kh.svg referenced in ../fonts/flag-icon-css/flags/kh.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ki.svg referenced in ../fonts/flag-icon-css/flags/ki.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/km.svg referenced in ../fonts/flag-icon-css/flags/km.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/kn.svg referenced in ../fonts/flag-icon-css/flags/kn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/kp.svg referenced in ../fonts/flag-icon-css/flags/kp.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/kr.svg referenced in ../fonts/flag-icon-css/flags/kr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/kw.svg referenced in ../fonts/flag-icon-css/flags/kw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ky.svg referenced in ../fonts/flag-icon-css/flags/ky.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/kz.svg referenced in ../fonts/flag-icon-css/flags/kz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/la.svg referenced in ../fonts/flag-icon-css/flags/la.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/lb.svg referenced in ../fonts/flag-icon-css/flags/lb.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/lc.svg referenced in ../fonts/flag-icon-css/flags/lc.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/li.svg referenced in ../fonts/flag-icon-css/flags/li.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/lk.svg referenced in ../fonts/flag-icon-css/flags/lk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/lr.svg referenced in ../fonts/flag-icon-css/flags/lr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ls.svg referenced in ../fonts/flag-icon-css/flags/ls.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/lt.svg referenced in ../fonts/flag-icon-css/flags/lt.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/lu.svg referenced in ../fonts/flag-icon-css/flags/lu.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/lv.svg referenced in ../fonts/flag-icon-css/flags/lv.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ly.svg referenced in ../fonts/flag-icon-css/flags/ly.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ma.svg referenced in ../fonts/flag-icon-css/flags/ma.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mc.svg referenced in ../fonts/flag-icon-css/flags/mc.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/md.svg referenced in ../fonts/flag-icon-css/flags/md.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/me.svg referenced in ../fonts/flag-icon-css/flags/me.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mf.svg referenced in ../fonts/flag-icon-css/flags/mf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mg.svg referenced in ../fonts/flag-icon-css/flags/mg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mh.svg referenced in ../fonts/flag-icon-css/flags/mh.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mk.svg referenced in ../fonts/flag-icon-css/flags/mk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ml.svg referenced in ../fonts/flag-icon-css/flags/ml.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mm.svg referenced in ../fonts/flag-icon-css/flags/mm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mn.svg referenced in ../fonts/flag-icon-css/flags/mn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mo.svg referenced in ../fonts/flag-icon-css/flags/mo.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mp.svg referenced in ../fonts/flag-icon-css/flags/mp.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mq.svg referenced in ../fonts/flag-icon-css/flags/mq.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mr.svg referenced in ../fonts/flag-icon-css/flags/mr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ms.svg referenced in ../fonts/flag-icon-css/flags/ms.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mt.svg referenced in ../fonts/flag-icon-css/flags/mt.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mu.svg referenced in ../fonts/flag-icon-css/flags/mu.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mv.svg referenced in ../fonts/flag-icon-css/flags/mv.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mw.svg referenced in ../fonts/flag-icon-css/flags/mw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mx.svg referenced in ../fonts/flag-icon-css/flags/mx.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/my.svg referenced in ../fonts/flag-icon-css/flags/my.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/mz.svg referenced in ../fonts/flag-icon-css/flags/mz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/na.svg referenced in ../fonts/flag-icon-css/flags/na.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/nc.svg referenced in ../fonts/flag-icon-css/flags/nc.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ne.svg referenced in ../fonts/flag-icon-css/flags/ne.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/nf.svg referenced in ../fonts/flag-icon-css/flags/nf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ng.svg referenced in ../fonts/flag-icon-css/flags/ng.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ni.svg referenced in ../fonts/flag-icon-css/flags/ni.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/nl.svg referenced in ../fonts/flag-icon-css/flags/nl.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/no.svg referenced in ../fonts/flag-icon-css/flags/no.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/np.svg referenced in ../fonts/flag-icon-css/flags/np.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/nr.svg referenced in ../fonts/flag-icon-css/flags/nr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/nu.svg referenced in ../fonts/flag-icon-css/flags/nu.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/nz.svg referenced in ../fonts/flag-icon-css/flags/nz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/om.svg referenced in ../fonts/flag-icon-css/flags/om.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pa.svg referenced in ../fonts/flag-icon-css/flags/pa.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pe.svg referenced in ../fonts/flag-icon-css/flags/pe.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pf.svg referenced in ../fonts/flag-icon-css/flags/pf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pg.svg referenced in ../fonts/flag-icon-css/flags/pg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ph.svg referenced in ../fonts/flag-icon-css/flags/ph.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pk.svg referenced in ../fonts/flag-icon-css/flags/pk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pl.svg referenced in ../fonts/flag-icon-css/flags/pl.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pm.svg referenced in ../fonts/flag-icon-css/flags/pm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pn.svg referenced in ../fonts/flag-icon-css/flags/pn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pr.svg referenced in ../fonts/flag-icon-css/flags/pr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ps.svg referenced in ../fonts/flag-icon-css/flags/ps.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pt.svg referenced in ../fonts/flag-icon-css/flags/pt.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/pw.svg referenced in ../fonts/flag-icon-css/flags/pw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/py.svg referenced in ../fonts/flag-icon-css/flags/py.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/qa.svg referenced in ../fonts/flag-icon-css/flags/qa.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/re.svg referenced in ../fonts/flag-icon-css/flags/re.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ro.svg referenced in ../fonts/flag-icon-css/flags/ro.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/rs.svg referenced in ../fonts/flag-icon-css/flags/rs.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ru.svg referenced in ../fonts/flag-icon-css/flags/ru.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/rw.svg referenced in ../fonts/flag-icon-css/flags/rw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sa.svg referenced in ../fonts/flag-icon-css/flags/sa.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sb.svg referenced in ../fonts/flag-icon-css/flags/sb.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sc.svg referenced in ../fonts/flag-icon-css/flags/sc.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sd.svg referenced in ../fonts/flag-icon-css/flags/sd.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/se.svg referenced in ../fonts/flag-icon-css/flags/se.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sg.svg referenced in ../fonts/flag-icon-css/flags/sg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sh.svg referenced in ../fonts/flag-icon-css/flags/sh.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/si.svg referenced in ../fonts/flag-icon-css/flags/si.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sj.svg referenced in ../fonts/flag-icon-css/flags/sj.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sk.svg referenced in ../fonts/flag-icon-css/flags/sk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sl.svg referenced in ../fonts/flag-icon-css/flags/sl.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sm.svg referenced in ../fonts/flag-icon-css/flags/sm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sn.svg referenced in ../fonts/flag-icon-css/flags/sn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/so.svg referenced in ../fonts/flag-icon-css/flags/so.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sr.svg referenced in ../fonts/flag-icon-css/flags/sr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ss.svg referenced in ../fonts/flag-icon-css/flags/ss.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/st.svg referenced in ../fonts/flag-icon-css/flags/st.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sv.svg referenced in ../fonts/flag-icon-css/flags/sv.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sx.svg referenced in ../fonts/flag-icon-css/flags/sx.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sy.svg referenced in ../fonts/flag-icon-css/flags/sy.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/sz.svg referenced in ../fonts/flag-icon-css/flags/sz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tc.svg referenced in ../fonts/flag-icon-css/flags/tc.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/td.svg referenced in ../fonts/flag-icon-css/flags/td.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tf.svg referenced in ../fonts/flag-icon-css/flags/tf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tg.svg referenced in ../fonts/flag-icon-css/flags/tg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/th.svg referenced in ../fonts/flag-icon-css/flags/th.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tj.svg referenced in ../fonts/flag-icon-css/flags/tj.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tk.svg referenced in ../fonts/flag-icon-css/flags/tk.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tl.svg referenced in ../fonts/flag-icon-css/flags/tl.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tm.svg referenced in ../fonts/flag-icon-css/flags/tm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tn.svg referenced in ../fonts/flag-icon-css/flags/tn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/to.svg referenced in ../fonts/flag-icon-css/flags/to.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tr.svg referenced in ../fonts/flag-icon-css/flags/tr.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tt.svg referenced in ../fonts/flag-icon-css/flags/tt.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tv.svg referenced in ../fonts/flag-icon-css/flags/tv.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tw.svg referenced in ../fonts/flag-icon-css/flags/tw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/tz.svg referenced in ../fonts/flag-icon-css/flags/tz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ua.svg referenced in ../fonts/flag-icon-css/flags/ua.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ug.svg referenced in ../fonts/flag-icon-css/flags/ug.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/um.svg referenced in ../fonts/flag-icon-css/flags/um.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/us.svg referenced in ../fonts/flag-icon-css/flags/us.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/uy.svg referenced in ../fonts/flag-icon-css/flags/uy.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/uz.svg referenced in ../fonts/flag-icon-css/flags/uz.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/va.svg referenced in ../fonts/flag-icon-css/flags/va.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/vc.svg referenced in ../fonts/flag-icon-css/flags/vc.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ve.svg referenced in ../fonts/flag-icon-css/flags/ve.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/vg.svg referenced in ../fonts/flag-icon-css/flags/vg.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/vi.svg referenced in ../fonts/flag-icon-css/flags/vi.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/vn.svg referenced in ../fonts/flag-icon-css/flags/vn.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/vu.svg referenced in ../fonts/flag-icon-css/flags/vu.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/wf.svg referenced in ../fonts/flag-icon-css/flags/wf.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ws.svg referenced in ../fonts/flag-icon-css/flags/ws.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/ye.svg referenced in ../fonts/flag-icon-css/flags/ye.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/yt.svg referenced in ../fonts/flag-icon-css/flags/yt.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/za.svg referenced in ../fonts/flag-icon-css/flags/za.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/zm.svg referenced in ../fonts/flag-icon-css/flags/zm.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/flag-icon-css/flags/zw.svg referenced in ../fonts/flag-icon-css/flags/zw.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-brands-400.eot referenced in ../fonts/font-awesome/webfonts/fa-brands-400.eot didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-brands-400.eot?#iefix referenced in ../fonts/font-awesome/webfonts/fa-brands-400.eot? didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-regular-400.eot referenced in ../fonts/font-awesome/webfonts/fa-regular-400.eot didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-regular-400.eot?#iefix referenced in ../fonts/font-awesome/webfonts/fa-regular-400.eot? didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-solid-900.eot referenced in ../fonts/font-awesome/webfonts/fa-solid-900.eot didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-solid-900.eot?#iefix referenced in ../fonts/font-awesome/webfonts/fa-solid-900.eot? didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/svgs/success.svg referenced in ../images/svgs/success.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/svgs/warning.svg referenced in ../images/svgs/warning.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/svgs/danger.svg referenced in ../images/svgs/danger.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/frontend-pages/topbar-bg.png referenced in ../images/frontend-pages/topbar-bg.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/frontend-pages/blog-10.jpg referenced in ../images/frontend-pages/blog-10.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../../dist/images/shape/shape-3.png referenced in ../../dist/images/shape/shape-3.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/backgrounds/school.png referenced in ../images/backgrounds/school.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../../dist/images/backgrounds/design-collection.png referenced in ../../dist/images/backgrounds/design-collection.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/shaps/warning-shap.png referenced in ../images/shaps/warning-shap.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/shaps/danger-shap.png referenced in ../images/shaps/danger-shap.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/shaps/info-shap.png referenced in ../images/shaps/info-shap.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/blog/blog-img9.jpg referenced in ../images/blog/blog-img9.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/blog/blog-img10.jpg referenced in ../images/blog/blog-img10.jpg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../images/shaps/shap-login.png referenced in ../images/shaps/shap-login.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/tabler-icons/fonts/tabler-icons.woff2 referenced in ../fonts/tabler-icons/fonts/tabler-icons.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/crypto-icons/cryptocoins.woff referenced in ../fonts/crypto-icons/cryptocoins.woff didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-brands-400.woff2 referenced in ../fonts/font-awesome/webfonts/fa-brands-400.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-regular-400.woff2 referenced in ../fonts/font-awesome/webfonts/fa-regular-400.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-solid-900.woff2 referenced in ../fonts/font-awesome/webfonts/fa-solid-900.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/tabler-icons/fonts/tabler-icons.woff referenced in ../fonts/tabler-icons/fonts/tabler-icons.woff didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/crypto-icons/cryptocoins.ttf referenced in ../fonts/crypto-icons/cryptocoins.ttf didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-brands-400.woff referenced in ../fonts/font-awesome/webfonts/fa-brands-400.woff didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-regular-400.woff referenced in ../fonts/font-awesome/webfonts/fa-regular-400.woff didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-solid-900.woff referenced in ../fonts/font-awesome/webfonts/fa-solid-900.woff didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/tabler-icons/fonts/tabler-icons.ttf referenced in ../fonts/tabler-icons/fonts/tabler-icons.ttf didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-brands-400.ttf referenced in ../fonts/font-awesome/webfonts/fa-brands-400.ttf didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-regular-400.ttf referenced in ../fonts/font-awesome/webfonts/fa-regular-400.ttf didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-solid-900.ttf referenced in ../fonts/font-awesome/webfonts/fa-solid-900.ttf didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-brands-400.svg#fontawesome referenced in ../fonts/font-awesome/webfonts/fa-brands-400.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-regular-400.svg#fontawesome referenced in ../fonts/font-awesome/webfonts/fa-regular-400.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+../fonts/font-awesome/webfonts/fa-solid-900.svg#fontawesome referenced in ../fonts/font-awesome/webfonts/fa-solid-900.svg didn't resolve at build time, it will remain unchanged to be resolved at runtime
+[32m✓[39m 9416 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m    0.47 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mdist/[22m[35massets/index-CX9eOh1l.css  [39m[1m[2m  911.76 kB[22m[1m[22m[2m │ gzip: 138.86 kB[22m
+[2mdist/[22m[36massets/index-CpaKpbw_.js   [39m[1m[33m1,294.29 kB[39m[22m[2m │ gzip: 377.31 kB[22m
+[33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32m✓ built in 9.21s[39m

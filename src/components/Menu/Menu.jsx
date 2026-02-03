@@ -15,7 +15,10 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
       id="aside-menu-toggle"
       className={`left-sidebar with-vertical ${!togglebar ? "sidebar-hover" : ""}`}
       onMouseMove={() => setMouseMove(true)}
-      onMouseLeave={() => setMouseMove(false)}
+      onMouseLeave={() => {
+        setMouseMove(false);
+        if (!togglebar) setMenegment(false);
+      }}
     >
       <div className="brand-logo d-flex align-items-center justify-content-between">
         <Link className="text-nowrap logo-img" to="/">
@@ -37,13 +40,12 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
             width={180}
             style={{ display: "flex" }} />}
         </Link>
-        <a
-          href="#"
+        <span
           id="mobile-close-sidebar"
           className="sidebartoggler ms-auto text-decoration-none fs-5"
         >
           <IconX className="menu-xmark" onClick={() => setMedia(false)} size={20} />
-        </a>
+        </span>
       </div>
 
       <div className="scroll-sidebar simplebar-scrollable-y" data-simplebar="init">
@@ -71,19 +73,6 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         {togglebar || mouseMove ? <span className="hide-menu ps-1">Boshqaruv paneli</span> : ''}
                       </NavLink>
                     </li>
-
-                    {/* <li className="sidebar-item">
-                      <NavLink
-                        className="sidebar-link info-hover-bg"
-                        to="/profile"
-                        aria-expanded="false"
-                      >
-                        <span className="aside-icon p-2 bg-info-subtle rounded-1">
-                          <Icon icon="solar:user-circle-line-duotone" className="fs-5" />
-                        </span>
-                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Hisob</span> : ''}
-                      </NavLink>
-                    </li> */}
 
                     <li className="sidebar-item">
                       <NavLink
@@ -148,21 +137,21 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                     </li>
 
                     <li className="sidebar-item">
-                      <a
+                      <span
                         onClick={(e) => {
                           e.preventDefault();
                           setMenegment(!menegment)
                         }}
-                        className={`sidebar-link warning-hover-bg ${togglebar || mouseMove ? 'has-arrow' : ""}`}
+                        className={`sidebar-link warning-hover-bg ${togglebar || mouseMove || menegment ? 'has-arrow' : ""}`}
                         aria-expanded={menegment}
                       >
                         <span className="aside-icon p-2 bg-warning-subtle rounded-1">
                           <Icon icon="lucide:layout-dashboard" className="fs-6" />
                         </span>
                         {togglebar || mouseMove ? <span className="hide-menu ps-1">Boshqaruv</span> : ''}
-                      </a>
+                      </span>
 
-                      {!menegment || mouseMove &&
+                      {menegment && (
                         <ul>
                           <li className="sidebar-item px-lg-13">
                             <Link to="/teachers" className="sidebar-link">
@@ -180,7 +169,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                             </Link>
                           </li>
                         </ul>
-                      }
+                      )}
                     </li>
                   </ul>
                 </nav>

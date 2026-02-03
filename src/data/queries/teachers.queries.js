@@ -29,10 +29,10 @@ export const useTeachersDataFullInfo = () => {
 };
 
 // GET teacher
-export const useTeacher = () => {
+export const useTeacher = (id) => {
      return useQuery({
-          queryKey: ["teachers"],
-          queryFn: getTeacher,
+          queryKey: ["teachers", id],
+          queryFn: () => getTeacher(id),
           initialData: [],
      });
 };

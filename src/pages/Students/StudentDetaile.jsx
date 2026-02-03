@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Icon } from "@iconify/react"
 import Modal from "../../components/Ui/Modal"
-import studentsData from "../../data/Students.json"
 import Notification from "../../components/Ui/Notification"
 
 const colorStyles = ["#4bd08b", "#fb977d", "#f6c85f", "#0085db"]

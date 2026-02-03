@@ -7,7 +7,7 @@ export const getTeachersDataFullInfo = () =>
      api.get("/teachers/?full_info=true").then(res => res.data.data);
 
 export const getTeacher = (id) =>
-     api.get(`/teachers/${id}/`).then(res => res.data.data) 
+     api.get(`/teachers/${id}/?full_info=true`).then(res => res.data.data)
 
 export const createTeacher = (data) =>
      api.post("/teachers/", data).then(res => res.data.data);
