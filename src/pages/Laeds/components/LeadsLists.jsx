@@ -36,7 +36,7 @@ const sourcesD = [
 ];
 
 
-const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setSelectOtherD, setChangeData, setShow }) => {
+const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setChangeData, setShow }) => {
      const navigate = useNavigate()
 
      const { data: teachers } = useTeachersData()
@@ -94,7 +94,6 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setS
           const data = leads.find(l => l.id === id)
           setChangeData(data)
           setOpemModal(true)
-          setSelectOtherD(false)
      }
 
 

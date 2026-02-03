@@ -1,4 +1,4 @@
-import { Card, Nav, Row, Spinner, Tab } from "react-bootstrap"
+import { Card, Spinner } from "react-bootstrap"
 import { Icon } from "@iconify/react"
 import { useState } from "react";
 import { Input } from "../../components/Ui/Input";
@@ -48,12 +48,9 @@ const Leads = () => {
      if (error) return <div style={{ color: "red" }}>Xatolik: {error.message}</div>
 
      const [opemModal, setOpemModal] = useState(false)
-     const [selectOtherD, setSelectOtherD] = useState(false)
      const [show, setShow] = useState(false)
 
      const [changeData, setChangeData] = useState({})
-
-     const [activeTab, setActiveTab] = useState('add')
 
      const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
 
@@ -392,7 +389,6 @@ const Leads = () => {
                     filters={filters}
                     setFilters={setFilters}
                     setOpemModal={setOpemModal}
-                    setSelectOtherD={setSelectOtherD}
                     setChangeData={setChangeData}
                     setShow={setShow}
                />

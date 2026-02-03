@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Spinner, Card, Row, Col, Button } from "react-bootstrap";
 import { Icon } from "@iconify/react";
 import { useTeachersDataFullInfo } from "../../data/queries/teachers.queries";
-import { useTheme } from "../../context/Context";
+import { useTheme } from "../../Context/Context";
 import DataTable from "../../components/Ui/DataTable";
 
 const Teachers = () => {
