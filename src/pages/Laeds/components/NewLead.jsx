@@ -5,8 +5,7 @@ import { useCreateLead } from "../../../data/queries/leads.queries";
 import { Input } from "../../../components/Ui/Input";
 import SelectDay from "../../../components/Ui/SelectDay";
 import { Spinner } from "react-bootstrap";
-
-const d = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"]
+import Modal from "../../../components/Ui/Modal";
 
 const sources = {
      "Instagram": "#ec4899",
@@ -18,7 +17,7 @@ const sources = {
 
 const date = new Date()
 
-const NewLead = ({ setNotif }) => {
+const NewLead = ({ setNotif, show, setShow }) => {
 
      const { data: AllTeacherData } = useTeachersData();
      const { data: AllCoursesData } = useCourses();
@@ -50,12 +49,10 @@ const NewLead = ({ setNotif }) => {
      // Yangi lid qoshish
      const handleSubmit = (e) => {
           e.preventDefault()
-          if (!(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.source && newLidData.teacher && newLidData.week_days)) {
+          if (!(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.week_days)) {
                alert("Asosiy ma'lumotlar to'ldiring!");
                return;
           }
-
-          console.log(newLidData);
 
 
           createLead(
@@ -90,37 +87,34 @@ const NewLead = ({ setNotif }) => {
      }
 
      return (
-          <>
-               <div className="d-flex flex-column gap-1">
-                    <h4 className="fs-6">
-                         Yangi lid qo'shish
-                    </h4>
-                    <span className="text-muted">
-                         Yangi lid ma'lumotlarini kiritish
-                    </span>
-               </div>
-
+          <Modal
+               title="Yangi lid qo'shish"
+               close={setShow}
+               anima={show}
+               width="50%"
+               zIndex={100}
+          >
                <form
                     onSubmit={handleSubmit}
                     className="d-flex form-control flex-column mt-3"
                >
                     <div className="row">
                          <Input
-                              label="Ism"
+                              label="Ism *"
                               placeholder="Ism..."
                               containerClassName="col"
                               value={newLidData.first_name}
                               onChange={(e) => setNewLidData({ ...newLidData, first_name: e.target.value })}
                          />
                          <Input
-                              label="Familiya"
+                              label="Familiya *"
                               placeholder="Familiya..."
                               containerClassName="col"
                               value={newLidData.last_name}
                               onChange={(e) => setNewLidData({ ...newLidData, last_name: e.target.value })}
                          />
                          <Input
-                              label="Telifon raqam"
+                              label="Telifon raqam *"
                               placeholder="Raqam..."
                               containerClassName="col"
                               value={newLidData.phone}
@@ -131,7 +125,7 @@ const NewLead = ({ setNotif }) => {
                     <div className="row">
                          <div className="col d-flex flex-column">
                               <label htmlFor="course" className="form-label">
-                                   Kurs
+                                   Kurs *
                               </label>
                               <select
                                    id="course"
@@ -146,6 +140,20 @@ const NewLead = ({ setNotif }) => {
                                    ))}
                               </select>
                          </div>
+
+                         <div className="col d-flex flex-column">
+                              <label htmlFor="days" className="form-label">
+                                   Dars kunlari *
+                              </label>
+                              <SelectDay
+                                   data={newLidData}
+                                   setData={setNewLidData}
+                                   field="week_days"
+                              />
+                         </div>
+                    </div>
+
+                    <div className="row mt-3">
                          <div className="col d-flex flex-column">
                               <label htmlFor="teacher" className="form-label">O'qituvchi</label>
                               <select
@@ -160,19 +168,6 @@ const NewLead = ({ setNotif }) => {
                                         <option key={t.id} value={t.id}>{t.first_name} {" "} {t.last_name}</option>
                                    ))}
                               </select>
-                         </div>
-                    </div>
-
-                    <div className="row mt-3">
-                         <div className="col d-flex flex-column">
-                              <label htmlFor="days" className="form-label">
-                                   Dars Kunlari
-                              </label>
-                              <SelectDay
-                                   data={newLidData}
-                                   setData={setNewLidData}
-                                   field="week_days"
-                              />
                          </div>
 
                          <div className="col d-flex flex-column">
@@ -230,7 +225,7 @@ const NewLead = ({ setNotif }) => {
                               type="submit"
                               style={{ background: "#0085db" }}
                               disabled={
-                                   !(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.teacher && newLidData.source && newLidData.week_days) || creating
+                                   !(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.week_days.length > 0) || creating
                               }
                               className="btn btn-sm px-3 py-2 fs-3 text-white"
                          >
@@ -238,7 +233,7 @@ const NewLead = ({ setNotif }) => {
                          </button>
                     </div>
                </form>
-          </>
+          </Modal>
      )
 }
 

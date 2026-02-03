@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { IconX } from "@tabler/icons-react";
 import "./Menu.css";
@@ -6,8 +6,9 @@ import { useState } from "react";
 
 
 const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
-  const [exam, setExam] = useState(false);
+  const [menegment, setMenegment] = useState(false)
   const [mouseMove, setMouseMove] = useState(false)
+  const navigate = useNavigate();
 
   return (
     <aside
@@ -122,49 +123,6 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
 
                     <li className="sidebar-item">
                       <NavLink
-                        to="/teachers"
-                        className={`sidebar-link success-hover-bg d-flex align-items-center`}
-                      >
-                        <span className="aside-icon p-2 bg-success-subtle rounded-1">
-                          <Icon icon="solar:lightbulb-bolt-line-duotone" className="fs-6" />
-                        </span>
-                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Ustozlar</span> : ''}
-                      </NavLink>
-                    </li>
-
-                    {/* <li className="sidebar-item">
-                      <a
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setExam(!exam)
-                        }}
-                        className={`sidebar-link warning-hover-bg ${togglebar || mouseMove ? 'has-arrow' : ""}`}
-                        aria-expanded={exam}
-                      >
-                        <span className="aside-icon p-2 bg-warning-subtle rounded-1">
-                          <Icon icon="solar:file-text-line-duotone" className="fs-6" />
-                        </span>
-                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Imtihon</span> : ''}
-                      </a>
-
-                      {!exam || mouseMove &&
-                        <ul className="first-level">
-                          <li className="sidebar-item px-lg-13">
-                            <Link to="/exam/schedule" className="sidebar-link">
-                              <span className="hide-menu">Imtihon jadvali</span>
-                            </Link>
-                          </li>
-                          <li className="sidebar-item px-lg-13">
-                            <Link to="/exam/result" className="sidebar-link">
-                              <span className="hide-menu">Imtihon natijasi</span>
-                            </Link>
-                          </li>
-                        </ul>
-                      }
-                    </li> */}
-
-                    <li className="sidebar-item">
-                      <NavLink
                         className="sidebar-link indigo-hover-bg"
                         to="/lessons"
                         aria-expanded="false"
@@ -188,6 +146,42 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         {togglebar || mouseMove ? <span className="hide-menu ps-1">Davomat</span> : ''}
                       </NavLink>
                     </li>
+
+                    <li className="sidebar-item">
+                      <a
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setMenegment(!menegment)
+                        }}
+                        className={`sidebar-link warning-hover-bg ${togglebar || mouseMove ? 'has-arrow' : ""}`}
+                        aria-expanded={menegment}
+                      >
+                        <span className="aside-icon p-2 bg-warning-subtle rounded-1">
+                          <Icon icon="lucide:layout-dashboard" className="fs-6" />
+                        </span>
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Boshqaruv</span> : ''}
+                      </a>
+
+                      {!menegment || mouseMove &&
+                        <ul>
+                          <li className="sidebar-item px-lg-13">
+                            <Link to="/teachers" className="sidebar-link">
+                              <span className="hide-menu">Ustozlar</span>
+                            </Link>
+                          </li>
+                          <li className="sidebar-item px-lg-13">
+                            <Link to="/rooms" className="sidebar-link">
+                              <span className="hide-menu">Xonalar</span>
+                            </Link>
+                          </li>
+                          <li className="sidebar-item px-lg-13">
+                            <Link to="/courses" className="sidebar-link">
+                              <span className="hide-menu">Kurslar</span>
+                            </Link>
+                          </li>
+                        </ul>
+                      }
+                    </li>
                   </ul>
                 </nav>
               </div>
@@ -200,7 +194,10 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
         <div className="card bg-primary-subtle mb-0 shadow-none">
           <div className="card-body p-3">
             <div className="d-flex align-items-center justify-content-between gap-3">
-              <div className="d-flex align-items-center gap-3">
+              <div
+                className="d-flex align-items-center gap-3 cursor-pointer"
+                onClick={() => navigate("/profile")}
+              >
                 <img
                   src={employee?.photo_url || "/user-1.jpg"}
                   style={{ borderRadius: "100%", width: "60px", height: "60px", objectFit: "cover" }}
@@ -208,7 +205,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                 />
                 <div>
                   <h5 className="mb-1">{employee?.first_name}</h5>
-                  <p className="mb-0">{employee?.title}</p>
+                  <p className="mb-0 text-capitalize">{employee?.role}</p>
                 </div>
               </div>
 
@@ -223,6 +220,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                   alignItems: 'center',
                   gap: '6px',
                 }}
+                onClick={(e) => e.stopPropagation()}
               >
                 <Icon
                   icon="solar:logout-line-duotone"

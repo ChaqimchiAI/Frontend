@@ -20,98 +20,27 @@ import BreadcrumbComponent from "../../components/Ui/BreadcrumbComponent";
 import Modal from "../../components/Ui/Modal"
 import { Input } from "../../components/Ui/Input";
 import Notification from "../../components/Ui/Notification";
+import { useChangePassword, useProfile } from "../../data/queries/profile.queries"
+import { useTheme } from "../../Context/Context";
 
 const Profile = () => {
-  const [employee, setEmployee] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const { theme } = useTheme();
+
   const [EditModal, setEditModal] = useState(false)
   const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
-  const [passwordStatus, setPasswordStatus] = useState(""); // Parol o'zgartirish natijasi uchun
+  const [passwordStatus, setPasswordStatus] = useState("");
 
-  // **********************************************
-  //             API SO'ROVI (GET)
-  // **********************************************
+  const [passwordData, setPasswordData] = useState({
+    current_password: "",
+    new_password: "",
+    confirm_password: ""
+  })
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(`https://erpbackend.pythonanywhere.com/api/v1/auth/profile`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        });
+  const { data: profile, isLoading: profileLoading, error: profileError } = useProfile();
+  const { mutate: changePassword, isPending: changePasswordLoading } = useChangePassword()
 
-        console.log(res?.data.data);
-
-        setEmployee(res?.data.data);
-      } catch (err) {
-        console.error("Profil ma'lumotlarini olishda xato:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-
-
-
-
-  // **********************************************
-  //             PAROL O'ZGARTIRISH LOGIKASI
-  // **********************************************
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    setPasswordStatus("");
-
-    const current = e.target.elements.currentPassword.value;
-    const newPass = e.target.elements.newPassword.value;
-    const confirm = e.target.elements.confirmPassword.value;
-
-    if (newPass !== confirm) {
-      setPasswordStatus("Yangi parol va tasdiqlash paroli mos emas!");
-      return;
-    }
-
-    try {
-      // Haqiqiy API chaqirig'i misoli
-
-      await axios.post(
-        "https://erpbackend.pythonanywhere.com/api/v1/auth/change-password/",
-        {
-          current_password: current,
-          new_password: newPass,
-          confirm_password: confirm
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      setPasswordStatus("Parol muvaffaqiyatli o'zgartirildi!");
-      e.target.reset();
-    }
-
-    catch (apiError) {
-      console.log("Backend javobi:", apiError.response?.data);
-
-      const errorMsg = apiError.response?.data?.detail || "Xatolik yuz berdi";
-      setPasswordStatus(errorMsg);
-    }
-  };
-
-
-
-  const handleSaveChanges = () => {
-    setEditModal(false)
-    setNotif({ show: true, type: 'edited', message: 'Teacher details saved' })
-  }
-
-  if (loading) {
+  if (profileLoading) {
     return (
       <div className="text-center py-5">
         <Spinner animation="border" variant="primary" role="status" />
@@ -120,10 +49,60 @@ const Profile = () => {
     );
   }
 
-  if (!employee) {
+  if (profileError) {
     return (
-      <div className="alert alert-warning">Profil ma'lumotlari topilmadi.</div>
+      <div className="text-center py-5">
+        <p className="mt-2">Xatolik yuz berdi</p>
+      </div>
     );
+  }
+
+  if (!profile) {
+    return (
+      <div className="text-center py-5">
+        <p className="mt-2">Profil ma'lumotlari topilmadi</p>
+      </div>
+    );
+  }
+
+  // parolni o'zgartirish
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordStatus("");
+
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      setNotif({ show: true, type: 'error', message: "Yangi parol va tasdiqlash paroli mos emas!" })
+      return;
+    }
+
+    if (passwordData.new_password.length < 6 || passwordData.confirm_password.length < 6) {
+      setNotif({ show: true, type: 'warn', message: "Yangi parol kamida 6 ta belgidan iborat bo'lishi shart!" })
+      return;
+    }
+
+    changePassword(
+      passwordData,
+      {
+        onSuccess: () => {
+          setNotif({ show: true, type: 'success', message: 'Parol muvaffaqiyatli o`zgartirildi' })
+          setPasswordData({
+            current_password: "",
+            new_password: "",
+            confirm_password: ""
+          })
+        },
+        onError: (err) => {
+          console.error(err);
+          setNotif({ show: true, type: 'error', message: "Parol o'zgartirilmadi, xatolik yuz berdi" })
+        }
+      }
+    )
+
+  };
+
+  const handleSaveChanges = () => {
+    setEditModal(false)
+    setNotif({ show: true, type: 'edited', message: "Ma'lumotlar saqlandi" })
   }
 
   return (
@@ -135,6 +114,7 @@ const Profile = () => {
           close={setEditModal}
           anima={EditModal}
           width="60%"
+          zIndex={100}
         >
           <div className="d-flex justify-content-between gap-3 mt-2">
             <div className="d-flex flex-column w-50 gap-2">
@@ -144,23 +124,23 @@ const Profile = () => {
               <Input
                 label="Ism"
                 placeholder="Ismingiz..."
-                defaultValue={employee?.first_name}
+                defaultValue={profile?.first_name}
               />
               <Input
                 label="Familya"
                 placeholder="Familiyangiz..."
-                defaultValue={employee?.last_name}
+                defaultValue={profile?.last_name}
               />
               <Input
                 label="Telefon"
                 placeholder="Telifon raqam..."
-                defaultValue={employee?.phone}
+                defaultValue={profile?.phone}
               />
               <Input
                 type="email"
                 label="Email"
                 placeholder="Email manzilingiz..."
-                defaultValue={employee?.email}
+                defaultValue={profile?.email}
               />
             </div>
             <div
@@ -175,17 +155,17 @@ const Profile = () => {
               <Input
                 label="Yashash manzili"
                 placeholder="(Farg'ona)"
-                defaultValue={employee?.address}
+                defaultValue={profile?.address}
               />
               <Input
                 label="Tug'ilgan sana"
                 type="date"
-                defaultValue={employee?.date_of_birth}
+                defaultValue={profile?.date_of_birth}
               />
               <Input
                 label="Ishga olingan sana"
                 type="date"
-                defaultValue={employee?.hire_date}
+                defaultValue={profile?.hire_date}
               />
               <div className="d-flex flex-column gap-2">
                 <label htmlFor="disc">
@@ -194,7 +174,7 @@ const Profile = () => {
                 <textarea
                   id="disc"
                   className="form-control"
-                  defaultValue={employee?.description}
+                  defaultValue={profile?.description}
                   placeholder="Izoh..."
                   style={{ height: "90px" }}
                 >
@@ -205,16 +185,20 @@ const Profile = () => {
           </div>
           <div className="d-flex justify-content-end gap-3 mt-3">
             <button
-              className="btn btn-outline-danger mt-1"
+              className="btn btn-sm py-2 px-4"
+              style={{ background: "#e5e5e5", color: "black" }}
               onClick={() => setEditModal(false)}
             >
-              Close
+              Orqaga
             </button>
             <button
-              className="btn btn-outline-success mt-1"
+              className="btn btn-sm py-2 px-4"
+              style={{ background: "#0085db", color: "white" }}
               onClick={handleSaveChanges}
+            // disabled={changePasswordLoading}
             >
-              Save Changes
+              {/* {changePasswordLoading ? <Spinner animation="border" size="sm" /> : "Saqlash"} */}
+              Saqlash
             </button>
           </div>
         </Modal>
@@ -245,7 +229,7 @@ const Profile = () => {
                       <div className="rounded-circle position-relative mb-0 mb-md-0 d-inline-block">
                         <img
                           src={
-                            employee?.photo_url ||
+                            profile?.photo_url ||
                             "/user-1.jpg"
                           }
                           alt="profile-img"
@@ -261,19 +245,20 @@ const Profile = () => {
                       <div className="ms-0 ms-md-3 mb-9 mb-md-0">
                         <div className="d-flex align-items-center justify-content-center justify-content-md-start mb-1">
                           <h4 id="full-name" className="me-3 mb-0 fs-6 fw-bold">
-                            {employee?.first_name + " " + employee?.last_name}
+                            {profile?.first_name + " " + profile?.last_name}
                           </h4>
                           <span
                             className="fs-2 rounded-4 fw-bold text-capitalize"
                             style={{ color: "#0095db", padding: "1px 10px", background: "#0085db20", border: "1px solid #0095db" }}
                           >
-                            {employee?.role}
+                            {profile?.role}
                           </span>
                         </div>
                         <p id="positions" className={`fs-5 mt-2 text-success`}>
                           •
                           <span
-                            className="text-white fs-3 fw-bold"
+                            className="fs-3 fw-bold"
+                            style={{ color: !theme ? "white" : "black" }}
                           >
                             Active
                           </span>
@@ -339,7 +324,7 @@ const Profile = () => {
                     <div className="card border border-1 p-4">
                       <h4 className="fs-6 mb-3">About me</h4>
                       <p className="mb-3 text-dark">
-                        {employee?.about_me || "Ma'lumot kiritilmagan."}
+                        {profile?.about_me || "Ma'lumot kiritilmagan."}
                       </p>
 
                       {/* Contact */}
@@ -354,7 +339,7 @@ const Profile = () => {
                             Phone:
                           </strong>
                           <span className="text-muted">
-                            {employee?.phone || "-"}
+                            {profile?.phone || "-"}
                           </span>
                         </p>
 
@@ -366,7 +351,7 @@ const Profile = () => {
                             Email:
                           </strong>
                           <span className="text-muted">
-                            {employee?.email || "-"}
+                            {profile?.email || "-"}
                           </span>
                         </p>
 
@@ -378,7 +363,7 @@ const Profile = () => {
                             Address:
                           </strong>
                           <span className="text-muted">
-                            {employee?.address || "-"}
+                            {profile?.address || "-"}
                           </span>
                         </p>
                       </div>
@@ -395,7 +380,7 @@ const Profile = () => {
                             Birth Date:
                           </strong>
                           <span className="text-muted">
-                            {employee?.date_of_birth || "-"}
+                            {profile?.date_of_birth || "-"}
                           </span>
                         </p>
 
@@ -407,7 +392,7 @@ const Profile = () => {
                             Hire Date:
                           </strong>
                           <span className="text-muted">
-                            {employee?.hire_date || "-"}
+                            {profile?.hire_date || "-"}
                           </span>
                         </p>
                       </div>
@@ -443,6 +428,8 @@ const Profile = () => {
                               type="password"
                               name="currentPassword"
                               required
+                              value={passwordData.current_password}
+                              onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
                             />
                           </Form.Group>
 
@@ -452,6 +439,8 @@ const Profile = () => {
                               type="password"
                               name="newPassword"
                               required
+                              value={passwordData.new_password}
+                              onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
                             />
                           </Form.Group>
 
@@ -461,6 +450,8 @@ const Profile = () => {
                               type="password"
                               name="confirmPassword"
                               required
+                              value={passwordData.confirm_password}
+                              onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
                             />
                           </Form.Group>
 
@@ -468,8 +459,9 @@ const Profile = () => {
                             variant="primary"
                             type="submit"
                             className="mt-2 fw-semibold"
+                            disabled={changePasswordLoading}
                           >
-                            O'zgartirish
+                            {changePasswordLoading ? <Spinner animation="border" size="sm" /> : "O'zgartirish"}
                           </Button>
                         </Form>
                       </Card.Body>

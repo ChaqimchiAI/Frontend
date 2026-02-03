@@ -6,6 +6,7 @@ import {
      getAvailabilityTeacher,
      getTeacher,
      getTeachersData,
+     getTeachersDataFullInfo,
      updateTeacher
 } from "../api/teacher.api";
 
@@ -14,6 +15,15 @@ export const useTeachersData = () => {
      return useQuery({
           queryKey: ["teachers"],
           queryFn: getTeachersData,
+          initialData: [],
+     });
+};
+
+// GET all teacher with full info
+export const useTeachersDataFullInfo = () => {
+     return useQuery({
+          queryKey: ["teachers-full-info"],
+          queryFn: getTeachersDataFullInfo,
           initialData: [],
      });
 };

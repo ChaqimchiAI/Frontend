@@ -70,9 +70,7 @@ const SelectDay = ({ data, setData, field }) => {
         }
         setMode(value)
     }
-
-    console.log(data);
-
+    
     return (
         <>
 

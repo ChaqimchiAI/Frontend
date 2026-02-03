@@ -127,6 +127,7 @@ const Groups = () => {
           close={setAddGroup}
           anima={addGroup}
           width="30%"
+          zIndex={100}
         >
           <Form
             className="mt-3"

@@ -49,6 +49,7 @@ const Leads = () => {
 
      const [opemModal, setOpemModal] = useState(false)
      const [selectOtherD, setSelectOtherD] = useState(false)
+     const [show, setShow] = useState(false)
 
      const [changeData, setChangeData] = useState({})
 
@@ -244,6 +245,8 @@ const Leads = () => {
                     </Modal>
                }
 
+               {show && <NewLead setNotif={setNotif} setShow={setShow} show={show} />}
+
                <div className="row gap-2 px-4">
                     <Card className="col lidCard">
                          <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
@@ -382,60 +385,17 @@ const Leads = () => {
                     </Card>
                </div>
 
-               <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
-
-                    {/* Tabbar navigatsiyasi */}
-                    <Nav
-                         variant="fill"
-                         className="user-profile-tab mt-4 justify-content-center justify-content-md-start"
-                    >
-                         <Nav.Item
-                              className="nav-item w-50"
-                         >
-                              <Nav.Link
-                                   eventKey="add"
-                                   className="nav-link d-flex justify-content-center align-items-center gap-1"
-                              >
-                                   <span className="d-none d-md-block">Yangi lid qo'shish</span>
-                                   <Icon icon="uil:user-plus" width="24" height="24" />
-                              </Nav.Link>
-                         </Nav.Item>
-
-                         <Nav.Item className="nav-item w-50">
-                              <Nav.Link
-                                   eventKey="list"
-                                   className="nav-link d-flex align-items-center justify-content-center gap-1"
-                              >
-                                   <span className="d-none d-md-block">Lidlar Ro'yhati</span>
-                                   <Icon icon="prime:list" width="24" height="24" />
-                              </Nav.Link>
-                         </Nav.Item>
-                    </Nav>
-
-                    <Tab.Content className="my-4 pb-2 px-3">
-
-                         {/* Yangi lid qo'shish */}
-                         <Tab.Pane eventKey="add">
-                              <Row className="card card-body px-3">
-                                   <NewLead setNotif={setNotif} />
-                              </Row>
-                         </Tab.Pane>
-
-                         {/* Lidlar ro'yhati */}
-                         <Tab.Pane eventKey="list">
-                              <LeadsLists
-                                   leads={leads}
-                                   totalCount={totalCount}
-                                   filters={filters}
-                                   setFilters={setFilters}
-                                   setOpemModal={setOpemModal}
-                                   setSelectOtherD={setSelectOtherD}
-                                   setChangeData={setChangeData}
-                              />
-                         </Tab.Pane>
-
-                    </Tab.Content>
-               </Tab.Container>
+               {/* Lidlar ro'yhati */}
+               <LeadsLists
+                    leads={leads}
+                    totalCount={totalCount}
+                    filters={filters}
+                    setFilters={setFilters}
+                    setOpemModal={setOpemModal}
+                    setSelectOtherD={setSelectOtherD}
+                    setChangeData={setChangeData}
+                    setShow={setShow}
+               />
           </>
      )
 }

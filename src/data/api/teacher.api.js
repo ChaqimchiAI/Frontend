@@ -3,6 +3,9 @@ import api from "./axios";
 export const getTeachersData = () =>
      api.get("/teachers/").then(res => res.data.data);
 
+export const getTeachersDataFullInfo = () =>
+     api.get("/teachers/?full_info=true").then(res => res.data.data);
+
 export const getTeacher = (id) =>
      api.get(`/teachers/${id}/`).then(res => res.data.data) 
 
