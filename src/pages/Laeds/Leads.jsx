@@ -29,6 +29,7 @@ const Leads = () => {
      const { data, isLoading, error } = useLeads(filters);
      const leads = data?.results || [];
      const totalCount = data?.count || 0;
+   
 
      // lidlar boyicha statistika 
      const { data: stats } = useLeadsStats()

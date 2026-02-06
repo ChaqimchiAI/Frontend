@@ -1,6 +1,6 @@
 import { Card, Dropdown } from "react-bootstrap";
 import DataTable from "../../../components/Ui/DataTable";
-import StatusDropdown from "./StatusFilter";
+import StatusDropdown from "../../../components/Ui/StatusFilter";
 import CalendarSelector from "../../../components/Ui/CalendarSelector";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useState } from "react";
@@ -194,6 +194,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                               </button>
                          </div>
 
+                         {/* filters */}
                          <div className="d-flex gap-2 align-items-center">
                               <CalendarSelector onRangeSelect={handleDateRange} filters={filters} />
 
