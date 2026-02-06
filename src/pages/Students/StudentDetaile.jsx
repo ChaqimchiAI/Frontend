@@ -11,7 +11,7 @@ const StudentDetaile = () => {
 
   return (
     <div>
-      <h1 className="text-center mt-5 fw-bold text-muted">{student.last_name} {student.first_name}ning malumotlari yuklanmoqda...</h1>
+      <h1 className="text-center mt-5 fw-bold text-muted">{student.last_name} {student.first_name}ning malumotlari yuklandi</h1>
     </div>
   )
 }
