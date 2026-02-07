@@ -348,4 +348,5 @@ const StudentDetaile = () => {
   );
 };
 
+
 export default StudentDetaile;
