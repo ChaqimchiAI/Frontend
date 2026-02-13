@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react"
 import { Card } from "react-bootstrap"
 
-const Modal = ({ title, close, children, anima, width, zIndex }) => {
+const Modal = ({ title, close, children, anima, width, zIndex, style }) => {
      return (
           <div className="d-flex justify-content-center" style={{ zIndex: zIndex }}>
                <div
@@ -10,7 +10,7 @@ const Modal = ({ title, close, children, anima, width, zIndex }) => {
                ></div>
                <Card
                     className={`d-flex ${anima ? 'modalFadeIn' : 'modalFadeOut'} px-4 py-4`}
-                    style={{ width: width, maxHeight: "90vh", position: "fixed", top: "30px", zIndex: zIndex, marginLeft: "-5%", overflow: "auto" }}
+                    style={{ width: width, maxHeight: "90vh", position: "fixed", top: "30px", zIndex: zIndex, marginLeft: "-5%", style }}
                >
                     <nav
                          className="d-flex border-bottom justify-content-between align-content-center w-100 bg-white py-3"

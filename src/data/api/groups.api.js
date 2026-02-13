@@ -50,3 +50,15 @@ export const editGroupSchedule = ({ id, scheduleId, data }) =>
 export const deleteGroupSchedule = ({ id, scheduleId }) =>
     api.delete(`/groups/${id}/schedules/${scheduleId}/`)
         .then(res => res.data.data);
+
+// Get celected groups students
+export const getGroupStudents = (id) =>
+    api.get(`/groups/${id}/students/`).then(res => res.data.data);
+
+// Add a student to a group
+export const addStudentToGroup = ({ id, student_id }) =>
+    api.post(`/groups/${id}/students/`, { student_id: student_id }).then(res => res.data.data);
+
+// leadslardagini guruhga qoshish
+export const addLeadToGroup = ({ id, group_id }) =>
+    api.post(`/groups/leads/add/`, { lead_id: id, group_id }).then(res => res.data.data);

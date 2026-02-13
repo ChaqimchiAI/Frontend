@@ -29,7 +29,7 @@ const Leads = () => {
      const { data, isLoading, error } = useLeads(filters);
      const leads = data?.results || [];
      const totalCount = data?.count || 0;
-   
+
 
      // lidlar boyicha statistika 
      const { data: stats } = useLeadsStats()
@@ -245,7 +245,7 @@ const Leads = () => {
 
                {show && <NewLead setNotif={setNotif} setShow={setShow} show={show} />}
 
-               <div className="row gap-2 px-4">
+               <div className="row gap-2 ps pe-4" style={{paddingLeft: "13px"}}>
                     <Card className="col lidCard">
                          <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
                               <div className="d-flex flex-column gap-1">

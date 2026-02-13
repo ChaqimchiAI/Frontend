@@ -61,16 +61,17 @@ function DataTable({
 
      const handleSearch = (e) => {
           const value = e.target.value;
+          if (value.length === 0) {
+               onSearch("");
+          }
           setSearchQuery(value);
-          setCurrentPage(1);
-
-          if (onSearch) onSearch(value); // ✅ to‘g‘ri qiymat
      };
 
      const handleKeyDown = (e) => {
           if (e.key === "Enter") {
                setCurrentPage(1);
-               if (onSearch) onSearch(searchQuery);
+
+               if (onSearch && searchQuery.length > 0) onSearch(searchQuery);
           }
      };
 
@@ -97,7 +98,7 @@ function DataTable({
                               style={{ width: "250px" }}
                               value={searchQuery}
                               onChange={handleSearch}
-                         // onKeyDown={handleKeyDown}
+                              onKeyDown={handleKeyDown}
                          />
                          {filter}
                     </div>

@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCourse, deleteCourse, editCourse, getCourse, getCoursesData, updateCourse } from "../api/courses.api";
 
-// GET all leads
 export const useCourses = () => {
   return useQuery({
     queryKey: ["courses"],
@@ -10,27 +9,24 @@ export const useCourses = () => {
   });
 };
 
-// GET lead
-export const useCourse = () => {
+export const useCourse = (id) => {
   return useQuery({
-    queryKey: ["courses"],
-    queryFn: getCourse,
+    queryKey: ["course", id],
+    queryFn: () => getCourse(id),
     initialData: [],
   });
 };
 
-// CREATE new lead
 export const useCreateCourse = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createCourse,
     onSuccess: () => {
-      queryClient.invalidateQueries(["courses"]);  // cache yangilanadi
+      queryClient.invalidateQueries(["courses"]);
     },
   });
 };
 
-// UPDATE existing lead
 export const useUpdateCourse = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -39,7 +35,6 @@ export const useUpdateCourse = () => {
   });
 };
 
-// EDIT course
 export const useEditCourse = () => {
      const queryClient = useQueryClient()
      return useMutation({
@@ -48,7 +43,6 @@ export const useEditCourse = () => {
      })
 }
 
-// DELETE lead
 export const useDeleteCourses = () => {
   const queryClient = useQueryClient();
   return useMutation({

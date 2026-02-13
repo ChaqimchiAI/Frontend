@@ -18,6 +18,8 @@ const Groups = () => {
   const { data: groupsData, isLoading: groupsLoading } = useGroups()
   if (groupsLoading) return <div>Loading...</div>
 
+  console.log(groupsData);
+
   // kurslarni chaqirish
   const { data: courses } = useCourses()
   const courseData = courses?.results

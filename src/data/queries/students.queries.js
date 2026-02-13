@@ -6,13 +6,13 @@ import {
     updateStudent,
     deleteStudent,
     getStudentNotes,
-    createStudentNote
+    createStudentNote,
 } from "../api/students.api";
 
-export const useStudentsData = () => {
+export const useStudentsData = (params) => {
     return useQuery({
-        queryKey: ["students"],
-        queryFn: getStudents,
+        queryKey: ["students", params],
+        queryFn: () => getStudents(params),
         initialData: [],
     });
 };

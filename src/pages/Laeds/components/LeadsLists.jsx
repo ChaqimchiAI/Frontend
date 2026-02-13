@@ -118,67 +118,71 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
 
      return (
           <>
-               <div className="card card-body px-4 mt-3">
+               <div className="card card-body px-4 mt-3 overflow-hidden">
 
-                    <div className="row gap-3 px-3">
-                         <Card className="col px-1 lidCard">
-                              <Card.Body>
-                                   <h4 className="fs-6" style={{ fontWeight: "900" }}>
-                                        Lidlar Holati
-                                   </h4>
+                    <div className="row g-3 mb-4 mx-0">
+                         <div className="col-12 col-xl-6">
+                              <Card className="lidCard h-100">
+                                   <Card.Body>
+                                        <h4 className="fs-6" style={{ fontWeight: "900" }}>
+                                             Lidlar Holati
+                                        </h4>
 
-                                   <ResponsiveContainer width="100%" height={300}>
-                                        <PieChart>
-                                             <Pie
-                                                  data={statusData}
-                                                  cx="50%"
-                                                  cy="50%"
-                                                  labelLine={false}
-                                                  label={(entry) => entry.name}
-                                                  outerRadius={100}
-                                                  fill="#8884d8"
-                                                  dataKey="value"
-                                             >
-                                                  {statusData.map((entry, index) => (
-                                                       <Cell key={`cell-${index}`} fill={entry.fill} />
-                                                  ))}
-                                             </Pie>
-                                             <Tooltip />
-                                        </PieChart>
-                                   </ResponsiveContainer>
-                              </Card.Body>
-                         </Card>
-                         <Card className="col px-1 lidCard">
-                              <Card.Body>
-                                   <h4 className="fs-6" style={{ fontWeight: "900" }}>
-                                        Lidlar Manbai
-                                   </h4>
+                                        <ResponsiveContainer width="99%" height={300}>
+                                             <PieChart>
+                                                  <Pie
+                                                       data={statusData}
+                                                       cx="50%"
+                                                       cy="50%"
+                                                       labelLine={false}
+                                                       label={(entry) => entry.name}
+                                                       outerRadius={100}
+                                                       fill="#8884d8"
+                                                       dataKey="value"
+                                                  >
+                                                       {statusData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                       ))}
+                                                  </Pie>
+                                                  <Tooltip />
+                                             </PieChart>
+                                        </ResponsiveContainer>
+                                   </Card.Body>
+                              </Card>
+                         </div>
+                         <div className="col-12 col-xl-6">
+                              <Card className="lidCard h-100">
+                                   <Card.Body>
+                                        <h4 className="fs-6" style={{ fontWeight: "900" }}>
+                                             Lidlar Manbai
+                                        </h4>
 
-                                   <ResponsiveContainer width="100%" height={300}>
-                                        <PieChart>
-                                             <Pie
-                                                  data={sourceData}
-                                                  cx="50%"
-                                                  cy="50%"
-                                                  labelLine={false}
-                                                  label={(entry) => entry.name}
-                                                  outerRadius={100}
-                                                  fill="#8884d8"
-                                                  dataKey="value"
-                                             >
-                                                  {sourceData.map((entry, index) => (
-                                                       <Cell key={`cell-${index}`} fill={entry.fill} />
-                                                  ))}
-                                             </Pie>
-                                             <Tooltip />
-                                        </PieChart>
-                                   </ResponsiveContainer>
-                              </Card.Body>
-                         </Card>
+                                        <ResponsiveContainer width="99%" height={300}>
+                                             <PieChart>
+                                                  <Pie
+                                                       data={sourceData}
+                                                       cx="50%"
+                                                       cy="50%"
+                                                       labelLine={false}
+                                                       label={(entry) => entry.name}
+                                                       outerRadius={100}
+                                                       fill="#8884d8"
+                                                       dataKey="value"
+                                                  >
+                                                       {sourceData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                       ))}
+                                                  </Pie>
+                                                  <Tooltip />
+                                             </PieChart>
+                                        </ResponsiveContainer>
+                                   </Card.Body>
+                              </Card>
+                         </div>
                     </div>
 
                     <div className="d-flex flex-column gap-3">
-                         <div className="d-flex justify-content-between align-items-center">
+                         <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
                               <div className="d-flex flex-column gap-1">
                                    <h4 className="fs-6">Lidlar ro'yhati</h4>
                                    <span className="text-muted">Barcha lidlar ma'lumotlari</span>
@@ -195,7 +199,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                          </div>
 
                          {/* filters */}
-                         <div className="d-flex gap-2 align-items-center">
+                         <div className="d-flex flex-wrap gap-2 align-items-center">
                               <CalendarSelector onRangeSelect={handleDateRange} filters={filters} />
 
                               <StatusDropdown

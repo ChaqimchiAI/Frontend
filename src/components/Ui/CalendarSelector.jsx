@@ -37,7 +37,7 @@ const staticRangesLabels = [
   },
 ];
 
-const CalendarSelector = ({ onRangeSelect, filters }) => {
+const CalendarSelector = ({ onRangeSelect, filters, placeholder }) => {
   const { theme } = useTheme();
   const [open, setOpen] = useState(false);
 
@@ -101,7 +101,7 @@ const CalendarSelector = ({ onRangeSelect, filters }) => {
             ? `${state[0].startDate.toLocaleDateString()} - ${state[0].endDate.toLocaleDateString()}`
             : ""}
           className="date-input"
-          placeholder="Sana tanlang"
+          placeholder={placeholder || "Sana tanlang"}
           style={{ cursor: 'pointer' }}
         />
       </div>

@@ -1,8 +1,45 @@
 import { Icon } from "@iconify/react"
-import { Table } from "react-bootstrap"
-import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Dropdown, Table } from "react-bootstrap"
+import { useUpdateStudent } from "../../../data/queries/students.queries"
+import { useNavigate } from "react-router-dom"
+import { useQueryClient } from "@tanstack/react-query"
 
-const StudentsTable = ({ currentStudents }) => {
+const StudentsTable = ({ currentStudents, groupId, setNotif }) => {
+     const navigate = useNavigate()
+     const queryClient = useQueryClient()
+
+
+     const [openDropdown, setOpenDropdown] = useState(null)
+     const { mutate: updateStudent } = useUpdateStudent()
+
+     const statusStyle = (s) => {
+          let st = s === "active" || s === "active" ? { style: { background: "#10b981" }, t: "Faol" }
+               : s === "frozen" || s === "frozen" ? { style: { background: "#3b82f6" }, t: "Muzlatilgan" }
+                    : s === "finished" ? { style: { background: "#9ea5ac" }, t: "Tugatgan" }
+                         : s === "left" ? { style: { background: "#ef4444" }, t: "Chiqib ketgan" }
+                              : { style: { background: "gray" }, t: "Status yo'q" }
+          return st
+     }
+
+     const statusChange = (s, id) => {
+
+          updateStudent(
+               { id, data: { status: s } },
+               {
+                    onSuccess: () => {
+                         queryClient.invalidateQueries(["groups", "students", groupId])
+                         setNotif({ show: true, type: 'edited', message: "O'quvchi holati o'zgartirildi!" })
+                         setOpenDropdown(null)
+                    },
+                    onError: (err) => {
+                         console.error(err)
+                         setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                    }
+               }
+          );
+     }
+
      return (
           <Table striped hover className="mt-4">
                <thead>
@@ -17,26 +54,58 @@ const StudentsTable = ({ currentStudents }) => {
                </thead>
 
                <tbody>
-                    {currentStudents.length > 0 ?
+                    {currentStudents?.length > 0 ?
                          currentStudents.map((student, index) => (
-                              <tr>
+                              <tr key={student.id}>
                                    <td>{index + 1}</td>
                                    <td
+                                        onClick={() => navigate(`/students/${student.student_id}`)}
                                         className="cursor-pointer"
                                    >
-                                        <Link to={`/students/${student.id}`} style={{ textDecoration: "none" }}>
-                                             {student.name}
-                                        </Link>
+                                        {student.first_name + " " + student.last_name}
                                    </td>
                                    <td>{student.phone}</td>
-                                   <td>{student.joinDate}</td>
+                                   <td>{student.joined_date?.split("-").reverse().join(".")}</td>
                                    <td>
-                                        <span
-                                             className="px-2 py-1 fs-2 rounded-3"
-                                             style={{ background: "#00a85425", color: "#00a854" }}
+                                        <Dropdown
+                                             show={openDropdown === index}
+                                             onToggle={() => setOpenDropdown(openDropdown === index ? null : index)}
+                                             onClick={(e) => e.stopPropagation()}
                                         >
-                                             Faol
-                                        </span>
+                                             <Dropdown.Toggle
+                                                  className="no-caret p-0"
+                                                  style={{ background: "transparent", border: "none" }}
+                                             >
+                                                  <div
+                                                       className="px-3 py-1 rounded-3 fs-3"
+                                                       style={{ background: statusStyle(student?.status)?.style?.background || "gray" }}
+                                                  >
+                                                       {statusStyle(student?.status)?.t || "No Status"}
+                                                  </div>
+                                             </Dropdown.Toggle>
+
+                                             <Dropdown.Menu>
+                                                  {[
+                                                       { k: "frozen", label: "Muzlatilgan", c: "#3b82f6" },
+                                                       { k: "finished", label: "Tugatgan", c: "#9ea5ac" },
+                                                       { k: "active", label: "Faol", c: "#10b981" },
+                                                       { k: "left", label: "Chiqib ketgan", c: "#ef4444" }
+                                                  ].map(o => (
+                                                       <Dropdown.Item
+                                                            key={o.k}
+                                                            onClick={() => statusChange(o.k, student?.id)}
+                                                            className="no-hover-effect"
+                                                       >
+                                                            <span
+                                                                 className="px-2 py-1 rounded-3 text-white fs-2"
+                                                                 style={{ background: o.c }}
+                                                            >
+                                                                 {o.label}
+                                                            </span>
+                                                       </Dropdown.Item>
+                                                  ))}
+                                             </Dropdown.Menu>
+                                        </Dropdown>
                                    </td>
                                    <td title="O'chirish">
                                         <Icon

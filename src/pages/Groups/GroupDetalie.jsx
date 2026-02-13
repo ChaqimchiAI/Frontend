@@ -10,10 +10,13 @@ import AttendenceTable from "./Components/AttendenceTable";
 import Schedule from "./Components/Schedule";
 import Notification from "../../components/Ui/Notification";
 
-import { useDeleteGroup, useEditGroup, useGroup, useGroupSchedule } from "../../data/queries/group.queries"
+import { useDeleteGroup, useEditGroup, useGroup, useGroupSchedule, useGroupStudents } from "../../data/queries/group.queries"
 import { useRoomsData } from "../../data/queries/room.queries"
 import { useTeachersData } from "../../data/queries/teachers.queries"
 import { useCourses } from "../../data/queries/courses.queries"
+import { useLeads } from "../../data/queries/leads.queries";
+import { useStudentsData } from "../../data/queries/students.queries";
+
 import EditGroup from "./GroupDetaileModals/EditGroup";
 import AddNewStudents from "./GroupDetaileModals/AddNewStudents";
 import EditGroupSchedule from "./GroupDetaileModals/EditGroupSchedule";
@@ -45,6 +48,14 @@ const GroupDetalie = () => {
      // dars jadvvallarni olish
      const { data: schedule_items } = useGroupSchedule(id)
 
+     // leadslarni olish
+     const { data: leads } = useLeads()
+     const leadsData = leads?.results
+
+     // guruhdagi o'quvchilarni olish
+     const { data: studentsData } = useGroupStudents(id)
+
+
      // =========== Edited ============
 
      // guruhni tahrirlash
@@ -73,9 +84,10 @@ const GroupDetalie = () => {
      const [changeActiveItem, setChangeActiveItem] = useState(false)
 
      useEffect(() => {
-          const studentsInGroup = studentsData.filter(st => st.group === currentGroup?.name)
-          setCurrentStudents(studentsInGroup)
-     }, [currentGroup])
+          if (studentsData) {
+               setCurrentStudents(studentsData)
+          }
+     }, [studentsData])
 
      useEffect(() => {
           setChangeGroupDate(currentGroup)
@@ -96,7 +108,8 @@ const GroupDetalie = () => {
      // lidlarni qidirish
      const handleSearch = (value) => {
           const filteredLeads = leadsData.filter(lead =>
-               lead.name.toLowerCase().includes(value.toLowerCase()) ||
+               lead.first_name.toLowerCase().includes(value.toLowerCase()) ||
+               lead.last_name.toLowerCase().includes(value.toLowerCase()) ||
                lead.phone.includes(value)
           )
           setSearchLead(filteredLeads)
@@ -198,6 +211,8 @@ const GroupDetalie = () => {
                          setAddNewUser={setAddNewUser}
                          handleSearch={handleSearch}
                          searchLead={searchLead}
+                         id={id}
+                         setNotif={setNotif}
                     />
                )}
 
@@ -239,6 +254,7 @@ const GroupDetalie = () => {
                          close={setDelateGroup}
                          anima={delateGroup}
                          width="30%"
+                         zIndex={100}
                     >
                          <p className="mt-2">
                               Rostdan ham ushbu guruhni o'chirmoqchimisiz?
@@ -465,7 +481,7 @@ const GroupDetalie = () => {
                                              </button>
                                         </div>
 
-                                        <StudentsTable currentStudents={currentStudents} />
+                                        <StudentsTable currentStudents={studentsData} groupId={id} setNotif={setNotif} />
                                    </Card.Body>
                               </Card>
                          </Tab.Pane>
@@ -492,7 +508,7 @@ const GroupDetalie = () => {
                               <Card>
                                    <Card.Body>
                                         <div className="d-flex align-items-center justify-content-between">
-                                             <h5 className="fs-4 fw-medium">
+                                             <h5 className="fs-4 fw-medium">T
                                                   <Icon icon="ion:calendar-outline" width="20" height="20" color="#00c8ff" className="me-2" />
                                                   Dars jadvali
                                              </h5>

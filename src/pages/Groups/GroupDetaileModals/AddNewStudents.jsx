@@ -1,13 +1,43 @@
 import { Icon } from "@iconify/react"
-import { Input } from "../../../components/Ui/Input"
 import Modal from "../../../components/Ui/Modal"
+import { ReactSelect } from "../../../components/Ui/ReactSelect"
+import { useTheme } from "../../../Context/Context"
+import { useState } from "react"
+import { useAddLeadToGroup } from "../../../data/queries/group.queries"
+import { Spinner } from "react-bootstrap"
 
 const AddNewStudents = ({
     addNewUser,
     setAddNewUser,
-    handleSearch,
-    searchLead
+    searchLead,
+    setNotif,
+    id
 }) => {
+
+    const { mutate: addLeadToGroup, isPending: adding } = useAddLeadToGroup();
+
+    const [selectedLead, setSelectedLead] = useState(null)
+
+    const addLead = () => {
+        addLeadToGroup(
+            {
+                id: selectedLead,
+                group_id: Number(id)
+            },
+            {
+                onSuccess: () => {
+                    setNotif({ show: true, type: "success", message: "Guruhga yangi o'quvchi qo'shildi" })
+                    setAddNewUser(false)
+                    setSelectedLead(null)
+                },
+                onError: (err) => {
+                    console.error(err)
+                    setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                }
+            }
+        )
+    }
+
     return (
         <Modal
             title="Guruhga yangi o'quvchi qo'shish"
@@ -16,40 +46,28 @@ const AddNewStudents = ({
             width="35%"
             zIndex={100}
         >
-            <Input
+            <ReactSelect
                 label="O'quvchini Lidlar ro'yxatidan tanlang"
+                containerClassName="mt-2"
                 placeholder="Lidlarni qidirish..."
-                type="search"
-                onChange={(e) => handleSearch(e.target.value)}
+                menuPortalTarget={document.body}
+                options={searchLead?.map(lead => ({
+                    value: lead.id,
+                    label: `${lead.first_name} ${lead.last_name} (${lead.phone})`,
+                    ...lead
+                }))}
+                onChange={(option) => {
+                    setSelectedLead(option.id)
+                }}
             />
-            <div className="d-flex flex-column gap-15 mt-3" style={{ maxHeight: "300px", overflowY: "auto" }}>
-                {searchLead.map(lead => (
-                    <div
-                        className="d-flex justify-content-between align-items-center p-2 border rounded-3"
-                        key={lead.id}
-                    >
-                        <div className="d-flex align-items-center gap-3">
-                            <span
-                                style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#0881c2", color: "#fff" }}
-                                className="d-flex align-items-center justify-content-center fs-4"
-                            >
-                                {lead.name.charAt(0)}
-                            </span>
-                            <div className="d-flex flex-column">
-                                <span className="fw-medium">{lead.name}</span>
-                                <span className="fs-3">{lead.phone}</span>
-                            </div>
-                        </div>
-                        <button
-                            className="btn btn-sm"
-                            style={{ background: "#0881c2", color: "#fff" }}
-                        >
-                            <Icon icon="prime:user-plus" width="20" height="20" className="me-2" />
-                            Qo'shish
-                        </button>
-                    </div>
-                ))}
-            </div>
+
+            <button
+                className="btn btn-sm save-button align-self-end mt-3"
+                disabled={!selectedLead}
+                onClick={addLead}
+            >
+                {adding ? <Spinner animation="border" size="sm" /> : "Qo'shish"}
+            </button>
         </Modal>
     )
 }

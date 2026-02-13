@@ -45,21 +45,21 @@ const Input = React.forwardRef(
                     )}
                 />
 
-                {type === "password" &&
-                    String(props.value ?? value).length > 0 && (
-                        <button
-                            type="button"
-                            onClick={() => setShow((s) => !s)}
-                            className="btn btn-sm btn-link position-absolute end-0 me-2"
-                            tabIndex={-1}
-                        >
-                            {
-                                show ?
-                                    <Icon icon="flowbite:eye-outline" width="18" height="18" /> :
-                                    <Icon icon="mdi:eye-off-outline" width="18" height="18" />
-                            }
-                        </button>
-                    )}
+                {type === "password" && (
+                    <button
+                        type="button"
+                        onClick={() => setShow((s) => !s)}
+                        className="btn btn-sm btn-link position-absolute end-0 me-2 text-secondary border-0 p-1"
+                        style={{ top: "50%", transform: "translateY(-50%)", zIndex: 5 }}
+                        tabIndex={-1}
+                    >
+                        {show ? (
+                            <Icon icon="mdi:eye-off-outline" width="20" height="20" />
+                        ) : (
+                            <Icon icon="mdi:eye-outline" width="20" height="20" />
+                        )}
+                    </button>
+                )}
             </div>
         )
 

@@ -1,21 +1,12 @@
 import { Icon } from "@iconify/react"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Dropdown, Table } from "react-bootstrap"
 import { Link } from "react-router-dom"
 
-const AttendenceTable = ({ currentStudents = [], studentsData = [], setCurrentStudents, days_of_week = [] }) => {
+const AttendenceTable = ({ studentsData = [], setCurrentStudents, days_of_week = [] }) => {
 
-     // Haftaning dushanbasi
-     const [weekStart] = useState(() => {
-          const d = new Date()
-          const day = d.getDay()
-          const diff = day === 0 ? -6 : 1 - day
-          d.setDate(d.getDate() + diff)
-          d.setHours(0, 0, 0, 0)
-          return d
-     })
-
-     const [currentPage, setCurrentPage] = useState(1)
+     // currentPage: 0 - joriy hafta, -1 - o'tgan, 1 - kelgusi
+     const [currentPage, setCurrentPage] = useState(0)
      const [openDropdown, setOpenDropdown] = useState(null)
 
      const dayCodeMap = {
@@ -32,24 +23,33 @@ const AttendenceTable = ({ currentStudents = [], studentsData = [], setCurrentSt
           "Iyul", "Avgust", "Sentyabr", "Oktabr", "Noyabr", "Dekabr"
      ]
 
-     const lessonDates = []
-     let d = new Date(weekStart)
-     d.setDate(d.getDate() + (currentPage - 1) * 7)
+     // Sanalarni hisoblash mantig'ini to'g'irladik
+     const lessonDates = useMemo(() => {
+          const dates = []
+          let d = new Date()
+          const day = d.getDay()
+          const diff = day === 0 ? -6 : 1 - day
+          
+          // Dushanbadan boshlab currentPage'ga qarab suriladi
+          d.setDate(d.getDate() + diff + (currentPage * 7))
+          d.setHours(0, 0, 0, 0)
 
-     const useAllDays = currentStudents.length === 0
+          const useAllDays = days_of_week.length === 0
+          let tempDate = new Date(d)
 
-     while (lessonDates.length < 6) {
-          const code = dayCodeMap[d.getDay()]
-
-          if (
-               d.getDay() !== 0 &&
-               (useAllDays || days_of_week.some(day => day.code === code))
-          ) {
-               lessonDates.push(new Date(d))
+          while (dates.length < 6) {
+               const code = dayCodeMap[tempDate.getDay()]
+               // Yakshanba bo'lmasa va tanlangan dars kunlariga to'g'ri kelsa
+               if (tempDate.getDay() !== 0 && (useAllDays || days_of_week.some(day => day.code === code))) {
+                    dates.push(new Date(tempDate))
+               }
+               tempDate.setDate(tempDate.getDate() + 1)
+               
+               // Cheksiz sikldan himoya (agar dars kunlari noto'g'ri kelsa)
+               if (tempDate.getDate() > d.getDate() + 14) break; 
           }
-
-          d.setDate(d.getDate() + 1)
-     }
+          return dates
+     }, [currentPage, days_of_week])
 
      const getStatusForStudent = (s, date) =>
           s.attendance?.find(a => a.date === date.toISOString().slice(0, 10))?.status ?? null
@@ -71,26 +71,27 @@ const AttendenceTable = ({ currentStudents = [], studentsData = [], setCurrentSt
                          attendance: (() => {
                               const att = Array.isArray(s.attendance) ? [...s.attendance] : []
                               const idx = att.findIndex(a => a.date === dateStr)
-                              if (idx >= 0) att[idx].status = status
+                              if (idx >= 0) att[idx] = { ...att[idx], status }
                               else att.push({ date: dateStr, status })
                               return att
                          })()
                     }
                )
           )
+          setOpenDropdown(null) // Tanlangandan keyin yopish
      }
 
      return (
           <>
                {/* HEADER */}
                <div className="d-flex align-items-center gap-2 my-3">
-                    <button className="btn btn-sm border" onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
+                    <button className="btn btn-sm border" onClick={() => setCurrentPage(p => p - 1)}>
                          <Icon icon="akar-icons:chevron-left" />
                     </button>
 
                     <strong>
                          {lessonDates[0]?.getDate()} {monthNames[lessonDates[0]?.getMonth()]} –
-                         {lessonDates.at(-1)?.getDate()} {monthNames[lessonDates.at(-1)?.getMonth()]}
+                         {" "} {lessonDates.at(-1)?.getDate()} {monthNames[lessonDates.at(-1)?.getMonth()]}
                     </strong>
 
                     <button className="btn btn-sm border" onClick={() => setCurrentPage(p => p + 1)}>
@@ -113,16 +114,16 @@ const AttendenceTable = ({ currentStudents = [], studentsData = [], setCurrentSt
                     </thead>
 
                     <tbody>
-                         {currentStudents.length > 0 ? (
-                              currentStudents.map(student => (
+                         {studentsData.length > 0 ? (
+                              studentsData.map(student => (
                                    <tr key={student.id}>
                                         <td>
-                                             <Link to={`/students/${student.id}`}>{student.name}</Link>
+                                             <Link to={`/students/${student.student_id}`}>{student.first_name + " " + student.last_name}</Link>
                                         </td>
 
                                         {lessonDates.map((d, i) => {
                                              const status = getStatusForStudent(student, d)
-                                             const key = `${student.id}-${i}`
+                                             const key = `${student.id}-${d.getTime()}` // Key o'zgartirildi
 
                                              return (
                                                   <td key={i} className="text-center">

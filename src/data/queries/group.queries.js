@@ -10,7 +10,10 @@ import {
   getGroupScheduleById,
   createGroupSchedule,
   editGroupSchedule,
-  deleteGroupSchedule
+  deleteGroupSchedule,
+  addStudentToGroup,
+  addLeadToGroup,
+  getGroupStudents
 } from "../api/groups.api";
 
 // ================= GROUPS =================
@@ -140,6 +143,42 @@ export const useDeleteGroupSchedule = () => {
     mutationFn: deleteGroupSchedule,
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries(["groups", "schedule", id]);
+    }
+  });
+};
+
+// ================= GROUP STUDENTS =================
+
+// LIST
+export const useGroupStudents = (id) =>
+  useQuery({
+    queryKey: ["groups", "students", id],
+    queryFn: () => getGroupStudents(id),
+    enabled: !!id,
+    initialData: []
+  });
+
+// CREATE
+export const useAddStudentToGroup = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addStudentToGroup,
+    onSuccess: (_, { id, student_id }) => {
+      queryClient.invalidateQueries(["groups", "students", id]);
+      queryClient.invalidateQueries(["student", student_id]);
+    }
+  });
+};
+
+// CREATE
+export const useAddLeadToGroup = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addLeadToGroup,
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries(["groups", "students", id]);
     }
   });
 };

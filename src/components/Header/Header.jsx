@@ -1,6 +1,6 @@
 import "./Header.css";
 import { Icon } from "@iconify/react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowbar, setMedia }) => {
 
@@ -67,14 +67,6 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                 Chat
               </Link>
             </li>
-            <li className="nav-item dropdown-hover d-none d-lg-block me-2">
-              <Link
-                to="/calendar"
-                className="nav-link header__blank-link"
-              >
-                Kalendar
-              </Link>
-            </li>
           </ul>
 
           <div
@@ -83,235 +75,13 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
           >
             <div className="d-flex align-items-center justify-content-between">
               <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-                <li className="nav-item dropdown nav-icon-hover-bg rounded-circle d-flex d-lg-none">
-                  <a
-                    className="nav-link position-relative"
-                    href="javascript:void(0)"
-                    id="drop3"
-                    aria-expanded="false"
-                  >
-                    <Icon icon="solar:magnifer-linear" className="fs-7" />
-                  </a>
-                  <div
-                    className="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                    aria-labelledby="drop3"
-                  >
-                    <div className="modal-header border-bottom p-3">
-                      <input
-                        type="search"
-                        className="form-control fs-3"
-                        placeholder="Try to searching ..."
-                      />
-                    </div>
-                    <div className="message-body p-3" data-simplebar="init">
-                      <div
-                        className="simplebar-wrapper"
-                        style={{ margin: "-16px" }}
-                      >
-                        <div className="simplebar-height-auto-observer-wrapper">
-                          <div className="simplebar-height-auto-observer"></div>
-                        </div>
-                        <div className="simplebar-mask">
-                          <div
-                            className="simplebar-offset"
-                            style={{ right: "0px", bottom: "0px" }}
-                          >
-                            <div
-                              className="simplebar-content-wrapper"
-                              tabIndex="0"
-                              role="region"
-                              aria-label="scrollable content"
-                              style={{ height: "auto", overflow: "hidden" }}
-                            >
-                              <div
-                                className="simplebar-content"
-                                style={{ padding: "16px" }}
-                              >
-                                <h5 className="mb-0 fs-5 p-1">
-                                  Quick Page Links
-                                </h5>
-                                <ul className="list mb-0 py-2">
-                                  <li className="p-1 mb-1 bg-hover-light-black rounded">
-                                    <a href="javascript:void(0)">
-                                      <span className="fs-3 text-dark d-block">
-                                        Modern
-                                      </span>
-                                      <span className="fs-3 text-muted d-block">
-                                        /dashboards/dashboard1
-                                      </span>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="simplebar-placeholder"
-                          style={{ width: "0px", height: "0px" }}
-                        ></div>
-                      </div>
-                      <div
-                        className="simplebar-track simplebar-horizontal"
-                        style={{ visibility: "hidden" }}
-                      >
-                        <div
-                          className="simplebar-scrollbar"
-                          style={{ width: "0px", display: "none" }}
-                        ></div>
-                      </div>
-                      <div
-                        className="simplebar-track simplebar-vertical"
-                        style={{ visibility: "hidden" }}
-                      >
-                        <div
-                          className="simplebar-scrollbar"
-                          style={{ height: "0px", display: "none" }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-
-                <li className="nav-item dropdown  d-none d-lg-block">
-                  <a
-                    className="nav-link position-relative shadow-none"
-                    href="javascript:void(0)"
-                    id="drop3"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <form className="nav-link position-relative shadow-none">
-                      <input
-                        type="text"
-                        className="form-control navigation-search-input rounded-5 py-1.7 ps-5 text-dark fw-medium"
-                        placeholder="Try to searching ..."
-                      />
-                      <Icon
-                        icon="solar:magnifer-linear"
-                        className="text-dark position-absolute top-50 start-0 translate-middle-y ms-3"
-                      />
-                    </form>
-                  </a>
-
-                  <div
-                    className="dropdown-menu content-dd border-0 dropdown-menu-end dropdown-menu-animate-up p-0"
-                    aria-labelledby="drop3"
-                    style={{ minWidth: "300px", borderRadius: '20px' }}
-                  >
-                    <div className="modal-header border-bottom p-3">
-                      <input
-                        type="search"
-                        className="form-control .navigation-search-input fs-0.2 fw-medium"
-                        placeholder="Try to searching ..."
-                      />
-                    </div>
-
-                    <div
-                      className="message-body p-3 overflow-y-auto"
-                      data-simplebar id="search-input-header-react"
-                    >
-                      <h5
-                        style={{ fontSize: "18px", fontWeight: "600" }}
-                        className="mb-0 p-1"
-                      >
-                        Quick Page Links
-                      </h5>
-                      <ul id="quick-page-links" className="list mb-0 py-2 px-0">
-                        <li className="p-1 mb-1 bg-hover-light-black rounded">
-                          <a href="javascript:void(0)">
-                            <span
-                              style={{
-                                fontWeight: 500,
-                                textDecoration: "none",
-                              }}
-                              className="fs-0.2 text-dark d-block "
-                            >
-                              Modern
-                            </span>
-                            <span className="fs-0.1 text-muted d-block">
-                              /dashboards/dashboard1
-                            </span>
-                          </a>
-                        </li>
-                        <li className="p-1 mb-1 bg-hover-light-black rounded">
-                          <a href="javascript:void(0)">
-                            <span
-                              style={{ fontWeight: 500 }}
-                              className="fs-0.2 text-dark d-block "
-                            >
-                              Dashboard
-                            </span>
-                            <span className="fs-0.1 text-muted d-block">
-                              /dashboards/dashboard2
-                            </span>
-                          </a>
-                        </li>
-                        <li className="p-1 mb-1 bg-hover-light-black rounded">
-                          <a href="javascript:void(0)">
-                            <span
-                              style={{ fontWeight: 500 }}
-                              className="fs-0.2 text-dark d-block"
-                            >
-                              Contacts
-                            </span>
-                            <span className="fs-0.1 text-muted d-block">
-                              /apps/contacts
-                            </span>
-                          </a>
-                        </li>
-                        <li className="p-1 mb-1 bg-hover-light-black rounded">
-                          <a href="javascript:void(0)">
-                            <span
-                              style={{ fontWeight: 500 }}
-                              className="fs-0.2 text-dark d-block"
-                            >
-                              Posts
-                            </span>
-                            <span className="fs-0.1 text-muted d-block">
-                              /apps/blog/posts
-                            </span>
-                          </a>
-                        </li>
-                        <li className="p-1 mb-1 bg-hover-light-black rounded">
-                          <a href="javascript:void(0)">
-                            <span
-                              style={{ fontWeight: 500 }}
-                              className="fs-0.2 text-dark d-block"
-                            >
-                              Detail
-                            </span>
-                            <span className="fs-0.1 text-muted d-block">
-                              /apps/blog/detail/streaming-video-way-before-it-was-cool-go-dark-tomorrow
-                            </span>
-                          </a>
-                        </li>
-                        <li className="p-1 mb-1 bg-hover-light-black rounded">
-                          <a href="javascript:void(0)">
-                            <span
-                              style={{ fontWeight: 500 }}
-                              className="fs-0.2 text-dark d-block"
-                            >
-                              Shop
-                            </span>
-                            <span className="fs-0.1 text-muted d-block">
-                              /apps/ecommerce/shop
-                            </span>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-
                 <li
                   className="nav-item nav-icon-hover-bg rounded-circle"
                   onClick={handleToggle}
                 >
                   {toggleTheme
-                    ? <a
+                    ? <span
                       className="nav-link moon dark-layout"
-                      href="javascript:void(0)"
                       style={{ display: "flex" }}
                     >
                       <Icon
@@ -319,10 +89,9 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                         className="moon"
                         style={{ display: "flex", fontSize: "22px" }}
                       />
-                    </a>
-                    : <a
+                    </span>
+                    : <span
                       className="nav-link sun light-layout"
-                      href="javascript:void(0)"
                       style={{ display: "flex" }}
                     >
                       <Icon
@@ -330,257 +99,19 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                         className="sun"
                         style={{ display: "flex", fontSize: "22px" }}
                       />
-                    </a>
+                    </span>
                   }
                 </li>
 
-                <li className="nav-item  dropdown nav-icon-hover-bg rounded-circle">
-                  <a
-                    className="nav-link position-relative"
-                    href="javascript:void(0)"
-                    id="drop3"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <Icon
-                      icon="solar:chat-dots-line-duotone"
-                      style={{ fontSize: "22px" }}
-                    />
-                    <div className="pulse">
-                      <span className="heartbit border-warning"></span>
-                      <span className="point text-bg-warning"></span>
-                    </div>
-                  </a>
-
-                  <div
-                    className="dropdown-menu border-0 content-dd dropdown-menu-end dropdown-menu-animate-up p-0"
-                    aria-labelledby="drop3"
-                    style={{ minWidth: "350px", borderRadius: '24px' }}
-                  >
-                    <div className="d-flex align-items-center py-3 px-4 border-bottom">
-                      <h3 style={{ fontSize: "18px" }} className="mb-0">
-                        Xabarlar
-                      </h3>
-                      <span
-                        style={{
-                          borderRadius: "10px",
-                          backgroundColor: "#167EB5",
-                          fontWeight: "500",
-                        }}
-                        className="badge ms-3"
-                      >
-                        5 yangi
-                      </span>
-                    </div>
-
-                    <div
-                      className="message-body overflow-y-auto"
-                      data-simplebar id="message-header"
-                      style={{ maxHeight: "320px" }}
-                    >
-                      <a
-                        href="javascript:void(0)"
-                        className="dropdown-item px-4 d-flex align-items-center py-3 border-bottom"
-                      >
-                        <span className="flex-shrink-0">
-                          <img
-                            src="/user-2.jpg"
-                            alt="user"
-                            width="45"
-                            className="rounded-circle"
-                          />
-                        </span>
-                        <div className="w-100 ps-3">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <h5
-                              style={{ fontSize: "15px", fontWeight: 600 }}
-                              className="mb-0"
-                            >
-                              Roman Joined the Team!{" "}
-                            </h5>
-                            <span
-                              style={{ fontSize: "12px" }}
-                              className="text-muted"
-                            >
-                              9:08 AM
-                            </span>
-                          </div>
-                          <span
-                            style={{ fontSize: "12px", fontWeight: 600 }}
-                            className="d-block mt-1 text-muted"
-                          >
-                            Congratulate him
-                          </span>
-                        </div>
-                      </a>
-
-                      <a
-                        href="javascript:void(0)"
-                        className="dropdown-item px-4 d-flex align-items-center py-3 border-bottom"
-                      >
-                        <span className="flex-shrink-0">
-                          <img
-                            src="/user-3.jpg"
-                            alt="user"
-                            width="45"
-                            className="rounded-circle"
-                          />
-                        </span>
-                        <div className="w-100 ps-3">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <h5
-                              style={{ fontSize: "15px", fontWeight: 600 }}
-                              className="mb-0"
-                            >
-                              New message received
-                            </h5>
-                            <span
-                              style={{ fontSize: "12px" }}
-                              className="text-muted"
-                            >
-                              9:08 AM
-                            </span>
-                          </div>
-                          <span
-                            className="d-block mt-1 text-muted"
-                            style={{ fontSize: "12px", fontWeight: 600 }}
-                          >
-                            Salma sent you new message
-                          </span>
-                        </div>
-                      </a>
-
-                      <a
-                        href="javascript:void(0)"
-                        className="dropdown-item px-4 d-flex align-items-center py-3 border-bottom"
-                      >
-                        <span className="flex-shrink-0">
-                          <img
-                            src="/user-4.jpg"
-                            alt="user"
-                            width="45"
-                            className="rounded-circle"
-                          />
-                        </span>
-                        <div className="w-100 ps-3">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <h5
-                              style={{ fontSize: "15px", fontWeight: 600 }}
-                              className="mb-0"
-                            >
-                              New Payment received
-                            </h5>
-                            <span
-                              style={{ fontSize: "12px" }}
-                              className="text-muted"
-                            >
-                              9:08 AM
-                            </span>
-                          </div>
-                          <span
-                            className="d-block mt-1 text-muted"
-                            style={{ fontSize: "12px", fontWeight: 600 }}
-                          >
-                            Check your earnings
-                          </span>
-                        </div>
-                      </a>
-
-                      <a
-                        href="javascript:void(0)"
-                        className="dropdown-item px-4 d-flex align-items-center py-3 border-bottom"
-                      >
-                        <span className="flex-shrink-0">
-                          <img
-                            src="/user-5.jpg"
-                            alt="user"
-                            width="45"
-                            className="rounded-circle"
-                          />
-                        </span>
-                        <div className="w-100 ps-3">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <h5
-                              style={{ fontSize: "15px", fontWeight: 600 }}
-                              className="mb-0"
-                            >
-                              New message received
-                            </h5>
-                            <span
-                              style={{ fontSize: "12px" }}
-                              className="text-muted"
-                            >
-                              9:08 AM
-                            </span>
-                          </div>
-                          <span
-                            className="d-block mt-1 text-muted"
-                            style={{ fontSize: "12px", fontWeight: 600 }}
-                          >
-                            Salma sent you new message
-                          </span>
-                        </div>
-                      </a>
-
-                      <a
-                        href="javascript:void(0)"
-                        className="dropdown-item px-4 d-flex align-items-center py-3"
-                      >
-                        <span className="flex-shrink-0">
-                          <img
-                            src="/user-6.jpg"
-                            alt="user"
-                            width="45"
-                            className="rounded-circle"
-                          />
-                        </span>
-                        <div className="w-100 ps-3">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <h5
-                              style={{ fontSize: "15px", fontWeight: 600 }}
-                              className="mb-0"
-                            >
-                              Roman Joined the Team!
-                            </h5>
-                            <span
-                              style={{ fontSize: "12px" }}
-                              className="text-muted"
-                            >
-                              9:08 AM
-                            </span>
-                          </div>
-                          <span
-                            className="d-block mt-1 text-muted"
-                            style={{ fontSize: "12px", fontWeight: 600 }}
-                          >
-                            Congratulate him
-                          </span>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="py-3 px-4 border-top">
-                      <Link
-                        style={{ borderRadius: '34px', backgroundColor: '#0085DB' }}
-                        className="btn py-2 text-white w-100 log-btn"
-                        to="/chats"
-                      >
-                        Hamma xabarlarni ko'rish
-                      </Link>
-                    </div>
-                  </div>
-                </li>
-
                 <li className="nav-item dropdown">
-                  <a
+                  <span
                     className="nav-link position-relative ms-6"
-                    href="javascript:void(0)"
                     id="drop1"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
                     <div className="d-flex align-items-center flex-shrink-0">
-                      <div className="user-profile me-sm-3 me-2">
+                      <div className="user-profile me-sm-3 me-2 position-relative">
                         <img
                           src={employee?.photo_url || "/user-1.jpg"}
                           style={{ borderRadius: "100%", width: "40px", height: "40px", objectFit: "cover" }}
@@ -597,7 +128,7 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                         </p>
                       </div>
                     </div>
-                  </a>
+                  </span>
 
                   <div style={{ borderRadius: '24px' }}
                     className="dropdown-menu border-0 content-dd dropdown-menu-end dropdown-menu-animate-up"
@@ -646,7 +177,7 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                           </div>
                         </NavLink>
 
-                        <a
+                        <span
                           className="dropdown-item px-4 d-flex cursor-pointer align-items-center py-3"
                         >
                           <span className="btn px-2 py-1 bg-success-subtle rounded-1 text-success shadow-none">
@@ -663,7 +194,7 @@ const Header = ({ employee, toggleTheme, setToggleTheme, setTogglebar, setShowba
                               Xabarlar & Pochta
                             </span>
                           </div>
-                        </a>
+                        </span>
 
                         <a
                           className="dropdown-item px-4 d-flex cursor-pointer align-items-center py-3"

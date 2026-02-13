@@ -3,10 +3,16 @@
   min-height: 100vh;
   padding-right: 0px;
   padding-left: 20px;
+  overflow-x: hidden;
+  /* Prevent global horizontal scroll */
 }
+
 .layout-content {
   padding-top: 20px;
   padding-left: 270px;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body[data-sidebartype='mini-sidebar'] .layout-content {
@@ -18,9 +24,11 @@ body[data-sidebartype='mini-sidebar'] .layout-content {
   .layout-content {
     padding-left: 0 !important;
   }
+
   .show-sidebar {
     z-index: 123456 !important;
   }
+
   /* .show-sidebar #aside-menu-toggle {
     width: 270px !important;
     transition: width .2s ease;

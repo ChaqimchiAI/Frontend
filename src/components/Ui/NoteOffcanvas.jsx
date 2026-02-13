@@ -7,10 +7,10 @@ import { useTheme } from "../../Context/Context"; // O'zingizni manzilingizga mo
 const NoteOffcanvas = ({ show, handleClose, student }) => {
     const { theme } = useTheme();
     const [note, setNote] = useState("");
-
+    
     // Hook'lar
-    const { data: notes, isLoading } = useStudentNotes(student.id);
-
+    const { data: notes, isLoading, error } = useStudentNotes(student.id);
+    
     const { mutate: addNote, isPending: adding } = useCreateStudentNote();
 
     // Dark/Light ranglar mantiqi

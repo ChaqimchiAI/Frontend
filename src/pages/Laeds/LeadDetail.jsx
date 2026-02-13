@@ -1,12 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Icon } from "@iconify/react"
 import Modal from "../../components/Ui/Modal"
 import { useLead, useLeadHistory, useUpdateLead, useDeleteLead } from "../../data/queries/leads.queries";
-import { Card, Button, Row, Col, Badge, ListGroup, Form, Spinner, Dropdown } from "react-bootstrap";
+import { Card, Button, Row, Col, Badge, ListGroup, Spinner } from "react-bootstrap";
 import Notification from "../../components/Ui/Notification";
 import Back from "../../components/Ui/Back";
-import { useGroups } from "../../data/queries/group.queries";
+import { useAddLeadToGroup, useGroups } from "../../data/queries/group.queries";
 
 const LeadDetail = () => {
      const { id } = useParams()
@@ -16,14 +16,16 @@ const LeadDetail = () => {
      const { data: groups } = useGroups();
      const { data: lead, isLoading, error } = useLead(id);
      const { data: history, isLoading: isHistoryLoading } = useLeadHistory(id);
-     const deleteLeadMutation = useDeleteLead();
+     const { mutate: deleteLead, isPending: deleting } = useDeleteLead();
+
+     // guruhga qoshgandann keyin is_delate ni false qilish
+     const { mutate: updateLead, isPending: updateLeadPending } = useUpdateLead()
 
      const [addGroup, setAddGroup] = useState(false)
      const [removeLead, setRemoveLead] = useState(false)
-     const [editLead, setEditLead] = useState(false)
      const [selectedGroup, setSelectedGroup] = useState("")
 
-     const updateLeadMutation = useUpdateLead();
+     const { mutate: addLeadToGroup, isPending: adding } = useAddLeadToGroup();
 
      if (isLoading) return (
           <div className="d-flex justify-content-center align-items-center" style={{ height: '80vh' }}>
@@ -47,9 +49,13 @@ const LeadDetail = () => {
      )
 
      const handleRemoveLead = () => {
-          deleteLeadMutation.mutate(id, {
+          deleteLead(id, {
                onSuccess: () => {
                     navigate("/leads")
+               },
+               onError: (err) => {
+                    console.error(err)
+                    setNotif({ show: true, type: 'error', message: 'Xatolik yuz berdi' });
                }
           });
      }
@@ -60,8 +66,8 @@ const LeadDetail = () => {
 
           const statusMap = {
                'new': { label: 'Yangi', color: '#0dcaf0', icon: 'qlementine-icons:new-16' },
-               'registered': { label: 'Tastiqlangan', color: '#198754', icon: 'material-symbols:check-circle-outline' },
-               'lost': { label: 'Bekor qilingan', color: '#dc3545', icon: 'material-symbols:cancel-outline' },
+               'registered': { label: 'Guruhga qo\'shilgan', color: '#198754', icon: 'material-symbols:check-circle-outline' },
+               'lost': { label: 'O\'chirilgan', color: '#dc3545', icon: 'material-symbols:cancel-outline' },
                'contacted': { label: "Bog'lanilgan", color: '#6610f2', icon: 'material-symbols:call-made' },
           };
 
@@ -95,15 +101,19 @@ const LeadDetail = () => {
      };
 
      const addGroupToLead = () => {
-          updateLeadMutation.mutate({ id, data: { group: selectedGroup } }, {
-               onSuccess: () => {
-                    setAddGroup(false);
-                    setNotif({ show: true, type: 'success', message: 'Lid guruhga muvaffaqiyatli qo\'shildi' });
-               },
-               onError: (err) => {
-                    setNotif({ show: true, type: 'error', message: err.message || 'Xatolik yuz berdi' });
-               }
-          });
+          addLeadToGroup(
+               { id, group_id: selectedGroup },
+               {
+                    onSuccess: () => {
+                         setAddGroup(false);
+                         setNotif({ show: true, type: 'success', message: 'Lid guruhga muvaffaqiyatli qo\'shildi' });
+                         updateLead(id, { status: 'registered' });
+                    },
+                    onError: (err) => {
+                         console.error(err);
+                         setNotif({ show: true, type: 'error', message: 'Xatolik yuz berdi!' });
+                    }
+               });
      }
 
      return (
@@ -124,6 +134,7 @@ const LeadDetail = () => {
                          close={() => setAddGroup(false)}
                          anima={addGroup}
                          width="400px"
+                         zIndex={100}
                     >
                          <div className="p-3">
                               <label htmlFor="group" className="form-label text-white-50 small mb-2">Guruhni tanlang</label>
@@ -148,9 +159,9 @@ const LeadDetail = () => {
                                         className="px-4 btn-sm shadow-sm"
                                         style={{ background: '#0085db', border: 'none' }}
                                         onClick={addGroupToLead}
-                                        disabled={updateLeadMutation.isPending}
+                                        disabled={adding}
                                    >
-                                        {updateLeadMutation.isPending ? <Spinner size="sm" animation="border" /> : "Saqlash"}
+                                        {adding ? <Spinner size="sm" animation="border" /> : "Saqlash"}
                                    </Button>
                               </div>
                          </div>
@@ -284,7 +295,7 @@ const LeadDetail = () => {
                                         Barchasini ko'rish
                                    </Button>
                               </Card.Header>
-                              
+
                               <Card.Body className="px-4 py-4">
                                    {isHistoryLoading ? (
                                         <div className="text-center py-4"><Spinner size="sm" animation="border" /></div>
@@ -360,28 +371,13 @@ const LeadDetail = () => {
                                              )}
                                         </div>
                                    </ListGroup.Item>
+                                   <ListGroup.Item className="bg-transparent border-white border-opacity-10 py-3">
+                                        <div className="text-white-50 small mb-1">Izoh</div>
+                                        <div className="d-flex flex-wrap gap-1 mt-1">
+                                             {lead?.comment ? lead?.comment : "Ma'lumot yo'q"}
+                                        </div>
+                                   </ListGroup.Item>
                               </ListGroup>
-                         </Card>
-
-                         {/* Notes / Admin Comment */}
-                         <Card style={glassStyle} className="border-0 shadow-sm">
-                              <Card.Header className="bg-transparent border-bottom border-white border-opacity-10 py-3 d-flex justify-content-between align-items-center">
-                                   <h6 className="mb-0 fw-bold d-flex align-items-center gap-2">
-                                        <Icon icon="material-symbols:notes-rounded" className="text-warning" width="20" />
-                                        Admin izohi
-                                   </h6>
-                                   <Icon icon="material-symbols:edit-outline" role="button" className="text-white-50 hover-text-white" />
-                              </Card.Header>
-                              <Card.Body>
-                                   <div className="p-3 rounded-4 bg-dark bg-opacity-25 border border-white border-opacity-10">
-                                        <p className="mb-0 small line-height-lg text-white-50 italic">
-                                             {lead?.comment ? `"${lead.comment}"` : "Hali hech qanday izoh qoldirilmagan. Lid bilan bog'laning va tafsilotlarni bu yerga yozing."}
-                                        </p>
-                                   </div>
-                                   <Button variant="link" className="text-primary text-decoration-none small mt-3 w-100 text-center fw-semibold">
-                                        Yangi izoh qo'shish
-                                   </Button>
-                              </Card.Body>
                          </Card>
                     </Col>
                </Row>

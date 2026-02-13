@@ -26,7 +26,7 @@ export default function StatusDropdown({ currentItem, setCurrentItem, statuses =
                <Dropdown.Menu
                     className="px-2 py-3 rounded w-auto"
                     style={{
-                         boxShadow: `0px 0px 10px ${!theme ? "#1e293b" : "#ccc"}`,
+                         boxShadow: `0px 0px 10px ${!theme ? "rgba(0, 0, 0, 0.3)" : "#ccc"}`,
                     }}
                >
                     {statuses.map(item => (

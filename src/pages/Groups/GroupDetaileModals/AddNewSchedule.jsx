@@ -90,6 +90,7 @@ const AddNewSchedule = ({
             close={setAddSchedule}
             anima={addSchedule}
             width="30%"
+            zIndex={100}
         >
             <Form className="d-flex flex-column gap-3" onSubmit={handleAddNewSchedule}>
 

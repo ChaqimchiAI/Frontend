@@ -1,895 +1,372 @@
-import "./Home.css";
-import { Icon } from "@iconify/react";
-import {
-  IconDotsVertical,
-  IconPlus,
-  IconEdit,
-  IconTrash,
-  IconSearch,
-} from "@tabler/icons-react";
+import { Icon } from '@iconify/react';
+import { useTheme } from '../../Context/Context';
+import { useProfile } from '../../data/queries/profile.queries';
+import { useStudentsData } from '../../data/queries/students.queries';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate()
+  const { theme } = useTheme();
+
+  const { data: user } = useProfile()
+  const { data: students } = useStudentsData()
+  const studentsData = students?.results
+
+  const currentTime = new Date()
+
+  const [recentStudents, setRecentStudents] = useState([])
+
+  useEffect(() => {
+    if (studentsData) {
+      const recent = studentsData.filter(student => {
+        const studentTime = new Date(student.created_at)
+        const diffTime = currentTime - studentTime
+        const diffHours = diffTime / (1000 * 60 * 60)
+
+        return diffHours <= 12 && diffHours >= 0
+      })
+
+      setRecentStudents(recent)
+    }
+  }, [studentsData])
+
+  // Statistika uchun ma'lumotlar
+  const stats = [
+    {
+      id: 1,
+      title: "O'quvchilar",
+      value: "1,280",
+      change: "+12%",
+      icon: "ph:student-duotone",
+      color: "#6366f1",
+      gradient: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
+    },
+    {
+      id: 2,
+      title: "Guruhlar",
+      value: "42",
+      change: "+5%",
+      icon: "ph:users-four-duotone",
+      color: "#f43f5e",
+      gradient: "linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)"
+    },
+    {
+      id: 3,
+      title: "Darslar",
+      value: "156",
+      change: "-2%",
+      icon: "ph:chalkboard-teacher-duotone",
+      color: "#10b981",
+      gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)"
+    },
+    {
+      id: 4,
+      title: "Tushum",
+      value: "45.2M",
+      change: "+18%",
+      icon: "ph:wallet-duotone",
+      color: "#f59e0b",
+      gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)"
+    },
+  ];
+
+  // Yaqindagi darslar uchun mock ma'lumotlar
+  const upcomingLessons = [
+    {
+      id: 1,
+      groupName: "IELTS Master",
+      teacher: "D. Alimov",
+      time: "16:00 - 17:30",
+      room: "102-xona",
+      color: "#6366f1"
+    },
+    {
+      id: 2,
+      groupName: "Kids English",
+      teacher: "M. Sobirova",
+      time: "17:30 - 18:30",
+      room: "204-xona",
+      color: "#10b981"
+    },
+    {
+      id: 3,
+      groupName: "Grammar Alpha",
+      teacher: "J. Karimov",
+      time: "18:00 - 19:30",
+      room: "Online",
+      color: "#f59e0b"
+    }
+  ];
+
   return (
-    <div className="alert alert-warning">
-      Ma'lumotlar yuklanmoqda!
+    <div className="card card-body" style={{ minHeight: '100vh', transition: 'all 0.3s' }}>
+      <style>{`
+        .glass-card {
+          background: ${!theme ? "rgba(30, 41, 59, 0.7)" : "#f5f5f5"};
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid ${!theme ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"};
+          border-radius: 20px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: ${!theme ? "0 4px 6px -1px rgba(0, 0, 0, 0.2)" : "0 4px 6px -1px rgba(0, 0, 0, 0.05)"};
+        }
+        
+        .stat-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+          border-color: ${!theme ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
+        }
+
+        .icon-box {
+          width: 54px;
+          height: 54px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 14px;
+          margin-bottom: 1.5rem;
+        }
+
+        .action-btn {
+          background: ${!theme ? "rgba(15, 23, 42, 0.6)" : "rgba(248, 250, 252, 1)"};
+          border: 1px solid ${!theme ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"};
+          color: ${!theme ? "#f1f5f9" : "#1e293b"};
+          padding: 1rem;
+          border-radius: 15px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          transition: all 0.2s;
+          text-align: left;
+          width: 100%;
+        }
+
+        .action-btn:hover {
+          background: ${!theme ? "rgba(30, 41, 59, 0.8)" : "#fff"};
+          border-color: rgba(99, 102, 241, 0.3);
+          transform: translateX(8px);
+          color: ${!theme ? "#fff" : "#6366f1"};
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-item {
+          padding: 12px;
+          border-radius: 12px;
+          transition: background 0.2s;
+          border-bottom: 1px solid ${!theme ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.03)"};
+        }
+
+        .student-item:hover {
+          background: ${!theme ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.02)"};
+        }
+
+        .trend-up { color: #10b981; }
+        .trend-down { color: #f43f5e; }
+        
+        .welcome-title {
+          background: ${!theme ? "linear-gradient(to right, #fff, #94a3b8)" : "linear-gradient(to right, #1e293b, #64748b)"};
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      `}</style>
+
+      {/* 1. Header Section */}
+      <div className="d-flex justify-content-between align-items-end mb-5">
+        <div>
+          <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-bold">
+            BOSHQRUV PANELI
+          </span>
+          <h2 className="fw-bold mb-1 welcome-title">Xush kelibsiz, {user?.first_name} 👋</h2>
+          <p className="text-muted mb-0 small">Bugungi ko'rsatkichlar va oxirgi yangiliklar bilan tanishing.</p>
+        </div>
+        <div className="d-none d-md-flex align-items-center gap-3">
+          <button className="btn btn-sm save-button fs-3 d-flex align-items-center gap-1">
+            <Icon icon="ion:wallet-outline" fontSize={20} />
+            To'lov
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Statistika Kartochkalari */}
+      <div className="row g-4 mb-5">
+        {stats.map((stat) => (
+          <div className="col-12 col-md-6 col-lg-3" key={stat.id}>
+            <div className="card glass-card stat-card p-4 h-100 border-0 overflow-hidden position-relative">
+              <div style={{
+                position: 'absolute',
+                top: '-20px',
+                right: '-20px',
+                width: '100px',
+                height: '100px',
+                background: stat.gradient,
+                opacity: '0.1',
+                borderRadius: '50%',
+                filter: 'blur(30px)'
+              }}></div>
+
+              <div className="icon-box" style={{ background: `${stat.color}15`, border: `1px solid ${stat.color}20` }}>
+                <Icon icon={stat.icon} fontSize={28} style={{ color: stat.color }} />
+              </div>
+
+              <div>
+                <p className="text-muted small mb-1 fw-bold text-uppercase" style={{ letterSpacing: '0.5px' }}>{stat.title}</p>
+                <div className="d-flex align-items-end gap-2">
+                  <h3 className={`fw-bold mb-0 ${!theme ? 'text-white' : 'text-dark'}`}>{stat.value}</h3>
+                  <span className={`small mb-1 fw-semibold ${stat.change.startsWith('+') ? 'trend-up' : 'trend-down'}`}>
+                    {stat.change}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="row g-4">
+        {/* 3. Markaziy qism */}
+        <div className="col-lg-8">
+          {/* Yaqindagi darslar */}
+          <div className="card glass-card p-4 border-0 mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h5 className={`fw-bold mb-1 ${!theme ? 'text-white' : 'text-dark'}`}>Yaqindagi darslar</h5>
+                <p className="text-muted small mb-0">Kelgusi 3 soat ichidagi darslar jadvali</p>
+              </div>
+              <div
+                className="badge cursor-pointer bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold"
+                onClick={() => { }}
+              >
+                Barcha darslar
+              </div>
+            </div>
+
+            <div className="row g-3">
+              {upcomingLessons.map((lesson) => (
+                <div className="col-12 col-md-4" key={lesson.id}>
+                  <div className="p-3 rounded-4" style={{
+                    background: !theme ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+                    borderTop: `1px solid ${!theme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`,
+                    borderRight: `1px solid ${!theme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`,
+                    borderBottom: `1px solid ${!theme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`,
+                    borderLeft: `4px solid ${lesson.color}`
+                  }}>
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <div className={`fw-bold ${!theme ? 'text-white' : 'text-dark'}`}>{lesson.groupName}</div>
+                      <div className="small text-primary fw-bold">{lesson.time.split(' ')[0]}</div>
+                    </div>
+                    <div className="text-muted small mb-1 d-flex align-items-center gap-1">
+                      <Icon icon="ph:user-circle" /> {lesson.teacher}
+                    </div>
+                    <div className="text-muted small d-flex align-items-center gap-1">
+                      <Icon icon="ph:door-open" /> {lesson.room}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Oxirgi qo'shilganlar */}
+          <div className="card glass-card p-4 border-0">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h5 className={`fw-bold mb-1 ${!theme ? 'text-white' : 'text-dark'}`}>Oxirgi o'quvchilar</h5>
+                <p className="text-muted small mb-0">Oxirgi 12 soat ichida qo'shilganlar</p>
+              </div>
+              <button
+                className="btn btn-sm btn-link text-primary text-decoration-none fw-bold"
+                onClick={() => navigate('/students')}
+              >
+                Hammasini ko'rish
+              </button>
+            </div>
+
+            <div className="mt-2">
+              {recentStudents.map((student) => (
+                <div
+                  className="student-item d-flex align-items-center mb-2"
+                  key={student.id}
+                  onClick={() => navigate(`/students/${student.id}`)}
+                >
+                  <div
+                    className={`avatar me-3 rounded-circle d-flex align-items-center justify-content-center border 
+                      ${!theme ? 'bg-dark border-secondary' : 'bg-light border-light'}`
+                    }
+                    style={{ width: '45px', height: '45px' }}
+                  >
+                    <Icon icon="ph:user-duotone" fontSize={22} className="text-muted" />
+                  </div>
+                  <div className="flex-grow-1">
+                    <div className={`fw-semibold ${!theme ? 'text-white' : 'text-dark'}`}>{student.first_name} {student.last_name}</div>
+                    <div className="text-muted small">{student.phone}</div>
+                  </div>
+                  <div className="text-end d-none d-sm-block">
+                    <div className="small text-muted mb-1">{student.created_at?.split('T')[1].slice(0, 5)}</div>
+                    <span
+                      className={`badge rounded-pill px-3 
+                        ${student.is_active === true ? 'bg-success' : 'bg-danger'} bg-opacity-10 
+                        ${student.is_active === true ? 'text-success' : 'text-danger'}`
+                      }
+                    >
+                      {student.is_active === true ? 'Faol' : 'Faol emas'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 4. O'ng taraf - Tezkor Tugmalar */}
+        <div className="col-lg-4">
+          <div className="card glass-card p-4 h-100 border-0">
+            <h5 className={`fw-bold mb-4 ${!theme ? 'text-white' : 'text-dark'}`}>Tezkor amallar</h5>
+            <div className="d-grid gap-3">
+              <button className="action-btn">
+                <div className="p-2 rounded-3 bg-primary bg-opacity-10">
+                  <Icon icon="ph:plus-circle-duotone" className="text-primary" fontSize={22} />
+                </div>
+                <div>
+                  <div className="fw-bold small">Yangi Lead</div>
+                  <div className="text-muted" style={{ fontSize: '11px' }}>Leadlar bo'limi</div>
+                </div>
+              </button>
+
+              <button className="action-btn">
+                <div className="p-2 rounded-3 bg-warning bg-opacity-10">
+                  <Icon icon="ci:user-add" className="text-warning" fontSize={22} />
+                </div>
+                <div>
+                  <div className="fw-bold small">Yangi o'quvchi</div>
+                  <div className="text-muted" style={{ fontSize: '11px' }}>O'quvchilar bo'limi</div>
+                </div>
+              </button>
+
+              <button className="action-btn">
+                <div className="p-2 rounded-3 bg-danger bg-opacity-10">
+                  <Icon icon="ph:users-three-duotone" className="text-danger" fontSize={22} />
+                </div>
+                <div>
+                  <div className="fw-bold small">Yangi guruh</div>
+                  <div className="text-muted" style={{ fontSize: '11px' }}>Guruhlar bo'limi</div>
+                </div>
+              </button>
+
+              <div className="mt-4 p-4 rounded-4 text-center" style={{
+                background: !theme ? 'rgba(99, 102, 241, 0.05)' : 'rgba(99, 102, 241, 0.03)',
+                border: '1px dashed rgba(99, 102, 241, 0.3)'
+              }}>
+                <Icon icon="ph:quotes-duotone" className="text-primary mb-2" fontSize={24} />
+                <p className={`small mb-0 italic ${!theme ? 'text-muted' : 'text-secondary'}`} style={{ fontStyle: 'italic' }}>
+                  "Bilim olish - har bir inson uchun eng yaxshi sarmoyadir."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    // <div className="row">
-    //   <div className="col-12">
-    //     <div id="body-card-index" className="card mb-0">
-    //       <div id="body-card-main" className="card-body">
-    //         <div className="d-md-flex justify-content-between mb-9">
-    //           <div className="mb-9 mb-md-0">
-    //             <h4 id="card-title" className="card-title">
-    //               Latest Reviews
-    //             </h4>
-    //             <p className="card-subtitle mb-0">
-    //               Review received across all channels
-    //             </p>
-    //           </div>
-    //           <div className="d-flex align-items-center">
-    //             <form className="position-relative me-3 w-100">
-    //               <input
-    //                 type="text"
-    //                 className="form-control search-chat py-2 ps-5"
-    //                 id="text-srh"
-    //                 placeholder="Search"
-    //               />
-    //               <IconSearch className="position-absolute top-50 start-0 translate-middle-y text-dark ms-3" />
-    //             </form>
-    //             <div className="dropdown">
-    //               <a
-    //                 href="javascript:void(0)"
-    //                 className="btn border-dark-subtle shadow-none px-3"
-    //                 id="dropdownMenuButton"
-    //                 data-bs-toggle="dropdown"
-    //                 aria-expanded="false"
-    //               >
-    //                 <IconDotsVertical className="fs-5" />
-    //               </a>
-    //               <ul
-    //                 className="dropdown-menu dropdown-menu-end"
-    //                 aria-labelledby="dropdownMenuButton"
-    //               >
-    //                 <li>
-    //                   <a
-    //                     className="dropdown-item d-flex align-items-center gap-3"
-    //                     href="javascript:void(0)"
-    //                   >
-    //                     <IconPlus className="fs-4" />
-    //                     Add
-    //                   </a>
-    //                 </li>
-    //                 <li>
-    //                   <a
-    //                     className="dropdown-item d-flex align-items-center gap-3"
-    //                     href="javascript:void(0)"
-    //                   >
-    //                     <IconEdit className="fs-4" />
-    //                     Edit
-    //                   </a>
-    //                 </li>
-    //                 <li>
-    //                   <a
-    //                     className="dropdown-item d-flex align-items-center gap-3"
-    //                     href="javascript:void(0)"
-    //                   >
-    //                     <IconTrash className="fs-4" />
-    //                     Delete
-    //                   </a>
-    //                 </li>
-    //               </ul>
-    //             </div>
-    //           </div>
-    //         </div>
-    //         <div className="table-responsive overflow-x-auto latest-reviews-table">
-    //           <table className="table align-middle text-nowrap">
-    //             <thead className="text-dark fs-4">
-    //               <tr>
-    //                 <th style={{ fontSize: "16px" }} className="ps-0">
-    //                   #
-    //                 </th>
-    //                 <th style={{ fontSize: "16px" }}>Products</th>
-    //                 <th style={{ fontSize: "16px" }}>Customer</th>
-    //                 <th style={{ fontSize: "16px" }}>Reviews</th>
-    //                 <th style={{ fontSize: "16px" }}>Status</th>
-    //                 <th style={{ fontSize: "16px" }}>Time</th>
-    //                 <th></th>
-    //               </tr>
-    //             </thead>
-    //             <tbody>
-    //               <tr>
-    //                 <td className="ps-0">
-    //                   <div className="form-check mb-0 flex-shrink-0">
-    //                     <input
-    //                       className="form-check-input flexCheckDefaultWrapper"
-    //                       type="checkbox"
-    //                       value=""
-    //                       id="flexCheckDefault1"
-    //                     />
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center product text-truncate">
-    //                     <img
-    //                       src="/product-5.png"
-    //                       className="img-fluid flex-shrink-0"
-    //                       width="60"
-    //                       height="60"
-    //                     />
-    //                     <div className="ms-3 product-title">
-    //                       <h6 className="mb-0 text-truncate-2 index-item-title">
-    //                         iPhone 13 pro max-Pacific Blue-128GB storage
-    //                       </h6>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center text-truncate">
-    //                     <img
-    //                       src="/user-2.jpg"
-    //                       alt="spike-img"
-    //                       className="img-fluid rounded-circle flex-shrink-0"
-    //                       width="40"
-    //                       height="40"
-    //                     />
-    //                     <div className="ms-3">
-    //                       <h4
-    //                         style={{ fontSize: "16.6px", fontWeight: 600 }}
-    //                         className="card-title mb-1"
-    //                       >
-    //                         Arlene McCoy
-    //                       </h4>
-    //                       <p className="card-subtitle">macoy@arlene.com</p>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="product-reviews">
-    //                     <ul className="list-unstyled d-flex align-items-center mb-0">
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="" href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-line-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                     <p
-    //                       style={{ fontSize: "15px" }}
-    //                       className="text-dark mb-0 fw-medium text-truncate-2"
-    //                     >
-    //                       This theme is great. Clean and easy to understand.
-    //                       Perfect for those who don't have
-    //                       <br />
-    //                       time to... <a href="javascript:void(0)">See more</a>
-    //                     </p>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <span className="badge rounded-pill bg-success-subtle text-success border-success border">
-    //                     Confirmed
-    //                   </span>
-    //                 </td>
-    //                 <td>
-    //                   <p className="mb-0">Nov 8</p>
-    //                 </td>
-    //                 <td>
-    //                   <div className="dropdown dropstart">
-    //                     <a
-    //                       href="javascript:void(0)"
-    //                       className="text-muted "
-    //                       id="dropdownMenuButton"
-    //                       data-bs-toggle="dropdown"
-    //                       aria-expanded="false"
-    //                     >
-    //                       <IconDotsVertical className="fs-5" />
-    //                     </a>
-    //                     <ul
-    //                       className="dropdown-menu"
-    //                       aria-labelledby="dropdownMenuButton"
-    //                     >
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconPlus className="fs-4" />
-    //                           Add
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconEdit className="fs-4" />
-    //                           Edit
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconTrash className="fs-4" />
-    //                           Delete
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                   </div>
-    //                 </td>
-    //               </tr>
-    //               <tr>
-    //                 <td className="ps-0">
-    //                   <div className="form-check mb-0 flex-shrink-0">
-    //                     <input
-    //                       className="form-check-input flexCheckDefaultWrapper"
-    //                       type="checkbox"
-    //                       value=""
-    //                       id="flexCheckDefault2"
-    //                     />
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center product text-truncate">
-    //                     <img
-    //                       src="/product-6.png"
-    //                       className="img-fluid flex-shrink-0"
-    //                       width="60"
-    //                       height="60"
-    //                     />
-    //                     <div className="ms-3 product-title">
-    //                       <h6 className="mb-0 text-truncate-2 index-item-title">
-    //                         Apple MacBook Pro 13 inch-M1-8/256GB-space
-    //                       </h6>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center text-truncate">
-    //                     <img
-    //                       src="/user-3.jpg"
-    //                       alt="spike-img"
-    //                       className="img-fluid rounded-circle flex-shrink-0"
-    //                       width="40"
-    //                       height="40"
-    //                     />
-    //                     <div className="ms-3">
-    //                       <h4 className="card-title mb-1">Jerome Bell</h4>
-    //                       <p className="card-subtitle">belljerome@yahoo.com</p>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="product-reviews">
-    //                     <ul className="list-unstyled d-flex align-items-center mb-0">
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="" href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-line-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                     <p
-    //                       style={{ fontSize: "15px" }}
-    //                       className="text-dark mb-0 fw-medium text-truncate-2"
-    //                     >
-    //                       It's a Mac, after all. Once you've gone Mac,there's no
-    //                       going back. My first Mac lastedover nine years.
-    //                     </p>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <span className="badge rounded-pill bg-warning-subtle text-warning border-warning border">
-    //                     Pending
-    //                   </span>
-    //                 </td>
-    //                 <td>
-    //                   <p className="mb-0">Nov 8</p>
-    //                 </td>
-    //                 <td>
-    //                   <div className="dropdown dropstart">
-    //                     <a
-    //                       href="javascript:void(0)"
-    //                       className="text-muted "
-    //                       id="dropdownMenuButton"
-    //                       data-bs-toggle="dropdown"
-    //                       aria-expanded="false"
-    //                     >
-    //                       <IconDotsVertical className="fs-5" />
-    //                     </a>
-    //                     <ul
-    //                       className="dropdown-menu"
-    //                       aria-labelledby="dropdownMenuButton"
-    //                     >
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconPlus className="fs-4" />
-    //                           Add
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconEdit className="fs-4" />
-    //                           Edit
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconTrash className="fs-4" />
-    //                           Delete
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                   </div>
-    //                 </td>
-    //               </tr>
-    //               <tr>
-    //                 <td className="ps-0">
-    //                   <div className="form-check mb-0 flex-shrink-0">
-    //                     <input
-    //                       className="form-check-input flexCheckDefaultWrapper"
-    //                       type="checkbox"
-    //                       value=""
-    //                       id="flexCheckDefault3"
-    //                     />
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center product text-truncate">
-    //                     <img
-    //                       src="/product-7.png"
-    //                       className="img-fluid flex-shrink-0"
-    //                       width="60"
-    //                       height="60"
-    //                     />
-    //                     <div className="ms-3 product-title">
-    //                       <h6 className="mb-0 text-truncate-2 index-item-title">
-    //                         PlayStation 5 DualSense Wireless Controller
-    //                       </h6>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center text-truncate">
-    //                     <img
-    //                       src="/user-4.jpg"
-    //                       alt="spike-img"
-    //                       className="img-fluid rounded-circle flex-shrink-0"
-    //                       width="40"
-    //                       height="40"
-    //                     />
-    //                     <div className="ms-3">
-    //                       <h4 className="card-title mb-1">Jacob Jones</h4>
-    //                       <p className="card-subtitle">jones009@hotmail.com</p>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="product-reviews">
-    //                     <ul className="list-unstyled d-flex align-items-center mb-0">
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="" href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-line-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                     <p
-    //                       style={{ fontSize: "15px" }}
-    //                       className="text-dark mb-0 fw-medium text-truncate-2"
-    //                     >
-    //                       The best experience we could hope for.Customer service
-    //                       team is amazing and thequality of their products...{" "}
-    //                       <a href="javascript:void(0)">See more</a>
-    //                     </p>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <span className="badge rounded-pill bg-warning-subtle text-warning border-warning border">
-    //                     Pending
-    //                   </span>
-    //                 </td>
-    //                 <td>
-    //                   <p className="mb-0">Nov 8</p>
-    //                 </td>
-    //                 <td>
-    //                   <div className="dropdown dropstart">
-    //                     <a
-    //                       href="javascript:void(0)"
-    //                       className="text-muted "
-    //                       id="dropdownMenuButton"
-    //                       data-bs-toggle="dropdown"
-    //                       aria-expanded="false"
-    //                     >
-    //                       <IconDotsVertical className="fs-5" />
-    //                     </a>
-    //                     <ul
-    //                       className="dropdown-menu"
-    //                       aria-labelledby="dropdownMenuButton"
-    //                     >
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconPlus className="fs-4" />
-    //                           Add
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconEdit className="fs-4" />
-    //                           Edit
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconTrash className="fs-4" />
-    //                           Delete
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                   </div>
-    //                 </td>
-    //               </tr>
-    //               <tr>
-    //                 <td className="ps-0">
-    //                   <div className="form-check mb-0 flex-shrink-0">
-    //                     <input
-    //                       className="form-check-input flexCheckDefaultWrapper"
-    //                       type="checkbox"
-    //                       value=""
-    //                       id="flexCheckDefault4"
-    //                     />
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center product text-truncate">
-    //                     <img
-    //                       src="/product-8.png"
-    //                       className="img-fluid flex-shrink-0"
-    //                       width="60"
-    //                       height="60"
-    //                     />
-    //                     <div className="ms-3 product-title">
-    //                       <h6 className="mb-0 index-item-title text-truncate-2">
-    //                         Amazon Basics Mesh, Mid-Back, Swivel Office De...
-    //                       </h6>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center text-truncate">
-    //                     <img
-    //                       src="/user-5.jpg"
-    //                       alt="spike-img"
-    //                       className="img-fluid rounded-circle flex-shrink-0"
-    //                       width="40"
-    //                       height="40"
-    //                     />
-    //                     <div className="ms-3">
-    //                       <h4 className="card-title mb-1">Annette Black</h4>
-    //                       <p className="card-subtitle">blackanne@yahoo.com</p>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="product-reviews">
-    //                     <ul className="list-unstyled d-flex align-items-center mb-0">
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="" href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-line-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                     <p
-    //                       style={{ fontSize: "15px" }}
-    //                       className="text-dark mb-0 fw-medium text-truncate-2"
-    //                     >
-    //                       The controller is quite comfy for me. Despiteits
-    //                       increased size, the controller still fits well
-    //                       <br />
-    //                       in my hands.
-    //                     </p>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <span className="badge rounded-pill bg-success-subtle text-success border-success border">
-    //                     Confirmed
-    //                   </span>
-    //                 </td>
-    //                 <td>
-    //                   <p className="mb-0">Nov 8</p>
-    //                 </td>
-    //                 <td>
-    //                   <div className="dropdown dropstart">
-    //                     <a
-    //                       href="javascript:void(0)"
-    //                       className="text-muted "
-    //                       id="dropdownMenuButton"
-    //                       data-bs-toggle="dropdown"
-    //                       aria-expanded="false"
-    //                     >
-    //                       <IconDotsVertical className="fs-5" />
-    //                     </a>
-    //                     <ul
-    //                       className="dropdown-menu"
-    //                       aria-labelledby="dropdownMenuButton"
-    //                     >
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconPlus className="fs-4" />
-    //                           Add
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconEdit className="fs-4" />
-    //                           Edit
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconTrash className="fs-4" />
-    //                           Delete
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                   </div>
-    //                 </td>
-    //               </tr>
-    //               <tr>
-    //                 <td className="ps-0">
-    //                   <div className="form-check mb-0 flex-shrink-0">
-    //                     <input
-    //                       className="form-check-input flexCheckDefaultWrapper"
-    //                       type="checkbox"
-    //                       value=""
-    //                       id="flexCheckDefault5"
-    //                     />
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center product text-truncate">
-    //                     <img
-    //                       src="/product-9.png"
-    //                       className="img-fluid flex-shrink-0"
-    //                       width="50"
-    //                       height="50"
-    //                     />
-    //                     <div className="ms-3 product-title">
-    //                       <h6
-    //                         style={{ fontSize: "16px" }}
-    //                         className="mb-0 text-truncate-2 index-item-title"
-    //                       >
-    //                         Sony X85J 75 Inch Sony 4K Ultra HD LED Smart G...
-    //                       </h6>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="d-flex align-items-center text-truncate">
-    //                     <img
-    //                       src="/user-6.jpg"
-    //                       alt="spike-img"
-    //                       className="img-fluid rounded-circle flex-shrink-0"
-    //                       width="40"
-    //                       height="40"
-    //                     />
-    //                     <div className="ms-3">
-    //                       <h4 className="card-title mb-1">Albert Flores</h4>
-    //                       <p className="card-subtitle">albertflo9@gmail.com</p>
-    //                     </div>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <div className="product-reviews">
-    //                     <ul className="list-unstyled d-flex align-items-center mb-0">
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="me-1 " href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-bold-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a className="" href="javascript:void(0)">
-    //                           <Icon
-    //                             icon="solar:star-line-duotone"
-    //                             className="text-warning"
-    //                           />
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                     <p
-    //                       style={{ fontSize: "15px" }}
-    //                       className="text-dark mb-0 fw-medium text-truncate-2"
-    //                     >
-    //                       This theme is great. Perfect for those whodon't have
-    //                       time to start everything from
-    //                       <br />
-    //                       scratch.
-    //                     </p>
-    //                   </div>
-    //                 </td>
-    //                 <td>
-    //                   <span className="badge rounded-pill bg-warning-subtle text-warning border-warning border">
-    //                     Pending
-    //                   </span>
-    //                 </td>
-    //                 <td>
-    //                   <p className="mb-0">Nov 8</p>
-    //                 </td>
-    //                 <td>
-    //                   <div className="dropdown dropstart">
-    //                     <a
-    //                       href="javascript:void(0)"
-    //                       className="text-muted "
-    //                       id="dropdownMenuButton"
-    //                       data-bs-toggle="dropdown"
-    //                       aria-expanded="false"
-    //                     >
-    //                       <IconDotsVertical className="fs-5" />
-    //                     </a>
-    //                     <ul
-    //                       className="dropdown-menu"
-    //                       aria-labelledby="dropdownMenuButton"
-    //                     >
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconPlus className="fs-4" />
-    //                           Add
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconEdit className="fs-4" />
-    //                           Edit
-    //                         </a>
-    //                       </li>
-    //                       <li>
-    //                         <a
-    //                           className="dropdown-item d-flex align-items-center gap-3"
-    //                           href="javascript:void(0)"
-    //                         >
-    //                           <IconTrash className="fs-4" />
-    //                           Delete
-    //                         </a>
-    //                       </li>
-    //                     </ul>
-    //                   </div>
-    //                 </td>
-    //               </tr>
-    //             </tbody>
-    //           </table>
-    //         </div>
-    //         <div className="d-flex align-items-center justify-content-between mt-10">
-    //           <p className="mb-0 fw-normal">1-6 of 32</p>
-    //           <nav aria-label="Page navigation example">
-    //             <ul className="pagination mb-0 align-items-center">
-    //               <li className="page-item">
-    //                 <a
-    //                   className="page-link border-0 d-flex align-items-center text-muted fw-normal"
-    //                   href="javascript:void(0)"
-    //                 >
-    //                   <Icon
-    //                     icon="solar:alt-arrow-left-line-duotone"
-    //                     className="fs-5"
-    //                   />
-    //                   Previous
-    //                 </a>
-    //               </li>
-    //               <li className="page-item">
-    //                 <a
-    //                   className="page-link border-0 d-flex align-items-center fw-normal"
-    //                   href="javascript:void(0)"
-    //                 >
-    //                   Next
-    //                   <Icon
-    //                     icon="solar:alt-arrow-right-line-duotone"
-    //                     className="fs-5"
-    //                   />
-    //                 </a>
-    //               </li>
-    //             </ul>
-    //           </nav>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
 

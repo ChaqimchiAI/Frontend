@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useStudentsData } from "../../data/queries/students.queries";
+import { useBillingStats } from "../../data/queries/billing.queries";
 import DataTable from "../../components/Ui/DataTable";
 import CalendarSelector from "../../components/Ui/CalendarSelector";
 import StatusDropdown from "../../components/Ui/StatusFilter";
@@ -46,8 +47,9 @@ const Students = () => {
     search: "",
   });
 
-  const { data: studentsData, isLoading, error } = useStudentsData(filters);
-
+  const { data: students, isLoading, error } = useStudentsData(filters);
+  const studentsData = students?.results || [];
+  
   const [notif, setNotif] = useState({ show: false, message: "", type: "" });
 
   const [showNotes, setShowNotes] = useState(false);
@@ -63,7 +65,7 @@ const Students = () => {
     }));
   };
 
-  const handleDateRange = (range) => {
+  const handleDateRange = (range) => {    
     setFilters(prev => ({
       ...prev,
       start_date: range.start || "",
@@ -128,13 +130,13 @@ const Students = () => {
         <div
           style={{
             maxHeight: isFilterVisible ? "300px" : "0",
-            overflow: "hidden",
+            overflow: isFilterVisible ? "visible" : "hidden",
             transition: "all 0.4s ease-in-out",
             opacity: isFilterVisible ? 1 : 0,
           }}
         >
           <div className="d-flex flex-wrap align-items-center gap-2 p-3 border rounded bg-light-subtle">
-            <CalendarSelector onRangeSelect={handleDateRange} filters={filters} />
+            <CalendarSelector onRangeSelect={handleDateRange} filters={filters} placeholder="Yaratilgan sana bo'yicha" />
 
             {/* Status filtri */}
             <StatusDropdown
@@ -172,7 +174,7 @@ const Students = () => {
 
         <DataTable
           data={studentsData || []}
-          totalCount={studentsData?.totalCount}
+          totalCount={students?.count}
           columns={["№", "Talaba", "Telefon", "Balans", "To'lov sanasi", "Yaratilgan sana", "Guruh", ""]}
           onPageChange={(e, v) => setFilters(p => ({ ...p, page: v }))}
           onEntriesChange={(l) => setFilters(p => ({ ...p, limit: l, page: 1 }))}
