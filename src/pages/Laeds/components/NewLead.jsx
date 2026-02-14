@@ -49,7 +49,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
      // Yangi lid qoshish
      const handleSubmit = (e) => {
           e.preventDefault()
-          if (!(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.week_days)) {
+          if (!(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.week_days)) {
                alert("Asosiy ma'lumotlar to'ldiring!");
                return;
           }
@@ -125,7 +125,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
                     <div className="row">
                          <div className="col d-flex flex-column">
                               <label htmlFor="course" className="form-label">
-                                   Kurs *
+                                   Kurs
                               </label>
                               <select
                                    id="course"

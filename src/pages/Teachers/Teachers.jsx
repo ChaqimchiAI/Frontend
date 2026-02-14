@@ -12,12 +12,27 @@ const Teachers = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const isDark = !theme;
-  const { data: teachers, isLoading: gettingTeachersData } = useTeachersDataFullInfo();
+
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+    status: "",
+    teacher_id: "",
+    study_day: "",
+    start_date: "",
+    end_date: "",
+    search: "",
+  });
+
+  const { data: teachers, isLoading: gettingTeachersData } = useTeachersDataFullInfo(filters);
+  const teachersData = teachers?.results || [];
+
   const [newTeacher, setNewTeacher] = useState(false);
   const [notif, setNotif] = useState({ show: false, type: "", message: "" })
-
-  const teachersData = teachers?.results || [];
   const [viewMode, setViewMode] = useState("grid");
+
+  const [editTeacher, setEditTeacher] = useState(false);
+  const [editTeacherData, setEditTeacherData] = useState(null);
 
   // Avtomatik ravishda 15 tadan oshsa listga o'tkazish
   useEffect(() => {
@@ -36,8 +51,17 @@ const Teachers = () => {
     );
   }
 
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value === "all" ? "" : value,
+      page: 1
+    }));
+  };
+
+
   // List rejimi uchun ustunlar
-  const listColumns = ["O'qituvchi", "Telefon", "Guruhlar", "Filiallar", "Qo'shilgan sana", "Amallar"];
+  const listColumns = ["O'qituvchi", "Telefon", "Guruhlar", "Qo'shilgan sana", "Amallar"];
 
   const ViewToggle = (
     <div className="d-flex gap-2 align-items-center mb-3">
@@ -73,6 +97,8 @@ const Teachers = () => {
       {notif.show && <Notification type={notif.type} message={notif.message} onClose={() => setNotif({ ...notif, show: false })} />}
 
       {newTeacher && <TeacherModal show={newTeacher} setShow={setNewTeacher} setNotif={setNotif} />}
+
+      {editTeacher && <TeacherModal setNotif={setNotif} setShow={setEditTeacher} show={editTeacher} editData={editTeacherData} />}
 
       <div className="card card-body">
         <div className="d-flex justify-content-between">
@@ -126,7 +152,7 @@ const Teachers = () => {
                           variant="primary"
                           size="sm"
                           className="rounded-pill px-4 shadow-sm fw-semibold"
-                          onClick={() => navigate(`/teachers/${index + 1}`)}
+                          onClick={() => navigate(`/teachers/${teacher.id}`)}
                         >
                           Profil
                         </Button>
@@ -141,11 +167,15 @@ const Teachers = () => {
                   data={teachersData}
                   columns={viewMode === "list" ? listColumns : []}
                   searchKeys={["first_name", "last_name", "phone"]}
-                  theme={isDark}
+                  onSearch={(v) => handleFilterChange("search", v)}
                 >
                   {(currentData) => (
                     currentData.map((teacher, index) => (
-                      <tr key={teacher.id} style={{ color: isDark ? "#e2e8f0" : "#000" }} onClick={() => navigate(`/teachers/${index + 1}`)}>
+                      <tr
+                        key={teacher.id}
+                        style={{ color: isDark ? "#e2e8f0" : "#000" }}
+                        onClick={() => navigate(`/teachers/${teacher.id}`)}
+                      >
                         <td className="ps-4">
                           <div className="d-flex align-items-center gap-3 py-1">
                             {teacher.photo_url ? (
@@ -163,17 +193,16 @@ const Teachers = () => {
                         </td>
                         <td>{teacher.phone}</td>
                         <td>
-                          <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
-                            {teacher.course?.name}
+                          <span className="d-flex gap-2">
+                            <Icon icon="mingcute:group-2-line" className="fs-6" />
+
+                            {teacher.groups?.length || 0}
                           </span>
                         </td>
-                        <td></td>
                         <td>
-                          <span className={`badge ${teacher.status === 'interested' ? 'bg-info' : 'bg-success'} bg-opacity-10 text-${teacher.status === 'interested' ? 'info' : 'success'} px-3 py-2`}>
-                            {teacher.status}
-                          </span>
+                          {teacher.hire_date.split("-").reverse().join(".")}
                         </td>
-                        <td className="text-end pe-4">
+                        <td className="pe-4">
                           <button
                             className="rounded-3 border me-2 "
                             // style={{ background: "#15263a" }}
@@ -188,6 +217,8 @@ const Teachers = () => {
                             style={{ background: !theme ? "#15263a" : "#f5f5f5" }}
                             onClick={(e) => {
                               e.stopPropagation();
+                              setEditTeacher(true)
+                              setEditTeacherData(teacher)
                             }}
                           >
                             <Icon icon="lucide:edit" color="#fca130" />

@@ -26,16 +26,6 @@ const statuses = [
      { key: "contacted", label: "Bog‘lanilgan", color: "muted" },
 ];
 
-const sourcesD = [
-     { key: "all", label: "Barcha manbalar", },
-     { key: "Telegram", label: "Telegram", },
-     { key: "Facebook", label: "Facebook", },
-     { key: "Tavsiya", label: "Tavsiya", },
-     { key: "Banner", label: "Banner", },
-     { key: "Instagram", label: "Instagram", },
-];
-
-
 const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setChangeData, setShow }) => {
      const navigate = useNavigate()
 
@@ -44,7 +34,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
 
      const { mutate: updateLead } = useUpdateLead();
 
-     const { data: stats } = useLeadsStats(filters)
+     const { data: stats } = useLeadsStats()
 
      const [openDropdown, setOpenDropdown] = useState(null)
 
@@ -59,10 +49,6 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
 
      const handleStatusChange = (status) => {
           setFilters(prev => ({ ...prev, status: status.key === "all" ? "" : status.key, page: 1 }));
-     };
-
-     const handleSourceChange = (source) => {
-          setFilters(prev => ({ ...prev, source: source.key === "all" ? "" : source.key, page: 1 }));
      };
 
      const handleDateRange = (range) => {
@@ -111,9 +97,12 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
           fill: sources[source],
      }));
 
-
-     const handleSearch = (query) => {
-          setFilters(prev => ({ ...prev, search: query, page: 1 }));
+     const handleFilterChange = (key, value) => {
+          setFilters(prev => ({
+               ...prev,
+               [key]: value === "all" ? "" : value,
+               page: 1
+          }));
      };
 
      return (
@@ -208,13 +197,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                                    setCurrentItem={handleStatusChange}
                               />
 
-                              <StatusDropdown
-                                   statuses={sourcesD}
-                                   currentItem={sourcesD.find(s => s.key === (filters.source || "all"))}
-                                   setCurrentItem={handleSourceChange}
-                              />
-
-                              {(filters.status || filters.source || filters.start_date) && (
+                              {(filters.status || filters.start_date) && (
                                    <button
                                         className="btn btn-sm fs-4 d-flex align-items-center gap-2 px-3 py-2"
                                         onClick={() => {
@@ -241,9 +224,9 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                          totalCount={totalCount}
                          onPageChange={handlePageChange}
                          onEntriesChange={handleLimitChange}
-                         onSearch={handleSearch}
                          columns={["№", "Ism", "Telefon", "Holati", "Yaratilgan vaqti", "O'qituvchi", "Kurs", "Vaqti", "Amallar"]}
                          searchKeys={["first_name", "last_name", "phone"]}
+                         onSearch={(v) => handleFilterChange("search", v)}
                     >
                          {(currentData) =>
                               currentData.map((lid, index) => (

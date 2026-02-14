@@ -19,10 +19,10 @@ const Leads = () => {
           page: 1,
           limit: 10,
           status: "",
-          source: "",
           start_date: "",
           end_date: "",
-          period: ""
+          period: "",
+          search: ""
      });
 
      // lidlarni royxati
@@ -32,7 +32,7 @@ const Leads = () => {
 
 
      // lidlar boyicha statistika 
-     const { data: stats } = useLeadsStats()
+     const { data: stats } = useLeadsStats(filters)
 
      // lidlarni o'zgartirish
      const { mutate: editLead, isPending: editLeadPending } = useEditLead()
@@ -256,7 +256,7 @@ const Leads = () => {
                                         className="fs-8"
                                         style={{ color: "#0095db", fontWeight: "900" }}
                                    >
-                                        {stats?.count}
+                                        {stats?.count || 0}
                                    </span>
                               </div>
                               <span

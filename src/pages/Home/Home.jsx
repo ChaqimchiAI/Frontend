@@ -174,7 +174,7 @@ const Home = () => {
         <div className="d-flex justify-content-between align-items-end mb-5">
           <div>
             <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3 fw-bold">
-              BOSHQRUV PANELI
+              DASHBOARD
             </span>
             <h2 className="fw-bold mb-1 welcome-title">Xush kelibsiz, {user?.first_name} 👋</h2>
             <p className="text-muted mb-0 small">Bugungi ko'rsatkichlar va oxirgi yangiliklar bilan tanishing.</p>

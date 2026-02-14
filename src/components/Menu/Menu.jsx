@@ -70,7 +70,7 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                         <span className="aside-icon p-2 bg-primary-subtle rounded-1">
                           <Icon icon="solar:screencast-2-line-duotone" className="fs-5" />
                         </span>
-                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Boshqaruv paneli</span> : ''}
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Dashboard</span> : ''}
                       </NavLink>
                     </li>
 

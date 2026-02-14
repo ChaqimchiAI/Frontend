@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useStudentsData } from "../../data/queries/students.queries";
-import { useBillingStats } from "../../data/queries/billing.queries";
 import DataTable from "../../components/Ui/DataTable";
 import CalendarSelector from "../../components/Ui/CalendarSelector";
 import StatusDropdown from "../../components/Ui/StatusFilter";
