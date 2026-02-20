@@ -18,6 +18,7 @@ import Groups from "./pages/Groups/Groups";
 import GroupDetalie from "./pages/Groups/GroupDetalie";
 import Rooms from "./pages/Rooms/Rooms";
 import Courses from "./pages/Courses/Courses";
+import Debtors from "./pages/Debtors/Debtors";
 import { ThemeProvider, useTheme } from "./Context/Context";
 
 
@@ -53,6 +54,7 @@ function App() {
               <Route path="leads" element={<Leads />} />
               <Route path="rooms" element={<Rooms />} />
               <Route path="courses" element={<Courses />} />
+              <Route path="debtors" element={<Debtors />} />
               <Route path="groups/:id" element={<GroupDetalie />} />
               <Route path="teachers/:id" element={<TeacherDetaile />} />
               <Route path="students/:id" element={<StudentDetaile />} />

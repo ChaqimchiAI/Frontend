@@ -100,6 +100,18 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
 
                     <li className="sidebar-item">
                       <NavLink
+                        to="/debtors"
+                        className={`sidebar-link danger-hover-bg`}
+                      >
+                        <span className="aside-icon p-2 bg-danger-subtle rounded-1">
+                          <Icon icon="ph:warning-duotone" className="fs-6" />
+                        </span>
+                        {togglebar || mouseMove ? <span className="hide-menu ps-1">Qarzdorlar</span> : ""}
+                      </NavLink>
+                    </li>
+
+                    <li className="sidebar-item">
+                      <NavLink
                         to="/leads"
                         className={`sidebar-link warning-hover-bg`}
                       >

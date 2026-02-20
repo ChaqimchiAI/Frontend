@@ -29,6 +29,7 @@ function DataTable({
 
      /* 🔍 SEARCH */
      const filteredData = useMemo(() => {
+          if (!Array.isArray(data)) return [];
           if (!searchQuery) return data;
 
           return data.filter(item =>
@@ -46,7 +47,7 @@ function DataTable({
      const indexOfLast = currentPage * entries;
      const indexOfFirst = indexOfLast - entries;
 
-     const currentData = isServerSide ? data : filteredData.slice(indexOfFirst, indexOfLast);
+     const currentData = isServerSide ? data : filteredData?.slice(indexOfFirst, indexOfLast);
 
      const handleEntriesChange = (e) => {
           setEntries(e);
@@ -114,51 +115,53 @@ function DataTable({
                     </Table>
                </div>
 
-               <div className="d-flex justify-content-between align-items-center">
-                    <span className="text-muted">
-                         {total === 0 ? 0 : indexOfFirst + 1}
-                         {" "}dan{" "}
-                         {Math.min(indexOfLast, total)}
-                         {" "}ga qadar, jami {total} ta
-                    </span>
+               {total > 0 && (
+                    <div className="d-flex justify-content-between align-items-center">
+                         <span className="text-muted">
+                              {indexOfFirst + 1}
+                              {" "}dan{" "}
+                              {Math.min(indexOfLast, total)}
+                              {" "}ga qadar, jami {total} ta
+                         </span>
 
-                    <div className="d-flex align-items-center gap-2">
-                         <EntriesSelect
-                              options={countOptions}
-                              value={entries}
-                              onChange={handleEntriesChange}
-                         />
+                         <div className="d-flex align-items-center gap-2">
+                              <EntriesSelect
+                                   options={countOptions}
+                                   value={entries}
+                                   onChange={handleEntriesChange}
+                              />
 
-                         <Pagination
-                              count={pagesCount}
-                              page={currentPage}
-                              onChange={handlePageChangeInternal}
-                              size="small"
-                              shape="rounded"
-                              sx={{
-                                   '& .MuiPaginationItem-root': {
-                                        color: !theme ? '#ffffffd9' : '#000000d9',
-                                        backgroundColor: 'transparent',
-                                        border: 'none'
-                                   },
-                                   '& .MuiPaginationItem-root:hover': {
-                                        backgroundColor: 'rgba(255,255,255,0.06)'
-                                   },
-                                   '& .Mui-selected': {
-                                        backgroundColor: '#0d6dfd !important',
-                                        color: '#fff'
-                                   },
-                                   '& .MuiPaginationItem-ellipsis': {
-                                        color: 'rgba(255,255,255,0.6)'
-                                   },
-                                   '& .Mui-disabled': {
-                                        opacity: 0.65,
-                                        color: !theme ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
-                                   }
-                              }}
-                         />
+                              <Pagination
+                                   count={pagesCount}
+                                   page={currentPage}
+                                   onChange={handlePageChangeInternal}
+                                   size="small"
+                                   shape="rounded"
+                                   sx={{
+                                        '& .MuiPaginationItem-root': {
+                                             color: !theme ? '#ffffffd9' : '#000000d9',
+                                             backgroundColor: 'transparent',
+                                             border: 'none'
+                                        },
+                                        '& .MuiPaginationItem-root:hover': {
+                                             backgroundColor: 'rgba(255,255,255,0.06)'
+                                        },
+                                        '& .Mui-selected': {
+                                             backgroundColor: '#0d6dfd !important',
+                                             color: '#fff'
+                                        },
+                                        '& .MuiPaginationItem-ellipsis': {
+                                             color: 'rgba(255,255,255,0.6)'
+                                        },
+                                        '& .Mui-disabled': {
+                                             opacity: 0.65,
+                                             color: !theme ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
+                                        }
+                                   }}
+                              />
+                         </div>
                     </div>
-               </div>
+               )}
           </div>
      );
 }

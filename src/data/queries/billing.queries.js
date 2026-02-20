@@ -8,10 +8,10 @@ export const useBillingStats = () => {
     });
 };
 
-export const useDebtorsStudents = () => {
+export const useDebtorsStudents = ({ page, ordering } = {}) => {
     return useQuery({
-        queryKey: ["debtors-students"],
-        queryFn: getDebtorsStudents,
+        queryKey: ["debtors-students", page, ordering],
+        queryFn: () => getDebtorsStudents({ page, ordering }),
     });
 };
 
