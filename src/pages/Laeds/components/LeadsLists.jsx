@@ -26,6 +26,48 @@ const statuses = [
      { key: "contacted", label: "Bog‘lanilgan", color: "muted" },
 ];
 
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name, fill }) => {
+     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+     const x = cx + radius * Math.cos(-midAngle * RADIAN);
+     const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+     const sin = Math.sin(-RADIAN * midAngle);
+     const cos = Math.cos(-RADIAN * midAngle);
+     const sx = cx + (outerRadius + 15) * cos;
+     const sy = cy + (outerRadius + 15) * sin;
+
+     return (
+          <g>
+               {percent > 0 && (
+                    <text
+                         x={x}
+                         y={y}
+                         fill="white"
+                         textAnchor="middle"
+                         dominantBaseline="central"
+                         fontSize={11}
+                         fontWeight="bold"
+                         style={{ pointerEvents: 'none' }}
+                    >
+                         {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+               )}
+               <text
+                    x={sx}
+                    y={sy}
+                    fill={fill}
+                    textAnchor={cos >= 0 ? 'start' : 'end'}
+                    dominantBaseline="central"
+                    fontSize={12}
+                    fontWeight="700"
+               >
+                    {name}
+               </text>
+          </g>
+     );
+};
+
 const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setChangeData, setShow }) => {
      const navigate = useNavigate()
 
@@ -124,7 +166,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                                                        cx="50%"
                                                        cy="50%"
                                                        labelLine={false}
-                                                       label={(entry) => entry.name}
+                                                       label={renderCustomizedLabel}
                                                        outerRadius={100}
                                                        fill="#8884d8"
                                                        dataKey="value"
@@ -153,7 +195,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                                                        cx="50%"
                                                        cy="50%"
                                                        labelLine={false}
-                                                       label={(entry) => entry.name}
+                                                       label={renderCustomizedLabel}
                                                        outerRadius={100}
                                                        fill="#8884d8"
                                                        dataKey="value"
@@ -171,21 +213,8 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                     </div>
 
                     <div className="d-flex flex-column gap-3">
-                         <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                              <div className="d-flex flex-column gap-1">
-                                   <h4 className="fs-6">Lidlar ro'yhati</h4>
-                                   <span className="text-muted">Barcha lidlar ma'lumotlari</span>
-                              </div>
-                              <button
-                                   className="btn btn-sm fs-3 px-4 text-white"
-                                   style={{ background: "#0085db", padding: "10px 20px" }}
-                                   onClick={() => setShow(true)}
-                              >
-                                   <Icon icon="qlementine-icons:plus-16" width="15" height="15" />
-                                   &nbsp;
-                                   Yangi lid qo'shish
-                              </button>
-                         </div>
+
+                         <hr />
 
                          {/* filters */}
                          <div className="d-flex flex-wrap gap-2 align-items-center">
@@ -235,7 +264,7 @@ const LeadsLists = ({ leads, totalCount, filters, setFilters, setOpemModal, setC
                                         className="cursor-pointer"
                                         onClick={() => navigate(`/leads/${lid.id}`)}
                                    >
-                                        <td>{lid.id}</td>
+                                        <td>{index + 1}</td>
                                         <td>{lid?.first_name + " " + lid?.last_name}</td>
                                         <td>{lid.phone}</td>
                                         <td>

@@ -15,7 +15,9 @@ import { useRoomsData } from "../../data/queries/room.queries"
 import { useTeachersData } from "../../data/queries/teachers.queries"
 import { useCourses } from "../../data/queries/courses.queries"
 import { useLeads } from "../../data/queries/leads.queries";
-import { useStudentsData } from "../../data/queries/students.queries";
+// import { useStudentsData } from "../../data/queries/students.queries";
+
+import { useGroupAttendances, useStudentAttendances, useAttendances, useCreateAttendance } from "../../data/queries/attendances.queries";
 
 import EditGroup from "./GroupDetaileModals/EditGroup";
 import AddNewStudents from "./GroupDetaileModals/AddNewStudents";
@@ -77,21 +79,13 @@ const GroupDetalie = () => {
 
      const [notif, setNotif] = useState({ show: false, type: 'success', message: '' })
 
-     const [currentStudents, setCurrentStudents] = useState([])
-     const [availabilitiyTeacher, setAvailabilitiyTeacher] = useState([])
-
      const [activeTab, setActiveTab] = useState("students")
      const [changeActiveItem, setChangeActiveItem] = useState(false)
 
      useEffect(() => {
-          if (studentsData) {
-               setCurrentStudents(studentsData)
-          }
-     }, [studentsData])
-
-     useEffect(() => {
           setChangeGroupDate(currentGroup)
      }, [changeGroup])
+
 
 
      // statusni tog'ri olish
@@ -282,7 +276,7 @@ const GroupDetalie = () => {
 
                <Back />
 
-               <div className="d-flex w-100 justify-content-between align-items-start">
+               <div className="d-flex w-100 justify-content-between align-items-start pe-3">
                     <div className="d-flex align-items-start gap-2">
                          <span
                               style={{ width: "45px", height: "45px", color: "#05c9ff", borderRadius: "8px", background: "#00a0ea25" }}
@@ -329,7 +323,7 @@ const GroupDetalie = () => {
                     </div>
                </div>
 
-               <div className="d-flex pt-4 justify-content-between align-items-center gap-3">
+               <div className="d-flex pt-4 justify-content-between align-items-center gap-3 pe-3">
                     <div
                          className="card card-hover px-4 border py-4"
                          style={{ width: "33%" }}
@@ -460,7 +454,7 @@ const GroupDetalie = () => {
                          </Nav>
                     </div>
 
-                    <Tab.Content className="mt-3">
+                    <Tab.Content className="mt-3 pe-3">
                          <Tab.Pane eventKey="students">
                               {/* O'quvchilar ro'yxati shu yerda bo'ladi */}
                               <Card>
@@ -493,12 +487,10 @@ const GroupDetalie = () => {
                                              <Icon icon="lucide:clipboard-list" width="20" height="20" color="#00c8ff" className="me-2" />
                                              Davomat jadvali
                                         </h5>
-
                                         <AttendenceTable
-                                             studentsData={studentsData}
-                                             currentStudents={currentStudents}
-                                             setCurrentStudents={setCurrentStudents}
                                              days_of_week={t?.days_of_week}
+                                             scheduleId={t?.id}
+                                             id={id}
                                         />
 
                                    </Card.Body>
@@ -508,7 +500,7 @@ const GroupDetalie = () => {
                               <Card>
                                    <Card.Body>
                                         <div className="d-flex align-items-center justify-content-between">
-                                             <h5 className="fs-4 fw-medium">T
+                                             <h5 className="fs-4 fw-medium">
                                                   <Icon icon="ion:calendar-outline" width="20" height="20" color="#00c8ff" className="me-2" />
                                                   Dars jadvali
                                              </h5>

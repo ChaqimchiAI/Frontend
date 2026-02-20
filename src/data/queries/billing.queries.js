@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createStudentTransactions, getDebtorsStudents, getStats, getStudentTransactions } from "../api/billing.api";
+import { createStudentDiscount, createStudentTransactions, getDebtorsStudents, getStats, getStudentDiscounts, getStudentTransactions, uptadeStudentDiscount } from "../api/billing.api";
 
 export const useBillingStats = () => {
     return useQuery({
@@ -32,6 +32,43 @@ export const useCreateStudentTransaction = (id) => {
             });
             queryClient.invalidateQueries({
                 queryKey: ["student", id],
+            });
+        },
+    });
+};
+
+export const useStudentDiscounts = (id) => {
+    return useQuery({
+        queryKey: ["student-discounts", id],
+        queryFn: () => getStudentDiscounts(id),
+    });
+};
+
+export const useCreateStudentDiscount = (id) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data) => createStudentDiscount(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["student-discounts", id],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["student", id],
+            });
+        },
+    });
+};
+
+export const useUpdateStudentDiscount = (studentId) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ discountId, data }) => uptadeStudentDiscount(discountId, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["student-discounts", studentId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["student", studentId],
             });
         },
     });

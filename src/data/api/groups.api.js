@@ -62,3 +62,6 @@ export const addStudentToGroup = ({ id, student_id }) =>
 // leadslardagini guruhga qoshish
 export const addLeadToGroup = ({ id, group_id }) =>
     api.post(`/groups/leads/add/`, { lead_id: id, group_id }).then(res => res.data.data);
+
+export const groupStudentStatusChange = ({ student_id, group_id, status }) =>
+    api.patch(`/groups/${group_id}/students/${student_id}/`, { status }).then(res => res.data.data);

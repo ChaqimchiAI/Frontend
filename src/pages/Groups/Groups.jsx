@@ -54,7 +54,7 @@ const Groups = () => {
       )}
 
 
-      <div className="d-flex w-100 justify-content-between align-items-start">
+      <div className="d-flex w-100 justify-content-between align-items-start me-3">
         <div className="d-flex align-items-start gap-2">
           <span
             style={{ width: "40px", height: "40px", color: "#05c9ff", borderRadius: "8px", background: "#00a0ea25" }}
@@ -71,7 +71,7 @@ const Groups = () => {
         </div>
 
         <button
-          className="btn btn-sm text-white py-2 px-3 fs-3"
+          className="btn btn-sm text-white py-2 px-3 fs-3 me-3"
           style={{ background: "#0085db" }}
           onClick={() => setAddGroup(true)}
         >
@@ -80,7 +80,7 @@ const Groups = () => {
         </button>
       </div>
 
-      <div className="">
+      <div className="card card-body pt-0 mt-3 me-3">
         <Table striped hover className="mt-4">
           <thead>
             <tr>

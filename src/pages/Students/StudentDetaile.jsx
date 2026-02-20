@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react"; // Tablar uchun holat
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Badge, Spinner, Button, Nav, Table } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Button, Nav } from "react-bootstrap";
 import { Icon } from "@iconify/react";
 import { useDeleteStudent, useStudent, useUpdateStudent } from "../../data/queries/students.queries";
-import { useCreateStudentTransaction } from "../../data/queries/billing.queries"
+import { useCreateStudentDiscount, useCreateStudentTransaction, useUpdateStudentDiscount } from "../../data/queries/billing.queries"
 import { Input } from "../../components/Ui/Input";
 import { ReactSelect } from "../../components/Ui/ReactSelect";
 import { useTheme } from "../../Context/Context";
@@ -13,6 +13,21 @@ import { useCourses } from "../../data/queries/courses.queries";
 import { useAddStudentToGroup, useGroups } from "../../data/queries/group.queries";
 import Edited from "./components/Edited";
 import StudentsGroups from "./components/StudentsGroups";
+import { useGroupAttendances, useStudentAttendances, useAttendances, useCreateAttendance } from "../../data/queries/attendances.queries";
+
+// Sub-components
+import StudentProfile from "./components/Details/StudentProfile";
+import StudentStats from "./components/Details/StudentStats";
+import StudentAttendances from "./components/Details/StudentAttendances";
+import StudentDiscounts from "./components/Details/StudentDiscounts";
+import StudentPassword from "./components/Details/StudentPassword";
+
+const statusStyle = (s) => {
+  let st = s === true ? { style: { background: "#01df31" }, t: "Faol" }
+    : s === false ? { style: { background: "#ef4444" }, t: "Faol emas" }
+      : ""
+  return st
+}
 
 const StudentDetaile = () => {
   const { theme } = useTheme();
@@ -24,6 +39,9 @@ const StudentDetaile = () => {
   const { data: currentStudent, isLoading, error } = useStudent(id);
   const { mutate: createStudentTransaction, isPending: creatingStudentTransaction } = useCreateStudentTransaction(id)
 
+  const { mutate: createStudentDiscount, isPending: creatingDiscount } = useCreateStudentDiscount(id)
+  const { mutate: updateStudentDiscount } = useUpdateStudentDiscount(id)
+
   const { data: groupsData, isLoading: groupsLoading } = useGroups()
   const { data: courses } = useCourses();
   const coursesData = courses?.results
@@ -32,6 +50,13 @@ const StudentDetaile = () => {
 
   const { mutate: deleteStudentData, isPending: deletingStudent } = useDeleteStudent();
   const { mutate: updateStudentData, isPending: updatingStudent } = useUpdateStudent();
+
+
+
+  const { data: attendancesData, isLoading: attendancesLoading, error: attendancesError } = useStudentAttendances(id)
+
+  console.log(attendancesData)
+
 
   const [student, setStudent] = useState(null);
   const [notif, setNotif] = useState({ show: false, type: "", message: "" })
@@ -48,6 +73,14 @@ const StudentDetaile = () => {
   const [totalToPay, setTotalToPay] = useState(0);
   const [remainingLessons, setRemainingLessons] = useState(0);
   const [nextClassDates, setNextClassDates] = useState([]);
+
+  const [showAddDiscount, setShowAddDiscount] = useState(false);
+  const [discount, setDiscount] = useState({
+    amount: "",
+    comment: "",
+    total_uses: ""
+  })
+  const [openDropdown, setOpenDropdown] = useState(null)
 
   useEffect(() => {
     const allGroups = groupsData?.results || groupsData;
@@ -169,19 +202,7 @@ const StudentDetaile = () => {
 
   if (error) return <div className="text-danger p-5 text-center">Xatolik yuz berdi!</div>;
 
-  const handleDeleteStudent = () => {
-    deleteStudentData(id, {
-      onSuccess: () => {
-        setNotif({ show: true, type: "success", message: "O'quvchini o'chirish muvaffaqiyatli amalga oshirildi" });
-        navigate(-1);
-      },
-      onError: (err) => {
-        console.error(err)
-        setNotif({ show: true, type: "error", message: "Xatolik yuz berdi!" });
-      }
-    })
-  }
-
+  // for transaction
   const handleTransaction = () => {
     if (!amount) return;
     const body = {
@@ -208,6 +229,24 @@ const StudentDetaile = () => {
     })
   }
 
+  // for discount
+  const handleAddDiscount = () => {
+    if (!discount.amount || !discount.total_uses) return;
+    createStudentDiscount(discount, {
+      onSuccess: () => {
+        setNotif({ show: true, type: "success", message: "Chegirma muvaffaqiyatli qo'shildi!" });
+        setModal(null);
+        setDiscount({ amount: "", total_uses: "", comment: "" });
+        setShowAddDiscount(false);
+      },
+      onError: (err) => {
+        console.error(err);
+        setNotif({ show: true, type: "error", message: "Xatolik yuz berdi!" });
+      }
+    })
+  }
+
+  // for student
   const handleSaveStudent = () => {
     const { save, ...dataToSave } = student;
     updateStudentData({ id, data: dataToSave }, {
@@ -236,9 +275,30 @@ const StudentDetaile = () => {
     });
   }
 
+  const handleDeleteStudent = () => {
+    deleteStudentData(id, {
+      onSuccess: () => {
+        setNotif({ show: true, type: "success", message: "O'quvchini o'chirish muvaffaqiyatli amalga oshirildi" });
+        navigate(-1);
+      },
+      onError: (err) => {
+        console.error(err)
+        setNotif({ show: true, type: "error", message: "Xatolik yuz berdi!" });
+      }
+    })
+  }
+
+  const statusChange = (status, discountId) => {
+    updateStudentDiscount({ discountId, data: { is_active: status } }, {
+      onSuccess: () => {
+        setNotif({ show: true, type: "success", message: "Status muvaffaqiyatli o'zgartirildi!" });
+        setOpenDropdown(null);
+      }
+    })
+  }
+
   return (
     <>
-
       {notif.show &&
         <Notification
           type={notif.type}
@@ -255,7 +315,6 @@ const StudentDetaile = () => {
           width="30%"
           zIndex={100}
         >
-
           {modal === "payment" && (
             <div className="d-flex gap-3 mt-3">
               <div className="form-check">
@@ -332,7 +391,6 @@ const StudentDetaile = () => {
           width="30%"
           zIndex={100}
         >
-
           <select
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
@@ -394,9 +452,79 @@ const StudentDetaile = () => {
         </Modal>
       }
 
+      {showAddDiscount &&
+        <Modal
+          title="Chegirma qo'shish"
+          anima={showAddDiscount}
+          close={setShowAddDiscount}
+          width="30%"
+          zIndex={100}
+        >
+          <Row>
+            <Input
+              label="Chegirma summasi"
+              value={discount.amount}
+              onChange={(e) => setDiscount({ ...discount, amount: e.target.value.replace(/\D/g, '') })}
+              placeholder="Chegirma..."
+              required
+              disabled={creatingDiscount}
+              containerClassName="mt-2 col-8"
+            />
+
+            <ReactSelect
+              label="Muddat"
+              containerClassName="mt-2 col-4"
+              placeholder="Muddat"
+              value={discount.total_uses ? { value: discount.total_uses, label: `${discount.total_uses} oy` } : null}
+              options={[
+                { value: "1", label: "1 oy" },
+                { value: "2", label: "2 oy" },
+                { value: "3", label: "3 oy" },
+                { value: "4", label: "4 oy" },
+                { value: "5", label: "5 oy" },
+                { value: "6", label: "6 oy" },
+                { value: "7", label: "7 oy" },
+                { value: "8", label: "8 oy" },
+                { value: "9", label: "9 oy" },
+                { value: "10", label: "10 oy" },
+                { value: "11", label: "11 oy" },
+                { value: "12", label: "12 oy" },
+              ]}
+              onChange={(e) => setDiscount({ ...discount, total_uses: e.value })}
+            />
+          </Row>
+
+          <label htmlFor="desc">Izoh</label>
+          <textarea
+            id="desc"
+            className="form-control mt-2"
+            style={{ resize: "none" }}
+            placeholder="Izoh..."
+            rows="3"
+            value={discount.comment}
+            onChange={(e) => setDiscount({ ...discount, comment: e.target.value })}
+          ></textarea>
+
+          <div className="mt-2 d-flex align-items-center gap-2 justify-content-end">
+            <Button
+              className="btn btn-sm px-4 py-2 text-black border-0"
+              style={{ background: "#f9fafb" }}
+              onClick={() => setShowAddDiscount(false)}
+            >
+              Orqaga
+            </Button>
+            <Button
+              className="btn btn-sm save-button"
+              onClick={handleAddDiscount}
+              disabled={creatingDiscount}
+            >
+              {creatingDiscount ? <Spinner animation="border" size="sm" /> : "Qo'shish"}
+            </Button>
+          </div>
+        </Modal>
+      }
 
       <Container fluid className="card card-body">
-        {/* Header: Orqaga qaytish */}
         <div className="d-flex align-items-center gap-3 mb-4 justify-content-between">
           <div className="d-flex align-items-center gap-3">
             <Button
@@ -409,143 +537,52 @@ const StudentDetaile = () => {
             <h4 className={`mb-0 fw-bold ${textColor}`}>{currentStudent?.first_name} {currentStudent?.last_name}</h4>
           </div>
 
-          {
-            currentStudent?.groups?.length === 0 && (
-              <button
-                className="btn btn-sm fs-2 d-flex align-items-center gap-1 save-button"
-                onClick={() => setAddStudentGroup(true)}
-              >
-                <Icon icon="material-symbols:group-add-outline" width="18" />
-                Guruhga qo'shish
-              </button>
-            )
-          }
-
+          {currentStudent?.groups?.length === 0 && (
+            <button
+              className="btn btn-sm fs-2 d-flex align-items-center gap-1 save-button"
+              onClick={() => setAddStudentGroup(true)}
+            >
+              <Icon icon="material-symbols:group-add-outline" width="18" />
+              Guruhga qo'shish
+            </button>
+          )}
         </div>
 
         <Row>
-          {/* Chap taraf: Profil */}
           <Col lg={4} xl={3}>
-            <Card
-              className="border-0 shadow-sm mb-4 text-center p-4 d-flex flex-column justify-content-between"
-              style={{ height: "500px", backgroundColor: cardBg }}
-            >
-              <div className="">
-                <div className="mb-3 position-relative">
-                  <img
-                    src={student?.image || "/user.jpg"}
-                    className="rounded-circle border border-2 border-info p-1"
-                    style={{ width: "120px", height: "120px", objectFit: "cover" }}
-                  />
-                  {currentStudent?.is_active && (
-                    <span className="position-absolute bottom-0 translate-middle p-2 bg-success border border-light rounded-circle" style={{ left: "65%" }}></span>
-                  )}
-                </div>
-                <h5 className={`mb-1 ${textColor}`}>{currentStudent?.first_name}</h5>
-                <p className="small mb-4" style={{ color: "#00d2ff" }}>{currentStudent?.phone}</p>
-
-                <div className="text-start mt-3 pt-3 border-top border-secondary border-opacity-25">
-                  <div className="d-flex align-items-center gap-2 mb-3">
-                    <Icon icon="fluent:location-24-regular" style={{ color: "#00d2ff" }} />
-                    <span className={`small ${textColor}`}>{currentStudent?.address || "Farg'ona, Qo'qon shahri"}</span>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <Icon icon="fluent:person-24-regular" style={{ color: "#00d2ff" }} />
-                    <span className={`small ${textColor}`}>ID: {currentStudent?.id}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="d-flex justify-content-between">
-                <button
-                  className="btn btn-sm fs-2 px-3 py-2 delete-button"
-                  onClick={() => setModal("withdraw")}
-                >
-                  <Icon icon="ri:refund-2-fill" fontSize={20} className="me-1" />
-                  Pul qaytarish
-                </button>
-
-                <button
-                  className="btn btn-sm fs-2 px-3 py-2 save-button"
-                  onClick={() => setModal("payment")}
-                >
-                  <Icon icon="ion:wallet-outline" fontSize={20} className="me-1" />
-                  To'lov qilish
-                </button>
-              </div>
-            </Card>
+            <StudentProfile
+              student={student}
+              currentStudent={currentStudent}
+              cardBg={cardBg}
+              textColor={textColor}
+              setModal={setModal}
+            />
           </Col>
 
-          {/* O'ng taraf: Ma'lumotlar */}
           <Col lg={8} xl={9}>
-            <Card className="border-0 mb-4 p-4" style={{ backgroundColor: cardBg }}>
-              <Row className="align-items-center gy-3">
-                <Col md={5} className="border-end border-secondary border-opacity-25">
-                  <p className={`mb-3 ${textColor}`}>Balans amal qilish muddati</p>
-                  <div className="d-flex gap-2 flex-wrap">
-                    {nextClassDates.length > 0 ? nextClassDates.map((item, idx) => (
-                      <span
-                        key={idx}
-                        className={`badge rounded-pill fw-normal border ${item.isPaid ? 'border-info' : 'border-danger'}`}
-                        style={{
-                          fontSize: "11px",
-                          color: item.isPaid ? "#00d2ff" : "#ff4d4d",
-                          backgroundColor: item.isPaid ? "rgba(0, 210, 255, 0.1)" : "rgba(255, 77, 77, 0.1)"
-                        }}
-                        title={item.isPaid ? "Yetarli balans" : "Balans yetarli emas"}
-                      >
-                        {item.day}
-                      </span>
-                    )) : (
-                      <span className="small text-muted opacity-50">Dars kunlari belgilanmagan</span>
-                    )}
-                  </div>
-                </Col>
-                <Col md={7}>
-                  <div className="d-flex gap-2 flex-wrap ms-md-3">
-                    <Badge className="py-2 px-3 fw-normal" style={{ backgroundColor: btnColor, color: "#fff" }}>Qolgan darslar: {remainingLessons}</Badge>
-                    <Badge className="py-2 px-3 fw-normal" style={{ backgroundColor: btnColor, color: "#fff" }}>
-                      To'lanishi kerak: {Number(totalToPay).toLocaleString("uz-UZ")}
-                    </Badge>
-                    <Badge className="py-2 px-3 fw-normal" style={{ backgroundColor: btnColor, color: "#fff" }}>
-                      Balans: {Number(currentStudent?.balance).toLocaleString("uz-UZ") || "0.00"}
-                    </Badge>
-                  </div>
-                </Col>
-              </Row>
-            </Card>
+            <StudentStats
+              nextClassDates={nextClassDates}
+              remainingLessons={remainingLessons}
+              totalToPay={totalToPay}
+              currentStudent={currentStudent}
+              textColor={textColor}
+              btnColor={btnColor}
+              cardBg={cardBg}
+            />
 
             <Card className="border-0" style={{ backgroundColor: cardBg }}>
               <div className="px-4 pt-3 border-bottom border-secondary border-opacity-25">
                 <Nav className="gap-4 mb-0">
-                  <Nav.Link
-                    onClick={() => setActiveTab("tahrirlash")}
-                    className={`px-0 py-3 ${activeTab === "tahrirlash" ? "text-primary border-bottom border-2 border-primary" : "text-muted opacity-75"}`}
-                    style={{ fontSize: "14px" }}
-                  >
-                    Tahrirlash
-                  </Nav.Link>
-                  <Nav.Link
-                    onClick={() => setActiveTab("parol")}
-                    className={`px-0 py-3 ${activeTab === "parol" ? "text-primary border-bottom border-2 border-primary" : "text-muted opacity-75"}`}
-                    style={{ fontSize: "14px" }}
-                  >
-                    Parol o'rnatish
-                  </Nav.Link>
-                  <Nav.Link
-                    onClick={() => setActiveTab("guruhlar")}
-                    className={`px-0 py-3 ${activeTab === "guruhlar" ? "text-primary border-bottom border-2 border-primary" : "text-muted opacity-75"}`}
-                    style={{ fontSize: "14px" }}
-                  >
-                    Guruhlar
-                  </Nav.Link>
-                  <Nav.Link
-                    onClick={() => setActiveTab("davomat")}
-                    className={`px-0 py-3 ${activeTab === "davomat" ? "text-primary border-bottom border-2 border-primary" : "text-muted opacity-75"}`}
-                    style={{ fontSize: "14px" }}
-                  >
-                    Davomat
-                  </Nav.Link>
+                  {["tahrirlash", "guruhlar", "davomat", "chegirma", "parol"].map((tab) => (
+                    <Nav.Link
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-0 py-3 text-capitalize ${activeTab === tab ? "text-primary border-bottom border-2 border-primary" : "text-muted opacity-75"}`}
+                      style={{ fontSize: "14px" }}
+                    >
+                      {tab}
+                    </Nav.Link>
+                  ))}
                 </Nav>
               </div>
 
@@ -562,31 +599,6 @@ const StudentDetaile = () => {
                   />
                 )}
 
-                {activeTab === "parol" && (
-                  <div style={{ width: "100%" }}>
-                    <Input
-                      label="Login"
-                      defaultValue={currentStudent?.phone}
-                      className="mb-3"
-                      style={{ width: "50%" }}
-                    />
-                    <Input
-                      label="Yangi parol"
-                      type="password"
-                      defaultValue={currentStudent?.username}
-                      placeholder="*****"
-                      style={{ width: "50%" }}
-                    />
-                    <div className="mt-5 d-flex justify-content-end">
-                      <Button
-                        className="btn btn-sm save-button"
-                      >
-                        Saqlash
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
                 {activeTab === "guruhlar" && (
                   <StudentsGroups
                     student={student}
@@ -597,26 +609,31 @@ const StudentDetaile = () => {
                 )}
 
                 {activeTab === "davomat" && (
-                  <Table responsive borderless className={textColor}>
-                    <thead>
-                      <tr className="border-bottom border-secondary border-opacity-25 opacity-50 small">
-                        <th>SANA</th><th>GURUH</th><th>HOLAT</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>07.02.2026</td><td>MM Arab tili J</td><td><Badge bg="success">Kelgan</Badge></td></tr>
-                      <tr><td>05.02.2026</td><td>MM Arab tili J</td><td><Badge bg="danger">Kelmagan</Badge></td></tr>
-                    </tbody>
-                  </Table>
+                  <StudentAttendances textColor={textColor} />
+                )}
+
+                {activeTab === "chegirma" && (
+                  <StudentDiscounts
+                    currentStudent={currentStudent}
+                    setShowAddDiscount={setShowAddDiscount}
+                    textColor={textColor}
+                    statusStyle={statusStyle}
+                    openDropdown={openDropdown}
+                    setOpenDropdown={setOpenDropdown}
+                    statusChange={statusChange}
+                  />
+                )}
+
+                {activeTab === "parol" && (
+                  <StudentPassword currentStudent={currentStudent} />
                 )}
               </Card.Body>
             </Card>
           </Col>
         </Row>
-      </Container >
+      </Container>
     </>
   );
 };
-
 
 export default StudentDetaile;

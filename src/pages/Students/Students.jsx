@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useStudentsData } from "../../data/queries/students.queries";
 import DataTable from "../../components/Ui/DataTable";
-import CalendarSelector from "../../components/Ui/CalendarSelector";
 import StatusDropdown from "../../components/Ui/StatusFilter";
 import NoteOffcanvas from "../../components/Ui/NoteOffcanvas";
-import Modal from "../../components/Ui/Modal"
 import Notification from "../../components/Ui/Notification";
 import { Icon } from "@iconify/react";
 import { useTheme } from "../../Context/Context";
@@ -12,21 +10,9 @@ import StudentAdd from "./components/StudentAdd";
 import { useNavigate } from "react-router-dom";
 
 const statuses = [
-  { key: "all", label: "Barcha statuslar" },
-  { key: "active", label: "Faol o'quvchilar" },
-  { key: "inactive", label: "Nofaol o'quvchilar" },
-];
-
-const teachers = [
-  { key: "all", label: "Barcha o'qituvchilar" },
-  { key: "1", label: "Diyorbek Asatullayev" },
-  { key: "2", label: "Ali Valiyev" },
-];
-
-const studyDays = [
-  { key: "all", label: "Barcha kunlar" },
-  { key: "odd", label: "Toq kunlar (Du-Cho-Ju)" },
-  { key: "even", label: "Juft kunlar (Se-Pay-Sha)" },
+  { key: "all", label: "Hammasi" },
+  { key: false, label: "To'langan" },
+  { key: true, label: "Qarzdor" },
 ];
 
 const Students = () => {
@@ -34,13 +20,10 @@ const Students = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  const [isFilterVisible, setIsFilterVisible] = useState(false); // Filtr ko'rinishini boshqarish
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
-    status: "",
-    teacher_id: "",
-    study_day: "",
+    has_debt: false,
     start_date: "",
     end_date: "",
     search: "",
@@ -60,15 +43,6 @@ const Students = () => {
     setFilters(prev => ({
       ...prev,
       [key]: value === "all" ? "" : value,
-      page: 1
-    }));
-  };
-
-  const handleDateRange = (range) => {
-    setFilters(prev => ({
-      ...prev,
-      start_date: range.start || "",
-      end_date: range.end || "",
       page: 1
     }));
   };
@@ -119,51 +93,6 @@ const Students = () => {
           </button>
         </div>
 
-        <div
-          style={{
-            maxHeight: isFilterVisible ? "300px" : "0",
-            overflow: isFilterVisible ? "visible" : "hidden",
-            transition: "all 0.4s ease-in-out",
-            opacity: isFilterVisible ? 1 : 0,
-          }}
-        >
-          <div className="d-flex flex-wrap align-items-center gap-2 p-3 border rounded bg-light-subtle">
-            <CalendarSelector onRangeSelect={handleDateRange} filters={filters} placeholder="Yaratilgan sana bo'yicha" />
-
-            {/* Status filtri */}
-            <StatusDropdown
-              statuses={statuses}
-              currentItem={statuses.find(s => s.key === (filters.status || "all"))}
-              setCurrentItem={(item) => handleFilterChange("status", item.key)}
-            />
-
-            {/* O'qituvchi filtri */}
-            <StatusDropdown
-              statuses={teachers}
-              currentItem={teachers.find(t => t.key === (filters.teacher_id || "all"))}
-              setCurrentItem={(item) => handleFilterChange("teacher_id", item.key)}
-            />
-
-            {/* Juft/Toq kunlar filtri */}
-            <StatusDropdown
-              statuses={studyDays}
-              currentItem={studyDays.find(d => d.key === (filters.study_day || "all"))}
-              setCurrentItem={(item) => handleFilterChange("study_day", item.key)}
-            />
-
-            {/* Tozalash tugmasi */}
-            {(filters.status || filters.teacher_id || filters.study_day || filters.start_date) && (
-              <button
-                className="btn btn-link text-decoration-none text-danger d-flex align-items-center gap-1"
-                onClick={() => setFilters({ page: 1, limit: 10, status: "", teacher_id: "", study_day: "", start_date: "", end_date: "", search: "" })}
-              >
-                <Icon icon="mdi:filter-off-outline" width="20" />
-                Tozalash
-              </button>
-            )}
-          </div>
-        </div>
-
         <DataTable
           data={studentsData || []}
           totalCount={students?.count}
@@ -173,29 +102,25 @@ const Students = () => {
           onSearch={(v) => handleFilterChange("search", v)}
           searchKeys={["first_name", "last_name", "phone"]}
           filter={
-            <button
-              className="btn btn-sm gap-2 px-3 py-2"
-              style={{
-                background: isFilterVisible ? "#6c757d" : "#0085db",
-                color: "#fff",
-                transition: "0.3s"
-              }}
-              onClick={() => setIsFilterVisible(!isFilterVisible)}
-            >
-              <Icon icon={isFilterVisible ? "lucide:chevron-up" : "lucide:filter"} width="17" height="17" />
-              &nbsp;
-              {isFilterVisible ? "Filtrni yopish" : "Filtr"}
-            </button>
+            <StatusDropdown
+              statuses={statuses}
+              currentItem={statuses.find(s => s.key === (filters.has_debt === "" ? "all" : filters.has_debt))}
+              setCurrentItem={(item) => handleFilterChange("has_debt", item.key)}
+              style={{ width: "110px" }}
+            />
           }
         >
           {(currentData) =>
-            currentData.map((student) => (
-              <tr key={student.id} className="border-bottom">
-                <td className="text-muted">{student.id}</td>
+            currentData.map((student, index) => (
+              <tr
+                key={student.id}
+                className="border-bottom"
+                onClick={() => navigate(`/students/${student.id}`)}
+              >
+                <td className="text-muted">{index + 1}</td>
                 <td>
                   <div
                     className="fw-bold cursor-pointer"
-                    onClick={() => navigate(`/students/${student.id}`)}
                   >
                     {student.first_name} {student.last_name}
                   </div>
@@ -228,7 +153,10 @@ const Students = () => {
                   <button
                     className="btn btn-sm"
                     title="Izoh yozish"
-                    onClick={() => openNotes(student)}>
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openNotes(student)
+                    }}>
                     <Icon
                       icon="ph:chat-centered-light"
                       width="20"

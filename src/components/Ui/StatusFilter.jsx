@@ -3,7 +3,7 @@ import { useTheme } from "../../Context/Context";
 import "./StatusFilter.css";
 import { Icon } from "@iconify/react";
 
-export default function StatusDropdown({ currentItem, setCurrentItem, statuses = [] }) {
+export default function StatusDropdown({ currentItem, setCurrentItem, statuses = [], style }) {
      const { theme } = useTheme();
 
      return (
@@ -15,7 +15,8 @@ export default function StatusDropdown({ currentItem, setCurrentItem, statuses =
                     style={{
                          background: !theme ? "#0f172a" : "#fff",
                          padding: `11.5px 25px 11.5px ${currentItem.color ? "0px" : "11.5px"}`,
-                         width: "195px"
+                         width: "195px",
+                         ...style
                     }}
                >
                     {currentItem.color ? <span className={`ms-2 dot dot-${currentItem.color}`}></span> : ""}

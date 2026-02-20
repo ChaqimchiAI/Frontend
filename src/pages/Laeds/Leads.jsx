@@ -245,7 +245,24 @@ const Leads = () => {
 
                {show && <NewLead setNotif={setNotif} setShow={setShow} show={show} />}
 
-               <div className="row gap-2 ps pe-4" style={{paddingLeft: "13px"}}>
+               <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mx-1 me-3 pb-3">
+                    <div className="d-flex flex-column gap-1">
+                         <h4 className="fs-6">Lidlar ro'yhati</h4>
+                         <span className="text-muted">Barcha lidlar ma'lumotlari</span>
+                    </div>
+                    <button
+                         className="btn btn-sm fs-3 px-4 text-white"
+                         style={{ background: "#0085db", padding: "10px 20px" }}
+                         onClick={() => setShow(true)}
+                    >
+                         <Icon icon="qlementine-icons:plus-16" width="15" height="15" />
+                         &nbsp;
+                         Yangi lid qo'shish
+                    </button>
+               </div>
+
+
+               <div className="row gap-2 ps pe-4" style={{ paddingLeft: "13px" }}>
                     <Card className="col lidCard">
                          <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
                               <div className="d-flex flex-column gap-1">
@@ -277,7 +294,7 @@ const Leads = () => {
                          <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
                               <div className="d-flex flex-column gap-1">
                                    <span className="text-muted">
-                                        Tastiqlanganlar
+                                        Guruhga qo'shilgan
                                    </span>
                                    <span
                                         className="fs-8 text-success"

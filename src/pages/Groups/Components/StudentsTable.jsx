@@ -4,6 +4,7 @@ import { Dropdown, Table } from "react-bootstrap"
 import { useUpdateStudent } from "../../../data/queries/students.queries"
 import { useNavigate } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
+import { useGroupStudentStatusChange } from "../../../data/queries/group.queries"
 
 const StudentsTable = ({ currentStudents, groupId, setNotif }) => {
      const navigate = useNavigate()
@@ -11,7 +12,7 @@ const StudentsTable = ({ currentStudents, groupId, setNotif }) => {
 
 
      const [openDropdown, setOpenDropdown] = useState(null)
-     const { mutate: updateStudent } = useUpdateStudent()
+     const { mutate: groupStudentStatusChange } = useGroupStudentStatusChange()
 
      const statusStyle = (s) => {
           let st = s === "active" || s === "active" ? { style: { background: "#10b981" }, t: "Faol" }
@@ -24,11 +25,10 @@ const StudentsTable = ({ currentStudents, groupId, setNotif }) => {
 
      const statusChange = (s, id) => {
 
-          updateStudent(
-               { id, data: { status: s } },
+          groupStudentStatusChange(
+               { student_id: id, group_id: groupId, status: s },
                {
                     onSuccess: () => {
-                         queryClient.invalidateQueries(["groups", "students", groupId])
                          setNotif({ show: true, type: 'edited', message: "O'quvchi holati o'zgartirildi!" })
                          setOpenDropdown(null)
                     },

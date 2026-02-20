@@ -13,7 +13,8 @@ import {
   deleteGroupSchedule,
   addStudentToGroup,
   addLeadToGroup,
-  getGroupStudents
+  getGroupStudents,
+  groupStudentStatusChange
 } from "../api/groups.api";
 
 // ================= GROUPS =================
@@ -177,8 +178,20 @@ export const useAddLeadToGroup = () => {
 
   return useMutation({
     mutationFn: addLeadToGroup,
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries(["groups", "students", id]);
+    onSuccess: (_, { group_id }) => {
+      queryClient.invalidateQueries(["groups", "students", group_id]);
+    }
+  });
+};
+
+// UPDATE
+export const useGroupStudentStatusChange = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: groupStudentStatusChange,
+    onSuccess: (_, { group_id }) => {
+      queryClient.invalidateQueries(["groups", "students", group_id]);
     }
   });
 };

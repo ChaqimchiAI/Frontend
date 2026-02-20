@@ -49,7 +49,7 @@ const Input = React.forwardRef(
                     <button
                         type="button"
                         onClick={() => setShow((s) => !s)}
-                        className="btn btn-sm btn-link position-absolute end-0 me-2 text-secondary border-0 p-1"
+                        className="btn btn-sm btn-link position-absolute end-0 me-2 border-0 p-1"
                         style={{ top: "50%", transform: "translateY(-50%)", zIndex: 5 }}
                         tabIndex={-1}
                     >

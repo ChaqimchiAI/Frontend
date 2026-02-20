@@ -88,7 +88,7 @@ const ReactSelect = ({
     };
 
     return (
-        <div className={clsx("mb-3", containerClassName)}>
+        <div className={clsx(containerClassName)}>
             {label && (
                 <label
                     htmlFor={selectId}
