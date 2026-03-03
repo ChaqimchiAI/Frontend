@@ -220,10 +220,7 @@ const Home = () => {
         </div>
 
         <div className="row p-3">
-          {/* darslar jadvali */}
-          <Lessons theme={theme} upcomingLessons={upcomingLessons} setScheduleModal={setScheduleModal} />
-
-          <div className="row col-lg-12 gap-3"> 
+          <div className="row col-lg-12 gap-3">
             <div className="card card-body col-lg-4 glass-card border-0" style={{ minHeight: '500px' }}>
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -333,6 +330,10 @@ const Home = () => {
               </div>
             </div>
           </div>
+          
+          {/* darslar jadvali */}
+          <Lessons theme={theme} upcomingLessons={upcomingLessons} setScheduleModal={setScheduleModal} />
+
         </div>
       </div>
 

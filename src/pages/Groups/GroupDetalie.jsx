@@ -476,10 +476,15 @@ const GroupDetalie = () => {
                               {/* Davomat jadvali shu yerda bo'ladi */}
                               <Card>
                                    <Card.Body>
-                                        <h5 className="fs-4 fw-medium">
-                                             <Icon icon="lucide:clipboard-list" width="20" height="20" color="#00c8ff" className="me-2" />
-                                             Davomat jadvali
-                                        </h5>
+                                        <div className="d-flex justify-content-between align-items-center">
+                                             <h5 className="fs-4 fw-medium">
+                                                  <Icon icon="lucide:clipboard-list" width="20" height="20" color="#00c8ff" className="me-2" />
+                                                  Davomat jadvali
+                                             </h5>
+                                             <span className="fs-3 fw-medium total-attandance">
+                                                  Umumiy davomat
+                                             </span>
+                                        </div>
                                         <AttendenceTable
                                              days_of_week={t?.days_of_week}
                                              scheduleId={t?.id}
@@ -514,6 +519,18 @@ const GroupDetalie = () => {
                          </Tab.Pane>
                     </Tab.Content>
                </Tab.Container>
+
+               <style>
+                    {`
+                         .total-attandance:hover{
+                              color: #00c8ff;
+                              cursor: pointer;
+                              text-decoration: underline;
+                              transition: all 0.3s ease-in-out;
+                         }
+                    `}
+               </style>
+               
           </div >
      )
 }
