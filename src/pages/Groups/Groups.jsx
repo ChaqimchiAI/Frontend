@@ -4,8 +4,7 @@ import { Table } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import { useTheme } from "../../Context/Context"
 import { useNotification } from "../../Context/NotificationContext"
-import { useCreateGroup, useGroups } from "../../data/queries/group.queries"
-import { useCourses } from "../../data/queries/courses.queries"
+import { useGroups } from "../../data/queries/group.queries"
 import AddGroup from "./GroupDetaileModals/AddGroup"
 
 const Groups = () => {
@@ -89,7 +88,7 @@ const Groups = () => {
             </tr>
           </thead>
           <tbody>
-            {groupsData?.map((group) => {
+            {groupsData?.map((group, index) => {
               const t = group.schedule_items?.active?.at(-1)
               return (
                 <tr
@@ -97,7 +96,7 @@ const Groups = () => {
                   className="cursor-pointer"
                   onClick={() => navigate(`/groups/${group.id}`)}
                 >
-                  <td className="text-capitalize">{group.id}</td>
+                  <td className="text-capitalize">{index + 1}</td>
                   <td className="text-capitalize">{group.name}</td>
                   <td className="text-capitalize">{group.course_name}</td>
                   <td className="text-capitalize">

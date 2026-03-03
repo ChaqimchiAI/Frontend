@@ -6,6 +6,10 @@
   --hover-color: #1e293b;    
   --primary-color: #3b82f6; 
   --secondary-bg: #1e293b;   
+  --select-bg: #1e293b;
+  --select-text: #e2e8f0;
+  --select-option-bg: #0f172a;
+  --select-option-text: #e2e8f0;
 }
 
 .light-theme {
@@ -15,6 +19,10 @@
   --hover-color: #f0f0f0;
   --primary-color: #3d91ff;
   --secondary-bg: #fff;
+  --select-bg: #f5f5f5;
+  --select-text: #333333;
+  --select-option-bg: #ffffff;
+  --select-option-text: #333333;
 }
 
 /* --- Konteyner --- */
@@ -78,6 +86,30 @@
 .rdrMonthName, 
 .rdrWeekDay {
   color: var(--text-color) !important;
+}
+
+/* Oy va Yil select elementlari — tizimga mos ranglar */
+.rdrMonthAndYearPickers select {
+  color: var(--select-text) !important;
+  background-color: var(--select-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  appearance: auto;
+  -webkit-appearance: auto;
+}
+
+.rdrMonthAndYearPickers select:focus {
+  outline: none;
+  border-color: var(--primary-color) !important;
+}
+
+/* Select option elementlari */
+.rdrMonthAndYearPickers select option,
+.rdrMonthPicker select option,
+.rdrYearPicker select option {
+  background-color: var(--select-option-bg) !important;
+  color: var(--select-option-text) !important;
 }
 
 .rdrDayNumber span {
@@ -149,10 +181,6 @@
 
 .rdrMonthAndYearPickers select {
   color: var(--text-color) !important;
-}
-
-.rdrYearPicker select option{
-  color: #0f172a !important;
 }
 
 .rdrDateRangePickerWrapper {

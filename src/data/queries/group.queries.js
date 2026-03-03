@@ -14,7 +14,8 @@ import {
   addStudentToGroup,
   addLeadToGroup,
   getGroupStudents,
-  groupStudentStatusChange
+  groupStudentStatusChange,
+  getTodayLessons
 } from "../api/groups.api";
 
 // ================= GROUPS =================
@@ -195,3 +196,10 @@ export const useGroupStudentStatusChange = () => {
     }
   });
 };
+
+export const useTodayLessons = () =>
+  useQuery({
+    queryKey: ["groups", "today-lessons"],
+    queryFn: getTodayLessons,
+    initialData: []
+  });

@@ -225,7 +225,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
                               type="submit"
                               style={{ background: "#0085db" }}
                               disabled={
-                                   !(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.course && newLidData.week_days.length > 0) || creating
+                                   !(newLidData.first_name && newLidData.last_name && newLidData.phone && newLidData.week_days.length > 0) || creating
                               }
                               className="btn btn-sm px-3 py-2 fs-3 text-white"
                          >

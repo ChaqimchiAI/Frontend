@@ -98,7 +98,7 @@ const Students = () => {
               statuses={statuses}
               currentItem={statuses.find(s => s.key === (filters.has_debt === "" ? "all" : filters.has_debt))}
               setCurrentItem={(item) => handleFilterChange("has_debt", item.key)}
-              style={{ width: "110px" }}
+              style={{ width: "110px", padding: "9px" }}
             />
           }
         >

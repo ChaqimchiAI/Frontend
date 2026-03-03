@@ -52514,21 +52514,6 @@ a {
     position: relative
 }
 
-.user-profile::after {
-    position: absolute;
-    right: -5px;
-    top: 15px;
-    content: "";
-    width: 15px;
-    height: 15px;
-    background-color: var(--bs-success);
-    border-radius: 50%;
-    border: 2px solid var(--bs-white)
-}
-
-.nav-tabs .nav-link.active {
-    box-shadow: 0 5px 6px rgba(0, 133, 219, .3)
-}
 
 .acedamic-card {
     border-left: 5px solid var(--bs-indigo)
