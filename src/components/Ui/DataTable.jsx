@@ -84,7 +84,7 @@ function DataTable({
                          {button}
                     </div> : ""}
 
-               <div className="d-flex justify-content-end border-bottom">
+               <div className="d-flex justify-content-end align-items-center border-bottom">
                     <div className="d-flex align-items-center gap-2">
                          <Input
                               type="search"

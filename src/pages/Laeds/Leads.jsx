@@ -30,7 +30,6 @@ const Leads = () => {
      const leads = data?.results || [];
      const totalCount = data?.count || 0;
 
-
      // lidlar boyicha statistika 
      const { data: stats } = useLeadsStats(filters)
 
@@ -260,7 +259,7 @@ const Leads = () => {
                                         className="fs-8"
                                         style={{ color: "#0095db", fontWeight: "900" }}
                                    >
-                                        {stats?.count || 0}
+                                        {stats?.display_count || 0}
                                    </span>
                               </div>
                               <span
@@ -314,7 +313,7 @@ const Leads = () => {
                                         className="fs-8"
                                         style={{ color: "#00676f", fontWeight: "900" }}
                                    >
-                                        {stats?.statuses?.new || 0}
+                                        {stats?.new_leads_count || 0}
                                    </span>
                               </div>
                               <span
@@ -341,7 +340,7 @@ const Leads = () => {
                                         className="fs-8"
                                         style={{ color: "#9647fd", fontWeight: "900" }}
                                    >
-                                        {stats?.today || 0}
+                                        {stats?.today_count || 0}
                                    </span>
                               </div>
                               <span
@@ -390,12 +389,12 @@ const Leads = () => {
                {/* Lidlar ro'yhati */}
                <LeadsLists
                     leads={leads}
+                    stats={stats}
                     totalCount={totalCount}
                     filters={filters}
                     setFilters={setFilters}
                     setOpemModal={setOpemModal}
                     setChangeData={setChangeData}
-                    setShow={setShow}
                />
           </>
      )

@@ -17,22 +17,20 @@ export default function LogoutButton() {
 
     try {
       await axios.post(
-        'https://apichaqimchi.pythonanywhere.com/api/v1/user/logout/',
-        { refresh: refreshToken }, // body to'g'ri yuborilmoqda
+        'https://erpbackend.pythonanywhere.com/api/v1/auth/logout/',
+        { refresh: refreshToken },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
         }
       );
-
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      navigate('/login');
     } catch (error) {
       console.error('Logout xatolik yuz berdi:', error);
-    //   localStorage.removeItem('access_token');
-    //   localStorage.removeItem('refresh_token');
+    } finally {
+      // Har qanday holatda ham tokenlarni tozalaymiz
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       navigate('/login');
     }
   };

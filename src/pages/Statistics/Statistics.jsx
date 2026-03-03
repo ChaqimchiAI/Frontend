@@ -1,8 +1,7 @@
-// import { useBillingStats } from "../../data/queries/billing.queries"
-
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { Icon } from "@iconify/react"
 import { useTheme } from "../../Context/Context"
+import MonthSelect, { monthOptions } from "../../components/Ui/MonthSelect"
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, AreaChart, Area, LineChart, Line, Legend
@@ -14,38 +13,7 @@ const Statistics = () => {
 
     const { theme } = useTheme()
 
-    const monthNames = [
-        "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
-        "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"
-    ]
-
-    const now = new Date()
-    const currentMonth = now.getMonth()
-    const currentYear = now.getFullYear()
-
-    // Oxirgi 12 oy ro'yxati
-    const monthOptions = Array.from({ length: 12 }, (_, i) => {
-        const d = new Date(currentYear, currentMonth - i, 1)
-        return {
-            month: d.getMonth(),
-            year: d.getFullYear(),
-            label: `${monthNames[d.getMonth()]} ${d.getFullYear()}`
-        }
-    })
-
     const [selectedMonth, setSelectedMonth] = useState(monthOptions[0])
-    const [monthDropdownOpen, setMonthDropdownOpen] = useState(false)
-    const monthDropdownRef = useRef(null)
-
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (monthDropdownRef.current && !monthDropdownRef.current.contains(e.target)) {
-                setMonthDropdownOpen(false)
-            }
-        }
-        document.addEventListener('click', handleClickOutside, true)
-        return () => document.removeEventListener('click', handleClickOutside, true)
-    }, [])
 
     // ============ MOCK DATA ============
 
@@ -255,97 +223,7 @@ const Statistics = () => {
                         <p className="text-muted mb-0 small">O'quv markaz faoliyati haqida umumiy ko'rsatkichlar</p>
                     </div>
 
-                    <div className="position-relative" ref={monthDropdownRef}>
-                        <button
-                            className="btn d-flex align-items-center gap-2 px-3 py-2"
-                            onClick={() => setMonthDropdownOpen(!monthDropdownOpen)}
-                            style={{
-                                background: !theme ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                                border: `1px solid ${!theme ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                                borderRadius: '12px',
-                                color: !theme ? '#e2e8f0' : '#1e293b',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                transition: 'all 0.2s',
-                                minWidth: '180px',
-                                justifyContent: 'space-between',
-                            }}
-                        >
-                            <div className="d-flex align-items-center gap-2">
-                                <Icon icon="ph:calendar-duotone" fontSize={18} style={{ color: '#6366f1' }} />
-                                {selectedMonth.label}
-                            </div>
-                            <Icon
-                                icon="ph:caret-down-bold"
-                                fontSize={14}
-                                className="text-muted"
-                                style={{
-                                    transition: 'transform 0.2s',
-                                    transform: monthDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-                                }}
-                            />
-                        </button>
-
-                        {monthDropdownOpen && (
-                            <div className="stats-month-dropdown" style={{
-                                position: 'absolute',
-                                top: 'calc(100% + 8px)',
-                                right: 0,
-                                zIndex: 100,
-                                minWidth: '200px',
-                                maxHeight: '320px',
-                                overflowY: 'auto',
-                                background: !theme ? 'rgba(15, 23, 42, 0.97)' : 'rgba(255, 255, 255, 0.98)',
-                                backdropFilter: 'blur(20px)',
-                                border: `1px solid ${!theme ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-                                borderRadius: '14px',
-                                padding: '6px',
-                                boxShadow: !theme
-                                    ? '0 16px 48px rgba(0,0,0,0.5)'
-                                    : '0 16px 48px rgba(0,0,0,0.12)',
-                            }}>
-                                {monthOptions.map((opt, i) => (
-                                    <button
-                                        key={i}
-                                        className="btn w-100 text-start d-flex align-items-center justify-content-between px-3 py-2"
-                                        onClick={() => {
-                                            setSelectedMonth(opt)
-                                            setMonthDropdownOpen(false)
-                                        }}
-                                        style={{
-                                            borderRadius: '10px',
-                                            fontSize: '13px',
-                                            fontWeight: selectedMonth.label === opt.label ? 700 : 500,
-                                            color: selectedMonth.label === opt.label
-                                                ? '#6366f1'
-                                                : (!theme ? '#cbd5e1' : '#475569'),
-                                            background: selectedMonth.label === opt.label
-                                                ? (!theme ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.08)')
-                                                : 'transparent',
-                                            border: 'none',
-                                            transition: 'all 0.15s',
-                                            marginBottom: '2px',
-                                        }}
-                                        onMouseEnter={e => {
-                                            if (selectedMonth.label !== opt.label) {
-                                                e.currentTarget.style.background = !theme ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'
-                                            }
-                                        }}
-                                        onMouseLeave={e => {
-                                            if (selectedMonth.label !== opt.label) {
-                                                e.currentTarget.style.background = 'transparent'
-                                            }
-                                        }}
-                                    >
-                                        <span>{opt.label}</span>
-                                        {selectedMonth.label === opt.label && (
-                                            <Icon icon="ph:check-bold" fontSize={14} style={{ color: '#6366f1' }} />
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <MonthSelect value={selectedMonth} onChange={setSelectedMonth} />
                 </div>
 
                 {/* Stat Cards */}

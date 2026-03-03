@@ -25,7 +25,7 @@ let isRefreshing = false;
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
-  failedQueue.forEach(p => {
+  failedQueue.forEach((p) => {
     if (error) p.reject(error);
     else p.resolve(token);
   });
@@ -37,10 +37,23 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Refresh endpoint o'zi 401 qaytarsa, cheksiz loop bo'lmasligi uchun o'tkazib yuboramiz
+    const isRefreshRequest =
+      originalRequest.url?.includes("/auth/refresh");
+
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !isRefreshRequest
     ) {
+      // Agar refresh token yo'q bo'lsa, to'g'ridan-to'g'ri login ga o'tamiz
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) {
+        localStorage.clear();
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -54,15 +67,33 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem("refresh_token");
+        // Server kutayotgan body formatida yuboramiz
+        const res = await axios.post(
+          "https://erpbackend.pythonanywhere.com/api/v1/auth/refresh/",
+          { refresh: refreshToken }
+        );
 
-        const res = await axios.post("https://erpbackend.pythonanywhere.com/api/v1/auth/refresh", {
-          refresh_token: refreshToken,
-        });
+        // Server javob formatini aniqlash (res.data.data.access yoki res.data.access)
+        const newAccessToken =
+          res.data?.data?.access ||
+          res.data?.access ||
+          res.data?.access_token;
 
-        const newAccessToken = res.data.access_token;
+        const newRefreshToken =
+          res.data?.data?.refresh ||
+          res.data?.refresh ||
+          res.data?.refresh_token;
+
+        if (!newAccessToken) {
+          throw new Error("Refresh javobida access token topilmadi");
+        }
 
         localStorage.setItem("access_token", newAccessToken);
+
+        // Yangi refresh token ham qaytarilgan bo'lsa — yangilaymiz
+        if (newRefreshToken) {
+          localStorage.setItem("refresh_token", newRefreshToken);
+        }
 
         processQueue(null, newAccessToken);
 

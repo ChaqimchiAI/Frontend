@@ -163,7 +163,7 @@ const Home = () => {
         />
       )}
 
-      <div className="card card-body" style={{ minHeight: '100vh', transition: 'all 0.3s' }}>
+      <div className="card p-4" style={{ minHeight: '100vh', transition: 'all 0.3s' }}>
         {/* 1. Header Section */}
         <div className="d-flex justify-content-between align-items-end mb-5">
           <div>
@@ -219,14 +219,12 @@ const Home = () => {
           ))}
         </div>
 
-        <div className="row g-4">
-          <div className="col-lg-8">
+        <div className="row p-3">
+          {/* darslar jadvali */}
+          <Lessons theme={theme} upcomingLessons={upcomingLessons} setScheduleModal={setScheduleModal} />
 
-            {/* Yaqindagi darslar */}
-            <Lessons theme={theme} upcomingLessons={upcomingLessons} setScheduleModal={setScheduleModal} />
-
-            {/* Oxirgi qo'shilganlar */}
-            <div className="card glass-card p-4 border-0">
+          <div className="row col-lg-12 gap-3"> 
+            <div className="card card-body col-lg-4 glass-card border-0" style={{ minHeight: '500px' }}>
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                   <h5 className={`fw-bold mb-1 ${!theme ? 'text-white' : 'text-dark'}`}>Oxirgi o'quvchilar</h5>
@@ -279,11 +277,9 @@ const Home = () => {
                 )}
               </div>
             </div>
-          </div>
 
-          {/* 4. O'ng taraf - Tezkor Tugmalar */}
-          <div className="col-lg-4">
-            <div className="card glass-card p-4 h-100 border-0">
+            {/* 4. O'ng taraf - Tezkor Tugmalar */}
+            <div className="card glass-card p-4 border-0 col-lg-4" style={{ height: '500px' }}>
               <h5 className={`fw-bold mb-4 ${!theme ? 'text-white' : 'text-dark'}`}>Tezkor amallar</h5>
               <div className="d-grid gap-3">
                 <button

@@ -1,0 +1,172 @@
+.lesson-table-wrapper {
+    overflow: auto;
+    border-radius: 12px;
+    height: 80vh;
+}
+
+.lesson-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* thead qator uchun — rasmga o'xshash yumaloq ramka */
+.lesson-table thead th {
+    text-align: center;
+    padding: 8px 4px;
+    font-weight: 600;
+    font-size: 13px;
+    border-top: 2px solid #7e7e7e52;
+    border-bottom: 2px solid #7e7e7e52;
+    border-right: 2px solid #7e7e7e52;
+    background: transparent;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.lesson-table thead th:first-child {
+    border-left: 2px solid #7e7e7e52;
+    border-top-left-radius: 10px;
+    min-width: 100px;
+    width: 100px;
+}
+
+.lesson-table thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+/* tbody */
+.lesson-table tbody tr {
+    height: 28px;
+}
+
+.lesson-table td {
+    text-align: center;
+    border-right: 1px dashed #e0e0e050;
+    border-bottom: 1px dashed #e0e0e030;
+    padding: 0;
+    vertical-align: top;
+    position: relative;
+}
+
+.time-td {
+    font-weight: 500;
+    font-size: 11px;
+    padding: 4px 8px !important;
+    white-space: nowrap;
+    color: #888;
+    border-right: 1px solid #e0e0e050 !important;
+    vertical-align: middle !important;
+    text-align: left !important;
+}
+
+.empty-cell {
+    color: #d0d0d050;
+    font-size: 11px;
+    vertical-align: middle !important;
+}
+
+/* Dars kartochkasi */
+.lesson-cell {
+    max-width: 180px;
+    padding: 5px !important;
+    vertical-align: top !important;
+    position: relative;
+
+    &:hover .lesson-info {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.lesson-info {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: #000000cc;
+    backdrop-filter: blur(8px);
+    min-height: 120px;
+    width: 220px;
+    color: #fff !important;
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.lesson-info::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #000000cc;
+}
+
+.lesson-card {
+    border-radius: 8px;
+    padding: 6px 8px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lesson-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.lesson-card-name {
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lesson-card-teacher {
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.95;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lesson-card-room {
+    font-size: 10px;
+    opacity: 0.85;
+    font-style: italic;
+}
+
+.lesson-card-stats {
+    font-size: 10px;
+    margin-top: auto;
+    opacity: 0.9;
+    display: flex;
+    gap: 6px;
+}
+
+.t0 {
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.l0 {
+    left: 0;
+    z-index: 99;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
