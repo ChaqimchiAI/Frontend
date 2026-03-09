@@ -57,7 +57,6 @@ const GroupDetalie = () => {
      // guruhdagi o'quvchilarni olish
      const { data: studentsData } = useGroupStudents(id)
 
-
      // =========== Edited ============
 
      // guruhni tahrirlash
@@ -85,8 +84,6 @@ const GroupDetalie = () => {
      useEffect(() => {
           setChangeGroupDate(currentGroup)
      }, [changeGroup])
-
-
 
      // statusni tog'ri olish
      const Status = (s) => {
@@ -342,31 +339,6 @@ const GroupDetalie = () => {
                     </div>
 
                     <div
-                         className="card card-hover px-4 border py-4 z-3"
-                         style={{ width: "33%" }}
-                    >
-                         <spam className="fs-2">
-                              <Icon icon="tabler:clock" width="18" height="18" className="me-2" />
-                              Jadval
-                         </spam>
-                         <Dropdown autoClose="outside inside" className="mt-2">
-                              <Dropdown.Toggle className={`fs-4 ${!theme ? "text-white" : "text-black"}`} style={{ background: 'transparent', border: 'none', padding: '0' }}>
-                                   {
-                                        t?.days_of_week.map(d => " " + d.full) && t?.begin_time.slice(0, 5) !== "undifined" ? t?.days_of_week.map(d => " " + d.full) + " | " + t?.begin_time.slice(0, 5) : "Belgilanmagan"
-                                   }
-                              </Dropdown.Toggle>
-
-                              <Dropdown.Menu>
-                                   {currentGroup?.schedule_items?.active?.map(item => (
-                                        <Dropdown.Item className="fs-4 rounded-2">
-                                             {" " + item.days_of_week.map(d => d.full) + " | " + item.begin_time.slice(0, 5)}
-                                        </Dropdown.Item>
-                                   ))}
-                              </Dropdown.Menu>
-                         </Dropdown>
-                    </div>
-
-                    <div
                          className="card card-hover px-4 border py-4"
                          style={{ width: "33%" }}
                     >
@@ -486,11 +458,9 @@ const GroupDetalie = () => {
                                              </span>
                                         </div>
                                         <AttendenceTable
-                                             days_of_week={t?.days_of_week}
-                                             scheduleId={t?.id}
-                                             id={id}
                                              setNotif={setNotif}
                                              studentsData={studentsData}
+                                             schedule_items={schedule_items?.active}
                                         />
                                    </Card.Body>
                               </Card>

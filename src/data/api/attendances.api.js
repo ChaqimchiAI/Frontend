@@ -8,7 +8,7 @@ export const getStudentAttendances = (student_id, month, year) =>
         params: { month, year }
     }).then(res => res.data.data)
 
-export const getGroupAttendances = (schedule_id, date) =>
+export const getGroupAttendances = (schedule_id) =>
     api.get(`/attendances/schedule/${schedule_id}/`).then(res => res.data.data)
 
 export const createAttendance = (id, data) =>
