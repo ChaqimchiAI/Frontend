@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://erpbackend.pythonanywhere.com/api/v1",
+  baseURL: "https://apiprotech.asatullayev.uz/api/v1",
 });
 
 /* =========================
