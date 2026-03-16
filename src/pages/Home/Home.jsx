@@ -52,8 +52,8 @@ const Home = () => {
     {
       id: 1,
       title: "Leadlar",
-      value: "156",
-      change: "-2%",
+      value: "0",
+      change: "0%",
       icon: "ph:user-duotone",
       color: "#10b981",
       gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)"
@@ -61,8 +61,8 @@ const Home = () => {
     {
       id: 2,
       title: "O'quvchilar",
-      value: "1,280",
-      change: "+12%",
+      value: "0",
+      change: "0%",
       icon: "ph:student-duotone",
       color: "#6366f1",
       gradient: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
@@ -70,8 +70,8 @@ const Home = () => {
     {
       id: 3,
       title: "Guruhlar",
-      value: "42",
-      change: "+5%",
+      value: "0",
+      change: "0%",
       icon: "ph:users-four-duotone",
       color: "#f43f5e",
       gradient: "linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)"
@@ -79,8 +79,8 @@ const Home = () => {
     {
       id: 4,
       title: "Tushum",
-      value: "45.2M",
-      change: "+18%",
+      value: "0",
+      change: "0%",
       icon: "ph:wallet-duotone",
       color: "#f59e0b",
       gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)"
