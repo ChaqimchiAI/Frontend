@@ -5,6 +5,8 @@ import './Layout.css'
 import { Outlet } from 'react-router-dom';
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Layout = ({ toggleTheme, setToggleTheme }) => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ const Layout = ({ toggleTheme, setToggleTheme }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`https://erpbackend.pythonanywhere.com/api/v1/auth/profile`, {
+        const res = await axios.get(`${apiUrl}/auth/profile`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },

@@ -2,6 +2,8 @@ import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 export default function LogoutButton() {
   const navigate = useNavigate();
 
@@ -17,7 +19,7 @@ export default function LogoutButton() {
 
     try {
       await axios.post(
-        'https://erpbackend.pythonanywhere.com/api/v1/auth/logout/',
+        `${apiUrl}/auth/logout/`,
         { refresh: refreshToken },
         {
           headers: {
