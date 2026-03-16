@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 const api = axios.create({
-  baseURL: "https://erpbackend.pythonanywhere.com/api/v1",
+  baseURL: apiUrl,
 });
 
 /* =========================
@@ -69,7 +71,7 @@ api.interceptors.response.use(
       try {
         // Server kutayotgan body formatida yuboramiz
         const res = await axios.post(
-          "https://erpbackend.pythonanywhere.com/api/v1/auth/refresh/",
+          `${apiUrl}/auth/refresh/`,
           { refresh: refreshToken }
         );
 

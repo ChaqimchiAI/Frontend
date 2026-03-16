@@ -5,6 +5,8 @@ import { Input } from "../../components/Ui/Input"
 import "./Login.css";
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -53,7 +55,7 @@ export default function Login() {
     try {
       const res = await axios({
         method: 'post',
-        url: 'https://erpbackend.pythonanywhere.com/api/v1/auth/login/',
+        url: `${apiUrl}/auth/login/`,
         data: loginPayload,
         headers: {
           'Content-Type': 'application/json',
