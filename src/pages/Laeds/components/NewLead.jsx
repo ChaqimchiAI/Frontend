@@ -15,75 +15,70 @@ const sources = {
      "Banner": "#2f871c",
 }
 
-const date = new Date()
-
 const NewLead = ({ setNotif, show, setShow }) => {
-
-     const { data: AllTeacherData } = useTeachersData();
      const { data: AllCoursesData } = useCourses();
+     const coursesData = AllCoursesData?.results;
 
-     const teacherData = AllTeacherData?.results
-     const coursesData = AllCoursesData?.results
-
-     // yangi lid yaratish uchun
      const { mutate: createLead, isPending: creating } = useCreateLead();
-
 
      const [newLidData, setNewLidData] = useState({
           first_name: "",
           last_name: "",
           phone: "",
-          course: 0,
+          course: "",
           source: "",
           status: "new",
-          create_at: date,
           week_days: [],
           comment: "",
           parent_name: "",
           parent_phone: "",
-          teacher: "",
-          updated_at: null,
-          deleted_at: null
+          teacher: null, // Ustoz shart emas
      })
 
-     // Yangi lid qoshish
      const handleSubmit = (e) => {
           e.preventDefault()
+          
           if (!(newLidData.first_name && newLidData.last_name && newLidData.phone)) {
                alert("Asosiy ma'lumotlar to'ldiring!");
                return;
           }
 
+          // Backend kutayotgan formatga o'tkazamiz (string -> number)
+          const payload = {
+               ...newLidData,
+               course: newLidData.course ? Number(newLidData.course) : null,
+               source: newLidData.source ? Number(newLidData.source) : null,
+               teacher: null, // Aniq null yuboramiz
+               week_days: newLidData.week_days || [],
+               create_at: new Date().toISOString()
+          };
 
           createLead(
-               newLidData,
+               payload,
                {
                     onSuccess: () => {
                          setNewLidData({
                               first_name: "",
                               last_name: "",
                               phone: "",
-                              course: 0,
+                              course: "",
                               source: "",
                               status: "new",
-                              create_at: date,
                               week_days: [],
                               comment: "",
                               parent_name: "",
                               parent_phone: "",
-                              teacher: "",
+                              teacher: null,
                          })
-
-                         // bidirishnoma
-                         setNotif({ show: true, type: 'success', message: "Yangi lid muvoffaqyatli qo'shildi" })
+                         setNotif({ show: true, type: 'success', message: "Yangi lid muvaffaqiyatli qo'shildi" })
+                         setShow(false)
                     },
                     onError: (err) => {
-                         console.error(err)
-                         setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi!" })
+                         console.error("Xatolik tafsiloti:", err.response?.data);
+                         setNotif({ show: true, type: 'error', message: "Xatolik yuz berdi! Ma'lumotlarni tekshiring." })
                     }
                }
           )
-
      }
 
      return (
@@ -94,10 +89,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
                width="50%"
                zIndex={100}
           >
-               <form
-                    onSubmit={handleSubmit}
-                    className="d-flex form-control flex-column mt-3"
-               >
+               <form onSubmit={handleSubmit} className="d-flex form-control flex-column mt-3">
                     <div className="row">
                          <Input
                               label="Ism *"
@@ -124,17 +116,14 @@ const NewLead = ({ setNotif, show, setShow }) => {
 
                     <div className="row">
                          <div className="col d-flex flex-column">
-                              <label htmlFor="course" className="form-label">
-                                   Kurs
-                              </label>
+                              <label htmlFor="course" className="form-label">Kurs</label>
                               <select
                                    id="course"
                                    className="form-select"
                                    value={newLidData.course}
                                    onChange={(e) => setNewLidData({ ...newLidData, course: e.target.value })}
                               >
-                                   <option hidden>Kurs tanlash</option>
-
+                                   <option value="">Kurs tanlash</option>
                                    {coursesData?.map(c => (
                                         <option key={c.id} value={c.id}>{c.name}</option>
                                    ))}
@@ -142,9 +131,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
                          </div>
 
                          <div className="col d-flex flex-column">
-                              <label htmlFor="days" className="form-label">
-                                   Dars kunlari
-                              </label>
+                              <label htmlFor="days" className="form-label">Dars kunlari</label>
                               <SelectDay
                                    data={newLidData}
                                    setData={setNewLidData}
@@ -154,22 +141,6 @@ const NewLead = ({ setNotif, show, setShow }) => {
                     </div>
 
                     <div className="row mt-3">
-                         {/* <div className="col d-flex flex-column">
-                              <label htmlFor="teacher" className="form-label">O'qituvchi</label>
-                              <select
-                                   id="teacher"
-                                   className="form-select"
-                                   value={newLidData.teacher}
-                                   onChange={(e) => setNewLidData({ ...newLidData, teacher: e.target.value })}
-                              >
-                                   <option hidden value="">O'qituvchi tanlash</option>
-
-                                   {teacherData?.map(t => (
-                                        <option key={t.id} value={t.id}>{t.first_name} {" "} {t.last_name}</option>
-                                   ))}
-                              </select>
-                         </div> */}
-
                          <div className="col d-flex flex-column">
                               <label htmlFor="source" className="form-label">Manba</label>
                               <select
@@ -178,10 +149,9 @@ const NewLead = ({ setNotif, show, setShow }) => {
                                    value={newLidData.source}
                                    onChange={(e) => setNewLidData({ ...newLidData, source: e.target.value })}
                               >
-                                   <option hidden>Bizni qanday topdingiz ?</option>
-
+                                   <option value="">Bizni qanday topdingiz?</option>
                                    {Object.keys(sources).map((s, i) => (
-                                        <option value={i + 1}>{s}</option>
+                                        <option key={s} value={i + 1}>{s}</option>
                                    ))}
                               </select>
                          </div>
@@ -214,19 +184,15 @@ const NewLead = ({ setNotif, show, setShow }) => {
                                    className="form-control"
                                    style={{ resize: "none", height: "80px" }}
                                    onChange={(e) => setNewLidData({ ...newLidData, comment: e.target.value })}
-                              >
-                              </textarea>
+                              />
                          </div>
                     </div>
 
                     <div className="d-flex align-self-end my-3">
                          <button
-
                               type="submit"
                               style={{ background: "#0085db" }}
-                              disabled={
-                                   !(newLidData.first_name && newLidData.last_name && newLidData.phone) || creating
-                              }
+                              disabled={!(newLidData.first_name && newLidData.last_name && newLidData.phone) || creating}
                               className="btn btn-sm px-3 py-2 fs-3 text-white"
                          >
                               {creating ? <Spinner animation="border" size="sm" /> : "Saqlash"}
