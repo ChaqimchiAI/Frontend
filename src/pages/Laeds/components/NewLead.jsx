@@ -143,7 +143,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
 
                          <div className="col d-flex flex-column">
                               <label htmlFor="days" className="form-label">
-                                   Dars kunlari *
+                                   Dars kunlari
                               </label>
                               <SelectDay
                                    data={newLidData}
@@ -154,7 +154,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
                     </div>
 
                     <div className="row mt-3">
-                         <div className="col d-flex flex-column">
+                         {/* <div className="col d-flex flex-column">
                               <label htmlFor="teacher" className="form-label">O'qituvchi</label>
                               <select
                                    id="teacher"
@@ -168,7 +168,7 @@ const NewLead = ({ setNotif, show, setShow }) => {
                                         <option key={t.id} value={t.id}>{t.first_name} {" "} {t.last_name}</option>
                                    ))}
                               </select>
-                         </div>
+                         </div> */}
 
                          <div className="col d-flex flex-column">
                               <label htmlFor="source" className="form-label">Manba</label>
