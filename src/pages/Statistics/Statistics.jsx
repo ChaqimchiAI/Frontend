@@ -21,8 +21,8 @@ const Statistics = () => {
         {
             id: 1,
             title: "Jami tushum",
-            value: "128.5M",
-            change: "+14%",
+            value: "0",
+            change: "0%",
             icon: "ph:currency-dollar-duotone",
             color: "#10b981",
             gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
@@ -31,8 +31,8 @@ const Statistics = () => {
         {
             id: 2,
             title: "Jami xarajat",
-            value: "42.3M",
-            change: "-3%",
+            value: "0M",
+            change: "0%",
             icon: "ph:arrow-circle-down-duotone",
             color: "#f43f5e",
             gradient: "linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)",
@@ -41,8 +41,8 @@ const Statistics = () => {
         {
             id: 3,
             title: "Sof foyda",
-            value: "86.2M",
-            change: "+22%",
+            value: "0",
+            change: "0%",
             icon: "ph:chart-line-up-duotone",
             color: "#6366f1",
             gradient: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
@@ -51,8 +51,8 @@ const Statistics = () => {
         {
             id: 4,
             title: "Qarzdorlik",
-            value: "15.8M",
-            change: "-8%",
+            value: "0",
+            change: "0%",
             icon: "ph:warning-circle-duotone",
             color: "#f59e0b",
             gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
