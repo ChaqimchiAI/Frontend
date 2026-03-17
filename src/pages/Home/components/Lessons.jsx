@@ -259,18 +259,25 @@ const Lessons = ({ theme }) => {
 
     // Har bir xona va vaqt slot uchun darsni topish
     const getLessonForCell = (roomName, timeIndex) => {
-        return mockLessons.find(lesson => {
-            const lessonStart = getTimeSlotIndex(lesson.startTime)
-            return lesson.room === roomName && lessonStart === timeIndex
+        return todayLessons?.find(lesson => {
+            const startTime = lesson.begin_time || lesson.startTime
+            if (!startTime) return false;
+            const lessonStart = getTimeSlotIndex(startTime)
+            const rName = lesson.room?.name || lesson.roomName || lesson.room
+            return rName === roomName && lessonStart === timeIndex
         })
     }
 
     // Bu hujayra dars bilan band ekanligini tekshirish (rowSpan tufayli)
     const isCellOccupied = (roomName, timeIndex) => {
-        return mockLessons.some(lesson => {
-            const lessonStart = getTimeSlotIndex(lesson.startTime)
-            const span = getRowSpan(lesson.startTime, lesson.endTime)
-            return lesson.room === roomName && timeIndex > lessonStart && timeIndex < lessonStart + span
+        return todayLessons?.some(lesson => {
+            const startTime = lesson.begin_time || lesson.startTime
+            const endTime = lesson.end_time || lesson.endTime
+            if (!startTime || !endTime) return false;
+            const lessonStart = getTimeSlotIndex(startTime)
+            const span = getRowSpan(startTime, endTime)
+            const rName = lesson.room?.name || lesson.roomName || lesson.room
+            return rName === roomName && timeIndex > lessonStart && timeIndex < lessonStart + span
         })
     }
 
@@ -325,57 +332,60 @@ const Lessons = ({ theme }) => {
                                     const lesson = getLessonForCell(r.name, index)
 
                                     if (lesson) {
-                                        const span = getRowSpan(lesson.startTime, lesson.endTime)
+                                        const startTime = lesson.begin_time?.slice(0, 5) || lesson.startTime
+                                        const endTime = lesson.end_time?.slice(0, 5) || lesson.endTime
+                                        const span = getRowSpan(startTime, endTime)
                                         const cardHeight = span * ROW_HEIGHT - 4
+
+                                        const teacherName = lesson.teacher?.first_name 
+                                            ? `${lesson.teacher.first_name} ${lesson.teacher.last_name}`
+                                            : lesson.teacher || "Noma'lum"
+                                        const groupName = lesson.group?.name || lesson.group_name || lesson.name || "Noma'lum"
+                                        const roomName = lesson.room?.name || lesson.roomName || lesson.room || "Noma'lum"
+                                        const studentsCount = lesson.group?.students_count ?? lesson.students ?? 0
+                                        const courseName = lesson.group?.course?.name || lesson.course || "Noma'lum"
+
                                         return (
                                             <td key={r.id} rowSpan={span} className="lesson-cell">
                                                 <div className="position-relative d-flex align-items-center justify-content-center">
                                                     <div className="lesson-info fs-1 d-flex flex-column align-items-start">
                                                         <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
                                                             <span>Guruh:</span>
-                                                            <span>{lesson.name}</span>
+                                                            <span>{groupName}</span>
                                                         </p>
                                                         <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
                                                             <span>Xona:</span>
-                                                            <span>{lesson.room}</span>
+                                                            <span>{roomName}</span>
                                                         </p>
                                                         <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
                                                             <span>Dars vaqti:</span>
-                                                            <span>{lesson.startTime} - {lesson.endTime}</span>
+                                                            <span>{startTime} - {endTime}</span>
                                                         </p>
                                                         <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
                                                             <span>O'qituvchi:</span>
-                                                            <span>{lesson.teacher}</span>
+                                                            <span>{teacherName}</span>
                                                         </p>
                                                         <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
                                                             <span>Kurs: </span>
-                                                            <span>{lesson.course}</span>
+                                                            <span>{courseName}</span>
                                                         </p>
                                                         <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
                                                             <span>Sana:</span>
-                                                            <span>{lesson.date}</span>
-                                                        </p>
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>Boshlanish vaqti:</span>
-                                                            <span>{lesson.startTime}</span>
-                                                        </p>
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>Tugash vaqti:</span>
-                                                            <span>{lesson.endTime}</span>
+                                                            <span>{lesson.date || "Bugun"}</span>
                                                         </p>
                                                     </div>
                                                     <div
                                                         className="lesson-card"
                                                         style={{
-                                                            backgroundColor: lesson.color + '80',
+                                                            backgroundColor: (lesson.color || '#6366f1') + '80',
                                                             height: `${cardHeight}px`
                                                         }}
                                                     >
-                                                        <div className="lesson-card-name">{lesson.name}</div>
-                                                        <div className="lesson-card-teacher">{lesson.teacher}</div>
-                                                        <div className="lesson-card-room">Xona: {lesson.room}</div>
+                                                        <div className="lesson-card-name">{groupName}</div>
+                                                        <div className="lesson-card-teacher">{teacherName}</div>
+                                                        <div className="lesson-card-room">Xona: {roomName}</div>
                                                         <div className="lesson-card-stats d-flex justify-content-center">
-                                                            <span>👤 {lesson.students}/{r.capacity}</span>
+                                                            <span>👤 {studentsCount}/{r.capacity || r.max_capacity || 0}</span>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -20,3 +20,6 @@ export const createStudentDiscount = (id, data) =>
 
 export const uptadeStudentDiscount = (discountId, data) =>
     api.patch(`/billings/discounts/${discountId}/`, data).then(res => res.data.data)
+
+export const withdrawStudentTransaction = (id, data) =>
+    api.post(`/billings/students/${id}/withdraw/`, data).then(res => res.data.data)

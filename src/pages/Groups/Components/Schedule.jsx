@@ -35,7 +35,7 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                          <tbody>
                               {active?.length > 0 ?
                                    active.map((s, index) =>
-                                        <tr>
+                                        <tr key={s.id || index}>
                                              <td className="bg-transparent">{index + 1}</td>
                                              <td className="bg-transparent">{s.teacher.first_name + " " + s.teacher.last_name}</td>
                                              <td className="bg-transparent">{s.days_of_week.map(d => d.code + ", ")}</td>
@@ -90,7 +90,7 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                          <tbody>
                               {history?.length > 0 ?
                                    history.map((s, index) =>
-                                        <tr>
+                                        <tr key={s.id || index}>
                                              <td className="bg-transparent">{index + 1}</td>
                                              <td className="bg-transparent">{s.teacher.first_name + " " + s.teacher.last_name}</td>
                                              <td className="bg-transparent">{s.days_of_week.map(d => d.code + ", ")}</td>
@@ -101,7 +101,7 @@ const Schedule = ({ schedule_items, setChange_items }) => {
                                                   {s.start_date || s.end_date !== null || undefined ?
                                                        s.start_date?.split("T")[0].split("-").reverse().join(".") + " - " + s.end_date?.split("T")[0].split("-").reverse().join(".") : "Belgilanmagan"}
                                              </td>
-                                             <td className="bg-transparent">{s.room.name}</td>
+                                             <td className="bg-transparent">{s.room?.name}</td>
                                         </tr>
                                    ) : (
                                         <tr>

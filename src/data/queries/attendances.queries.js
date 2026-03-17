@@ -17,10 +17,11 @@ export const useStudentAttendances = (student_id, month, year) => {
     })
 }
 
-export const useGroupAttendances = (group_id, date) => {
+export const useGroupAttendances = (schedule_id) => {
     return useQuery({
-        queryKey: ["group-attendances", group_id, date],
-        queryFn: () => getGroupAttendances(group_id, date),
+        queryKey: ["group-attendances", schedule_id],
+        queryFn: () => getGroupAttendances(schedule_id),
+        enabled: !!schedule_id,
         initialData: []
     })
 }

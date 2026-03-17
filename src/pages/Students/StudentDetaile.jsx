@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Spinner, Button, Nav } from "react-bootstrap";
 import { Icon } from "@iconify/react";
 import { useDeleteStudent, useStudent, useUpdateStudent } from "../../data/queries/students.queries";
-import { useCreateStudentDiscount, useCreateStudentTransaction, useUpdateStudentDiscount } from "../../data/queries/billing.queries"
+import { useCreateStudentDiscount, useCreateStudentTransaction, useUpdateStudentDiscount, useWithdrawStudentTransaction } from "../../data/queries/billing.queries"
 import { Input } from "../../components/Ui/Input";
 import { ReactSelect } from "../../components/Ui/ReactSelect";
 import { useTheme } from "../../Context/Context";
@@ -21,6 +21,7 @@ import StudentStats from "./components/Details/StudentStats";
 import StudentAttendances from "./components/Details/StudentAttendances";
 import StudentDiscounts from "./components/Details/StudentDiscounts";
 import StudentPassword from "./components/Details/StudentPassword";
+import StudentTransactions from "./components/Details/StudentTransactions";
 
 const statusStyle = (s) => {
   let st = s === true ? { style: { background: "#01df31" }, t: "Faol" }
@@ -41,6 +42,7 @@ const StudentDetaile = () => {
 
   const { mutate: createStudentDiscount, isPending: creatingDiscount } = useCreateStudentDiscount(id)
   const { mutate: updateStudentDiscount } = useUpdateStudentDiscount(id)
+  const { mutate: withdrawStudentTransaction, isPending: withdrawingStudentTransaction } = useWithdrawStudentTransaction(id);
 
   const { data: groupsData, isLoading: groupsLoading } = useGroups()
   const { data: courses } = useCourses();
@@ -79,6 +81,8 @@ const StudentDetaile = () => {
     total_uses: ""
   })
   const [openDropdown, setOpenDropdown] = useState(null)
+  // StudentDetaile.jsx ichida
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     const allGroups = groupsData?.results || groupsData;
@@ -227,6 +231,30 @@ const StudentDetaile = () => {
     })
   }
 
+  const handleWithdrawPayment = () => {
+    if (!selectedGroup) {
+      setNotif({ show: true, type: "error", message: "Guruhni tanlang!" });
+      return;
+    }
+    const body = {
+      group_id: Number(selectedGroup),
+      comment: comment
+    };
+    withdrawStudentTransaction(body, {
+      onSuccess: () => {
+        setNotif({ show: true, type: "success", message: "To'lov muvaffaqiyatli yechildi!" });
+        setModal(null);
+        setComment("");
+        setSelectedGroup("");
+      },
+      onError: (err) => {
+        console.error(err);
+        const errorMsg = err.response?.data?.data?.error || "Xatolik yuz berdi!";
+        setNotif({ show: true, type: "error", message: errorMsg });
+      }
+    });
+  }
+
   // for discount
   const handleAddDiscount = () => {
     if (!discount.amount || !discount.total_uses) return;
@@ -305,7 +333,7 @@ const StudentDetaile = () => {
 
       {modal &&
         <Modal
-          title={`${modal === "payment" ? "To'lov qilish" : "Pul qaytarish"}`}
+          title={`${modal === "payment" ? "Balansni to'ldirish" : modal === "withdraw" ? "Pul qaytarish" : "To'lov yechish"}`}
           anima={modal}
           close={setModal}
           width="30%"
@@ -340,23 +368,61 @@ const StudentDetaile = () => {
             </div>
           )}
 
-          <Input
-            label="Summa"
-            type="text"
-            onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
-            placeholder="Summa"
-            required
-            disabled={creatingStudentTransaction}
-            containerClassName="mt-2"
-          />
+          {modal === "withdrawPayment" && (
+            <>
+              <select
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+                required
+                className="form-select mt-2"
+                disabled={withdrawingStudentTransaction}
+              >
+                <option value="" hidden>Guruhni tanlang</option>
+                {currentStudent?.groups?.map((studentGroup) => {
+                  const group = (groupsData?.results || groupsData || []).find(g => g.id === studentGroup.group_id);
+                  if (!group) return null;
+                  return (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
+                    </option>
+                  );
+                })}
+              </select>
 
-          {modal === "withdraw" && (
+              {selectedGroup && (
+                <div className="mt-2 mb-2 text-muted fw-bold d-flex align-items-center">
+                  <Icon icon="mdi:cash" fontSize={20} className="me-1" style={{ color: "#01df31" }} />
+                  Kurs narxi: <span className="ms-1" style={{ color: !theme ? "#fff" : "#000" }}>{
+                    (() => {
+                      const group = (groupsData?.results || groupsData || []).find(g => g.id === Number(selectedGroup));
+                      const course = coursesData?.find(c => c.course === group?.course || c.name === group?.course_name);
+                      return course?.price ? Number(course.price?.split(".")[0]).toLocaleString() + " so'm" : "Noma'lum";
+                    })()
+                  }</span>
+                </div>
+              )}
+            </>
+          )}
+
+          {(modal === "payment" || modal === "withdraw") && (
+            <Input
+              label="Summa"
+              type="text"
+              onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
+              placeholder="Summa"
+              required
+              disabled={creatingStudentTransaction}
+              containerClassName="mt-2"
+            />
+          )}
+
+          {(modal === "withdraw" || modal === "withdrawPayment") && (
             <Input
               label="Izoh"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Izoh..."
-              disabled={creatingStudentTransaction}
+              disabled={creatingStudentTransaction || withdrawingStudentTransaction}
               containerClassName="mt-2"
             />
           )}
@@ -371,9 +437,10 @@ const StudentDetaile = () => {
             </Button>
             <Button
               className="btn btn-sm save-button"
-              onClick={handleTransaction}
+              onClick={modal === "withdrawPayment" ? handleWithdrawPayment : handleTransaction}
+              disabled={creatingStudentTransaction || withdrawingStudentTransaction}
             >
-              {creatingStudentTransaction ? <Spinner animation="border" size="sm" /> : (modal === "payment" ? "To'lash" : "Qaytarish")}
+              {(creatingStudentTransaction || withdrawingStudentTransaction) ? <Spinner animation="border" size="sm" /> : (modal === "payment" ? "To'ldirish" : modal === "withdraw" ? "Qaytarish" : "Yechish")}
             </Button>
           </div>
         </Modal>
@@ -533,15 +600,13 @@ const StudentDetaile = () => {
             <h4 className={`mb-0 fw-bold ${textColor}`}>{currentStudent?.first_name} {currentStudent?.last_name}</h4>
           </div>
 
-          {currentStudent?.groups?.length === 0 && (
-            <button
-              className="btn btn-sm fs-2 d-flex align-items-center gap-1 save-button"
-              onClick={() => setAddStudentGroup(true)}
-            >
-              <Icon icon="material-symbols:group-add-outline" width="18" />
-              Guruhga qo'shish
-            </button>
-          )}
+          <button
+            className="btn btn-sm fs-2 d-flex align-items-center gap-1 save-button"
+            onClick={() => setAddStudentGroup(true)}
+          >
+            <Icon icon="material-symbols:group-add-outline" width="18" />
+            Guruhga qo'shish
+          </button>
         </div>
 
         <Row>
@@ -569,7 +634,7 @@ const StudentDetaile = () => {
             <Card className="border-0" style={{ backgroundColor: cardBg }}>
               <div className="px-4 pt-3 border-bottom border-secondary border-opacity-25">
                 <Nav className="gap-4 mb-0">
-                  {["tahrirlash", "guruhlar", "davomat", "chegirma", "parol"].map((tab) => (
+                  {["tahrirlash", "guruhlar", "davomat", "chegirma", "parol", "To'lovlar tarixi"].map((tab) => (
                     <Nav.Link
                       key={tab}
                       onClick={() => setActiveTab(tab)}
@@ -618,6 +683,14 @@ const StudentDetaile = () => {
                     setOpenDropdown={setOpenDropdown}
                     statusChange={statusChange}
                   />
+                )}
+
+                {activeTab === "To'lovlar tarixi" && (
+                    <StudentTransactions 
+                        studentId={student?.id} // Studentning ID raqamini yuboramiz
+                        textColor={theme ? "text-dark" : "text-white"}
+                        setShowPaymentModal={setShowPaymentModal}
+                    />
                 )}
 
                 {activeTab === "parol" && (

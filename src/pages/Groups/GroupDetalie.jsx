@@ -293,6 +293,15 @@ const GroupDetalie = () => {
 
                     <div className="d-flex gap-3">
                          <button
+                              className="btn btn-sm py-2 px-3 fs-3"
+                              style={{ background: "#0881c2", color: "#fff" }}
+                              onClick={() => setAddNewUser(true)}
+                         >
+                              <Icon icon="prime:user-plus" width="20" height="20" className="me-2" />
+                              O'quvchi qo'shish
+                         </button>
+
+                         <button
                               className="btn btn-sm border py-2 px-3 fs-3"
                               style={{ color: !theme ? "#fff" : "#05112b" }}
                               onClick={() => setChangeGroup(true)}
@@ -331,10 +340,10 @@ const GroupDetalie = () => {
                          className="card card-hover px-4 border py-4"
                          style={{ width: "33%" }}
                     >
-                         <spam className="fs-2">
+                         <span className="fs-2">
                               <Icon icon="radix-icons:people" width="18" height="18" className="me-2" />
                               O'quvchilar
-                         </spam>
+                         </span>
                          <h6 className="fs-5 mt-2">{currentGroup?.students_count + " ta"}</h6>
                     </div>
 
@@ -342,10 +351,10 @@ const GroupDetalie = () => {
                          className="card card-hover px-4 border py-4"
                          style={{ width: "33%" }}
                     >
-                         <spam className="fs-2">
+                         <span className="fs-2">
                               <Icon icon="lucide:calendar" width="18" height="18" className="me-2" />
                               Boshlanish
-                         </spam>
+                         </span>
                          <h6 className="fs-3 mt-2">
                               {currentGroup?.started_date || "Belgilanmagan"} {" | "} {currentGroup?.ended_date || "Belgilanmagan"}
                          </h6>
@@ -355,10 +364,10 @@ const GroupDetalie = () => {
                          className="card card-hover px-4 border py-4"
                          style={{ width: "33%" }}
                     >
-                         <spam className="fs-2">
+                         <span className="fs-2">
                               <Icon icon="simple-line-icons:diamond" width="16" height="15" className="me-2" />
                               Kurs
-                         </spam>
+                         </span>
                          <h6 className="fs-4 mt-2">
                               {currentGroup?.course_name || "Belgilanmagan"}
                          </h6>

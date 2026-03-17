@@ -16,13 +16,14 @@ const statuses = [
 ];
 
 const Students = () => {
-
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { setNotif } = useNotification();
 
+  // 1. LocalStorage'dan limitni olish (agar bo'sh bo'lsa 10)
   const [filters, setFilters] = useState({
     page: 1,
-    limit: 10,
+    limit: Number(localStorage.getItem("studentLimit")) || 10,
     has_debt: false,
     start_date: "",
     end_date: "",
@@ -31,8 +32,6 @@ const Students = () => {
 
   const { data: students, isLoading, error } = useStudentsData(filters);
   const studentsData = students?.results || [];
-
-  const { setNotif } = useNotification();
 
   const [showNotes, setShowNotes] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -47,6 +46,16 @@ const Students = () => {
     }));
   };
 
+  // 2. Limit o'zgarganda LocalStorage'ga saqlash funksiyasi
+  const handleEntriesChange = (newLimit) => {
+    localStorage.setItem("studentLimit", newLimit); // Xotiraga yozish
+    setFilters(prev => ({
+      ...prev,
+      limit: newLimit,
+      page: 1
+    }));
+  };
+
   const openNotes = (student) => {
     setSelectedStudent(student);
     setShowNotes(true);
@@ -56,9 +65,6 @@ const Students = () => {
 
   return (
     <>
-
-
-
       {isAddModalOpen && (
         <StudentAdd
           open={isAddModalOpen}
@@ -90,7 +96,8 @@ const Students = () => {
           totalCount={students?.count}
           columns={["№", "Talaba", "Telefon", "Balans", "Yaratilgan sana", "Guruh", ""]}
           onPageChange={(e, v) => setFilters(p => ({ ...p, page: v }))}
-          onEntriesChange={(l) => setFilters(p => ({ ...p, limit: l, page: 1 }))}
+          // 3. DataTable ichidagi o'zgarishni handlerga ulaymiz
+          onEntriesChange={handleEntriesChange}
           onSearch={(v) => handleFilterChange("search", v)}
           searchKeys={["first_name", "last_name", "phone"]}
           filter={
@@ -108,18 +115,17 @@ const Students = () => {
                 key={student.id}
                 className="border-bottom"
                 onClick={() => navigate(`/students/${student.id}`)}
+                style={{ cursor: "pointer" }}
               >
-                <td className="text-muted">{index + 1}</td>
+                <td className="text-muted">{(filters.page - 1) * filters.limit + index + 1}</td>
                 <td>
-                  <div
-                    className="fw-bold cursor-pointer"
-                  >
+                  <div className="fw-bold">
                     {student.first_name} {student.last_name}
                   </div>
                 </td>
                 <td className="small">{student.phone}</td>
                 <td>
-                  <span className={`fw-bold ${parseFloat(student.balance) <= 0 ? 'text-danger' : 'text-success'}`}>
+                  <span className={`fw-bold ${parseFloat(student.balance) < 0 ? 'text-danger' : 'text-success'}`}>
                     {student.balance} UZS
                   </span>
                 </td>
@@ -133,7 +139,7 @@ const Students = () => {
                 <td>
                   {student.groups?.length > 1 ? (
                     <span className={`badge bg-dark-subtle border border-secondary ${!theme ? "text-white" : "text-black"}`}>
-                      {student.groups?.length || "Guruhsiz"}
+                      {student.groups?.length} ta guruh
                     </span>
                   ) : (
                     <span className={`badge bg-dark-subtle border border-secondary ${!theme ? "text-white" : "text-black"}`}>

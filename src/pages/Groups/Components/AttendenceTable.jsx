@@ -11,25 +11,63 @@ const AttendenceTable = ({ setNotif,studentsData, schedule_items, }) => {
      const [selectedSchedule, setSelectedSchedule] = useState(null)
 
      const { data: attendances, error } = useGroupAttendances(selectedSchedule?.id)
-     console.log(attendances);
-     
-     console.error(error);         
-
 
      const selectSchedule = (schedule) => {
-          console.log(attendances);
-
           setSelectedSchedule(schedule)
+          // Setup default values when opening the schedule? Maybe not necessary yet.
      }
+
+     const handleStatusChange = (student_id, status) => {
+          setSelectedStatuses(prev => {
+               const defaultTime = selectedSchedule?.begin_time?.slice(0, 5) || "";
+               const current = prev[student_id] || { comment: "" };
+
+               // Yoki avvalgi kiritgan vaqti saqlanib qoladi, yoki avtomatik dars vaqti belgilanadi
+               let time = current.time;
+               if ((status === "present" || status === "late") && !time) {
+                    time = defaultTime;
+               } else if (status === "absent" || status === "excused") {
+                    time = ""; // Vaqt kerak emas
+               }
+
+               return {
+                    ...prev,
+                    [student_id]: {
+                         ...current,
+                         status,
+                         time
+                    }
+               };
+          });
+     };
+
+     const handleTimeChange = (student_id, time) => {
+          setSelectedStatuses(prev => ({
+               ...prev,
+               [student_id]: {
+                    ...(prev[student_id] || { status: "", comment: "" }),
+                    time
+               }
+          }));
+     };
+
+     const handleCommentChange = (student_id, comment) => {
+          setSelectedStatuses(prev => ({
+               ...prev,
+               [student_id]: {
+                    ...(prev[student_id] || { status: "", time: "" }),
+                    comment
+               }
+          }));
+     };
 
      const saveAttendance = () => {
           const items = Object.keys(selectedStatuses).map(student_id => ({
                student_id: Number(student_id),
-               status: selectedStatuses[student_id]
+               status: selectedStatuses[student_id].status,
+               time: selectedStatuses[student_id].time || undefined,
+               comment: selectedStatuses[student_id].comment || undefined
           }))
-
-          console.log(items);
-
 
           updateAttendance(
                {
@@ -47,6 +85,13 @@ const AttendenceTable = ({ setNotif,studentsData, schedule_items, }) => {
                }
           )
      }
+
+     const statuses = [
+          { id: 'present', label: 'Keldi', color: '#00a854', icon: 'mingcute:check-fill' },
+          { id: 'late', label: 'Kech qoldi', color: '#c48a07', icon: 'mingcute:time-fill' },
+          { id: 'excused', label: 'Sababli', color: '#0881c2', icon: 'mingcute:information-fill' },
+          { id: 'absent', label: 'Kelmadi', color: '#ff4d4d', icon: 'mingcute:close-fill' }
+     ]
 
      return (
           <div className="attendence-wrapper mt-2" style={{ overflowX: "auto" }}>
@@ -88,77 +133,89 @@ const AttendenceTable = ({ setNotif,studentsData, schedule_items, }) => {
                                    Jadvallarga qaytish
                               </button>
                          )}
-                         {/* Table */}
-                         <Table>
-                              <thead>
+                         <Table className="align-middle border-top">
+                              <thead className="bg-light">
                                    <tr>
-                                        <th>O‘quvchi</th>
-                                        <th>
-                                             <div className="d-flex align-items-center gap-1">
-                                                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#00a854" }} /> Keldi
-                                             </div>
-                                        </th>
-                                        <th>
-                                             <div className="d-flex align-items-center gap-1">
-                                                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff4d4d" }} /> Kelmadi
-                                             </div>
-                                        </th>
-                                        <th>
-                                             <div className="d-flex align-items-center gap-1">
-                                                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#c48a07" }} /> Kech keldi
-                                             </div>
-                                        </th>
-                                        <th>
-                                             <div className="d-flex align-items-center gap-1">
-                                                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0881c2" }} /> Sababli
-                                             </div>
-                                        </th>
+                                        <th style={{ width: '25%' }}>O‘quvchi</th>
+                                        <th style={{ width: '45%' }}>Davomat Holati</th>
+                                        <th style={{ width: '30%' }}>Qo'shimcha</th>
                                    </tr>
                               </thead>
 
                               <tbody>
                                    {studentsData.length > 0 ? (
-                                        studentsData.map(student => (
+                                        studentsData.map(student => {
+                                             const statObj = selectedStatuses[student.student_id] || {};
+                                             const status = statObj.status;
+                                             
+                                             return (
                                              <tr key={student.student_id}>
-                                                  <td style={{ position: "sticky", left: 0, zIndex: 1 }}>
-                                                       <Link to={`/students/${student.student_id}`} className="text-decoration-none text-dark fw-medium">
+                                                  <td>
+                                                       <Link to={`/students/${student.student_id}`} className="text-decoration-none text-dark fw-medium d-flex align-items-center gap-2">
+                                                            <div className="avatar bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style={{ width: 35, height: 35 }}>
+                                                                 {student.first_name?.charAt(0)}{student.last_name?.charAt(0)}
+                                                            </div>
                                                             {student.first_name} {student.last_name}
                                                        </Link>
                                                   </td>
-                                                  <td className="ps-3">
-                                                       <div
-                                                            className="circle border"
-                                                            onClick={() => setSelectedStatuses(prev => ({ ...prev, [student.student_id]: "present" }))}
-                                                            style={{ background: selectedStatuses[student.student_id] === "present" ? "#00a854" : "" }}
-                                                       />
+                                                  <td>
+                                                       <div className="d-flex flex-wrap gap-2">
+                                                            {statuses.map(s => (
+                                                                 <button
+                                                                      key={s.id}
+                                                                      className="btn btn-sm border d-flex align-items-center gap-1"
+                                                                      onClick={() => handleStatusChange(student.student_id, s.id)}
+                                                                      style={{
+                                                                           backgroundColor: status === s.id ? s.color : 'transparent',
+                                                                           borderColor: status === s.id ? s.color : '#e2e8f0',
+                                                                           color: status === s.id ? '#ffffff' : '#64748b',
+                                                                           fontWeight: status === s.id ? '600' : '400',
+                                                                           transition: 'all 0.2s'
+                                                                      }}
+                                                                 >
+                                                                      <Icon icon={s.icon} width="16" height="16" />
+                                                                      {s.label}
+                                                                 </button>
+                                                            ))}
+                                                       </div>
                                                   </td>
-                                                  <td className="ps-3">
-                                                       <div
-                                                            className="circle border"
-                                                            onClick={() => setSelectedStatuses(prev => ({ ...prev, [student.student_id]: "absent" }))}
-                                                            style={{ background: selectedStatuses[student.student_id] === "absent" ? "#ff4d4d" : "" }}
-                                                       />
-                                                  </td>
-                                                  <td className="ps-3">
-                                                       <div
-                                                            className="circle border"
-                                                            onClick={() => setSelectedStatuses(prev => ({ ...prev, [student.student_id]: "late" }))}
-                                                            style={{ background: selectedStatuses[student.student_id] === "late" ? "#c48a07" : "" }}
-                                                       />
-                                                  </td>
-                                                  <td className="ps-3">
-                                                       <div
-                                                            className="circle border"
-                                                            onClick={() => setSelectedStatuses(prev => ({ ...prev, [student.student_id]: "excused" }))}
-                                                            style={{ background: selectedStatuses[student.student_id] === "excused" ? "#0881c2" : "" }}
-                                                       />
+                                                  <td>
+                                                       <div className="d-flex align-items-center gap-2">
+                                                            {(status === 'present' || status === 'late') && (
+                                                                 <div className="d-flex align-items-center bg-white border border-secondary-subtle rounded px-2" style={{ height: '32px' }}>
+                                                                      <Icon icon="tabler:clock" width="16" height="16" className="text-primary opacity-75 me-1" />
+                                                                      <input 
+                                                                           type="time" 
+                                                                           className="border-0 bg-transparent text-secondary cursor-pointer" 
+                                                                           style={{ width: "auto", minWidth: "75px", outline: "none", fontSize: "14px", fontWeight: "500" }}
+                                                                           value={statObj.time || ""}
+                                                                           onChange={(e) => handleTimeChange(student.student_id, e.target.value)}
+                                                                           title="Kelgan vaqt"
+                                                                      />
+                                                                 </div>
+                                                            )}
+                                                            {status && (
+                                                                 <div className="d-flex align-items-center bg-white border border-secondary-subtle rounded px-2" style={{ height: '32px' }}>
+                                                                      <Icon icon="tabler:message-circle" width="16" height="16" className="text-secondary opacity-75 me-1" />
+                                                                      <input 
+                                                                           type="text" 
+                                                                           className="border-0 bg-transparent text-secondary"
+                                                                           style={{ width: "120px", outline: "none", fontSize: "14px" }}
+                                                                           placeholder="Izoh yozish..."
+                                                                           value={statObj.comment || ""}
+                                                                           onChange={(e) => handleCommentChange(student.student_id, e.target.value)}
+                                                                      />
+                                                                 </div>
+                                                            )}
+                                                       </div>
                                                   </td>
                                              </tr>
-                                        ))
+                                        )})
                                    ) : (
                                         <tr>
-                                             <td colSpan={6} className="text-center py-4 text-muted">
-                                                  Hozircha o‘quvchilar yo‘q!
+                                             <td colSpan={3} className="text-center py-5 text-muted">
+                                                  <Icon icon="mingcute:sleep-fill" width={40} height={40} className="mb-2 opacity-50" />
+                                                  <p className="mb-0 fs-4">Hozircha o‘quvchilar yo‘q!</p>
                                              </td>
                                         </tr>
                                    )}
@@ -167,10 +224,12 @@ const AttendenceTable = ({ setNotif,studentsData, schedule_items, }) => {
 
                          <div className="d-flex justify-content-end mt-3">
                               <button
-                                   className="btn btn-sm save-button"
+                                   className="btn btn-sm py-2 px-3 fs-3 d-flex align-items-center gap-2 shadow-sm border-0"
+                                   style={{ background: "#0881c2", color: "#fff" }}
                                    onClick={saveAttendance}
                                    disabled={Object.keys(selectedStatuses).length === 0}
                               >
+                                   <Icon icon="mingcute:check-2-fill" width="20" height="20" />
                                    Saqlash
                               </button>
                          </div>
