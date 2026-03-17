@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react"; // useEffect qo'shildi
 import { Pagination } from "@mui/material";
 import EntriesSelect from "./EntriesSelect";
 import { Table } from "react-bootstrap";
@@ -18,13 +18,18 @@ function DataTable({
      onSearch,
      searchKeys = [],
      countOptions = [10, 25, 50, 100],
+     storageKey = "dataTableLimit" // Har xil jadvallar uchun turli key ishlatish imkoni
 }) {
      const { theme } = useTheme();
      const [searchQuery, setSearchQuery] = useState("");
-     const [entries, setEntries] = useState(countOptions[0]);
+     
+     // 1. Initial stateni LocalStorage'dan olamiz
+     const [entries, setEntries] = useState(() => {
+          return Number(localStorage.getItem(storageKey)) || countOptions[0];
+     });
+     
      const [currentPage, setCurrentPage] = useState(1);
 
-     // Server-side yoki Local paginatsiyani aniqlash
      const isServerSide = totalCount !== undefined;
 
      /* 🔍 SEARCH */
@@ -49,10 +54,13 @@ function DataTable({
 
      const currentData = isServerSide ? data : filteredData?.slice(indexOfFirst, indexOfLast);
 
+     // 2. Entries o'zgarganda ham statega, ham LocalStoragega yozamiz
      const handleEntriesChange = (e) => {
-          setEntries(e);
+          const newLimit = Number(e);
+          setEntries(newLimit);
+          localStorage.setItem(storageKey, newLimit); // Saqlash
           setCurrentPage(1);
-          if (onEntriesChange) onEntriesChange(e);
+          if (onEntriesChange) onEntriesChange(newLimit);
      };
 
      const handlePageChangeInternal = (e, value) => {
@@ -62,7 +70,7 @@ function DataTable({
 
      const handleSearch = (e) => {
           const value = e.target.value;
-          if (value.length === 0) {
+          if (value.length === 0 && onSearch) {
                onSearch("");
           }
           setSearchQuery(value);
@@ -71,13 +79,13 @@ function DataTable({
      const handleKeyDown = (e) => {
           if (e.key === "Enter") {
                setCurrentPage(1);
-
                if (onSearch && searchQuery.length > 0) onSearch(searchQuery);
           }
      };
 
      return (
           <div className="card-body">
+               {/* ... (Header qismi o'zgarishsiz qoladi) */}
                {title ?
                     <div className="d-flex justify-content-between">
                          <h5 className="fs-6">{title}</h5>
@@ -103,12 +111,11 @@ function DataTable({
                     <Table hover className="align-middle">
                          <thead>
                               <tr>
-                                   {columns.map(col => (
-                                        <th key={col}>{col}</th>
+                                   {columns.map((col, idx) => (
+                                        <th key={idx}>{col}</th>
                                    ))}
                               </tr>
                          </thead>
-
                          <tbody>
                               {children(currentData)}
                          </tbody>
@@ -117,11 +124,8 @@ function DataTable({
 
                {total > 0 && (
                     <div className="d-flex justify-content-between align-items-center">
-                         <span className="text-muted">
-                              {indexOfFirst + 1}
-                              {" "}dan{" "}
-                              {Math.min(indexOfLast, total)}
-                              {" "}ga qadar, jami {total} ta
+                         <span className="text-muted small">
+                              {indexOfFirst + 1} dan {Math.min(indexOfLast, total)} gacha, jami {total} ta
                          </span>
 
                          <div className="d-flex align-items-center gap-2">
@@ -130,7 +134,6 @@ function DataTable({
                                    value={entries}
                                    onChange={handleEntriesChange}
                               />
-
                               <Pagination
                                    count={pagesCount}
                                    page={currentPage}
@@ -140,22 +143,10 @@ function DataTable({
                                    sx={{
                                         '& .MuiPaginationItem-root': {
                                              color: !theme ? '#ffffffd9' : '#000000d9',
-                                             backgroundColor: 'transparent',
-                                             border: 'none'
-                                        },
-                                        '& .MuiPaginationItem-root:hover': {
-                                             backgroundColor: 'rgba(255,255,255,0.06)'
                                         },
                                         '& .Mui-selected': {
                                              backgroundColor: '#0d6dfd !important',
                                              color: '#fff'
-                                        },
-                                        '& .MuiPaginationItem-ellipsis': {
-                                             color: 'rgba(255,255,255,0.6)'
-                                        },
-                                        '& .Mui-disabled': {
-                                             opacity: 0.65,
-                                             color: !theme ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
                                         }
                                    }}
                               />

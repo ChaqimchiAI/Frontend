@@ -42,21 +42,30 @@ const StudentProfile = ({
                 </div>
             </div>
 
-            <div className="d-flex justify-content-between">
+            <div className="d-flex flex-wrap gap-2 justify-content-between mt-auto">
                 <button
-                    className="btn btn-sm fs-2 px-3 py-2 delete-button"
+                    className="btn btn-sm fs-6 px-3 py-2 delete-button flex-grow-1"
                     onClick={() => setModal("withdraw")}
                 >
-                    <Icon icon="ri:refund-2-fill" fontSize={20} className="me-1" />
+                    <Icon icon="ri:refund-2-fill" fontSize={18} className="me-1" />
                     Pul qaytarish
                 </button>
 
                 <button
-                    className="btn btn-sm fs-2 px-3 py-2 save-button"
+                    className="btn btn-sm fs-6 px-3 py-2 save-button flex-grow-1"
                     onClick={() => setModal("payment")}
                 >
-                    <Icon icon="ion:wallet-outline" fontSize={20} className="me-1" />
-                    To'lov qilish
+                    <Icon icon="ion:wallet-outline" fontSize={18} className="me-1" />
+                    Balansni to'ldirish
+                </button>
+
+                <button
+                    className="btn btn-sm fs-6 px-3 py-2 w-100 d-flex justify-content-center align-items-center"
+                    style={{ backgroundColor: "#ff9800", color: "#fff", border: "none", borderRadius: "8px" }}
+                    onClick={() => setModal("withdrawPayment")}
+                >
+                    <Icon icon="mdi:cash-minus" fontSize={20} className="me-1" />
+                    To'lov yechish
                 </button>
             </div>
         </Card>

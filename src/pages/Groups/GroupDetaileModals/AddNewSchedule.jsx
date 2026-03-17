@@ -135,7 +135,7 @@ const AddNewSchedule = ({
                             O'qituvchi
                         </option>
                         {teacherData?.map(t => (
-                            <option value={t.id}>{t.first_name + " " + t.last_name}</option>
+                            <option key={t.id} value={t.id}>{t.first_name + " " + t.last_name}</option>
                         ))}
                     </select>
                 </div>
@@ -152,7 +152,7 @@ const AddNewSchedule = ({
                             Xona
                         </option>
                         {roomData?.map(r => (
-                            <option value={r.id}>{r.name}</option>
+                            <option key={r.id} value={r.id}>{r.name}</option>
                         ))}
                     </select>
                 </div>

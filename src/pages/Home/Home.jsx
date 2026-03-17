@@ -35,13 +35,10 @@ const Home = () => {
 
   useEffect(() => {
     if (studentsData) {
-      const recent = studentsData.filter(student => {
-        const studentTime = new Date(student.created_at)
-        const diffTime = currentTime - studentTime
-        const diffHours = diffTime / (1000 * 60 * 60)
-
-        return diffHours <= 12 && diffHours >= 0
-      })
+      // Sort by created_at descending and take 5
+      const recent = [...studentsData]
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 5)
 
       setRecentStudents(recent)
     }
