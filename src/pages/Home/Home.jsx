@@ -2,55 +2,65 @@ import { Icon } from '@iconify/react';
 import { useTheme } from '../../Context/Context';
 import { useProfile } from '../../data/queries/profile.queries';
 import { useStudentsData } from '../../data/queries/students.queries';
+import { useDashboardStats } from '../../data/queries/dashboard.queries'; // Yangi statistika hook-i
 import { useEffect, useState } from 'react';
 import { useNotification } from '../../Context/NotificationContext';
 import { useNavigate } from 'react-router-dom';
 import PaymentModal from './Modals/PaymentModal';
 import ScheduleModal from './Modals/ScheduleModal';
 import Lessons from './components/Lessons';
+import { Spinner, OverlayTrigger, Tooltip } from 'react-bootstrap'; 
+
 // Modals Imports
 import StudentAdd from '../Students/components/StudentAdd';
 import NewLead from '../Laeds/components/NewLead';
 import AddGroup from '../Groups/GroupDetaileModals/AddGroup';
 
 const Home = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { theme } = useTheme();
-  const currentTime = new Date();
+  const { setNotif } = useNotification();
 
-  const { data: user } = useProfile()
-  const { data: students } = useStudentsData()
-  const studentsData = students?.results
+  // API Queries
+  const { data: user } = useProfile();
+  const { data: students } = useStudentsData();
+  const { data: dashboardData, isLoading: statsLoading } = useDashboardStats(); // Real statistika
 
+  const studentsData = students?.results;
 
-  const { setNotif } = useNotification()
-  const [recentStudents, setRecentStudents] = useState([])
-  const [paymentModal, setPaymentModal] = useState(false)
-  const [scheduleModal, setScheduleModal] = useState(false)
+  const [recentStudents, setRecentStudents] = useState([]);
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [scheduleModal, setScheduleModal] = useState(false);
 
   // Modal states
-  const [leadModal, setLeadModal] = useState(false)
-  const [studentModal, setStudentModal] = useState(false)
-  const [groupModal, setGroupModal] = useState(false)
+  const [leadModal, setLeadModal] = useState(false);
+  const [studentModal, setStudentModal] = useState(false);
+  const [groupModal, setGroupModal] = useState(false);
 
   useEffect(() => {
     if (studentsData) {
-      // Sort by created_at descending and take 5
+      // Oxirgi qo'shilgan 5 ta o'quvchini filtrlash
       const recent = [...studentsData]
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-        .slice(0, 5)
-
-      setRecentStudents(recent)
+        .slice(0, 5);
+      setRecentStudents(recent);
     }
-  }, [studentsData])
+  }, [studentsData]);
 
-  // Statistika uchun ma'lumotlar
+  const formatCompactNumber = (number) => {
+    if (number < 1000) return number.toString();
+    if (number >= 1000 && number < 1000000) return (number / 1000).toFixed(1).replace(/\.0$/, '') + ' ming';
+    if (number >= 1000000 && number < 1000000000) return (number / 1000000).toFixed(1).replace(/\.0$/, '') + ' mln';
+    if (number >= 1000000000) return (number / 1000000000).toFixed(1).replace(/\.0$/, '') + ' mlrd';
+  };
+
+  // Statistika ma'lumotlarini dinamik holatga keltiramiz
   const stats = [
     {
       id: 1,
       title: "Leadlar",
-      value: "0",
-      change: "0%",
+      value: dashboardData?.leads || "0",
+      change: "Shu oyda",
       icon: "ph:user-duotone",
       color: "#10b981",
       gradient: "linear-gradient(135deg, #10b981 0%, #34d399 100%)"
@@ -58,8 +68,8 @@ const Home = () => {
     {
       id: 2,
       title: "O'quvchilar",
-      value: "0",
-      change: "0%",
+      value: dashboardData?.students || "0",
+      change: "Jami faol",
       icon: "ph:student-duotone",
       color: "#6366f1",
       gradient: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)"
@@ -67,8 +77,8 @@ const Home = () => {
     {
       id: 3,
       title: "Guruhlar",
-      value: "0",
-      change: "0%",
+      value: dashboardData?.groups || "0",
+      change: "Faol guruhlar",
       icon: "ph:users-four-duotone",
       color: "#f43f5e",
       gradient: "linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)"
@@ -76,8 +86,11 @@ const Home = () => {
     {
       id: 4,
       title: "Tushum",
-      value: "0",
-      change: "0%",
+      // Bu yerda faqat formatlangan qiymatni saqlaymiz
+      value: formatCompactNumber(dashboardData?.income || 0),
+      // Tooltip uchun to'liq qiymatni alohida saqlaymiz
+      fullValue: `${Number(dashboardData?.income || 0).toLocaleString()} so'm`,
+      change: dashboardData?.month_name || "Mart",
       icon: "ph:wallet-duotone",
       color: "#f59e0b",
       gradient: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)"
@@ -86,37 +99,14 @@ const Home = () => {
 
   // Yaqindagi darslar uchun mock ma'lumotlar
   const upcomingLessons = [
-    {
-      id: 1,
-      groupName: "IELTS Master",
-      teacher: "D. Alimov",
-      time: "16:00 - 17:30",
-      room: "102-xona",
-      color: "#6366f1"
-    },
-    {
-      id: 2,
-      groupName: "Kids English",
-      teacher: "M. Sobirova",
-      time: "17:30 - 18:30",
-      room: "204-xona",
-      color: "#10b981"
-    },
-    {
-      id: 3,
-      groupName: "Grammar Alpha",
-      teacher: "J. Karimov",
-      time: "18:00 - 19:30",
-      room: "Online",
-      color: "#f59e0b"
-    }
+    { id: 1, groupName: "IELTS Master", teacher: "D. Alimov", time: "16:00 - 17:30", room: "102-xona", color: "#6366f1" },
+    { id: 2, groupName: "Kids English", teacher: "M. Sobirova", time: "17:30 - 18:30", room: "204-xona", color: "#10b981" },
+    { id: 3, groupName: "Grammar Alpha", teacher: "J. Karimov", time: "18:00 - 19:30", room: "Online", color: "#f59e0b" }
   ];
 
   return (
     <>
-
-
-
+      {/* --- Modals --- */}
       {paymentModal && (
         <PaymentModal
           paymentModal={paymentModal}
@@ -133,34 +123,21 @@ const Home = () => {
         />
       )}
 
-      {/* Lead Modal */}
       {leadModal && (
-        <NewLead
-          setNotif={setNotif}
-          setShow={setLeadModal}
-          show={leadModal}
-        />
+        <NewLead setNotif={setNotif} setShow={setLeadModal} show={leadModal} />
       )}
 
-      {/* Student Modal */}
       {studentModal && (
-        <StudentAdd
-          close={setStudentModal}
-          setNotif={setNotif}
-          open={studentModal}
-        />
+        <StudentAdd close={setStudentModal} setNotif={setNotif} open={studentModal} />
       )}
 
-      {/* Group Modal */}
       {groupModal && (
-        <AddGroup
-          addGroup={groupModal}
-          setAddGroup={setGroupModal}
-          setNotif={setNotif}
-        />
+        <AddGroup addGroup={groupModal} setAddGroup={setGroupModal} setNotif={setNotif} />
       )}
 
+      {/* --- Main UI --- */}
       <div className="card p-4" style={{ minHeight: '100vh', transition: 'all 0.3s' }}>
+
         {/* 1. Header Section */}
         <div className="d-flex justify-content-between align-items-end mb-5">
           <div>
@@ -172,7 +149,7 @@ const Home = () => {
           </div>
           <div className="d-none d-md-flex align-items-center gap-3">
             <button
-              className="btn btn-sm save-button fs-3 d-flex align-items-center gap-1"
+              className="btn btn-sm save-button fs-6 d-flex align-items-center gap-1"
               onClick={() => setPaymentModal(true)}
             >
               <Icon icon="ion:wallet-outline" fontSize={20} />
@@ -183,52 +160,73 @@ const Home = () => {
 
         {/* 2. Statistika Kartochkalari */}
         <div className="row g-4 mb-5">
-          {stats.map((stat) => (
-            <div className="col-12 col-md-6 col-lg-3" key={stat.id}>
-              <div className="card glass-card stat-card p-4 h-100 border-0 overflow-hidden position-relative">
-                <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '100px',
-                  height: '100px',
-                  background: stat.gradient,
-                  opacity: '0.1',
-                  borderRadius: '50%',
-                  filter: 'blur(30px)'
-                }}></div>
+          {statsLoading ? (
+            <div className="col-12 text-center py-5">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : (
+            stats.map((stat) => (
+              <div className="col-12 col-md-6 col-lg-3" key={stat.id}>
+                <div className="card glass-card stat-card p-4 h-100 border-0 overflow-hidden position-relative">
+                  <div style={{
+                    position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px',
+                    background: stat.gradient, opacity: '0.1', borderRadius: '50%', filter: 'blur(30px)'
+                  }}></div>
 
-                <div className="icon-box" style={{ background: `${stat.color}15`, border: `1px solid ${stat.color}20` }}>
-                  <Icon icon={stat.icon} fontSize={28} style={{ color: stat.color }} />
-                </div>
-
-                <div>
-                  <p className="text-muted small mb-1 fw-bold text-uppercase" style={{ letterSpacing: '0.5px' }}>{stat.title}</p>
-                  <div className="d-flex align-items-end gap-2">
-                    <h3 className={`fw-bold mb-0 ${!theme ? 'text-white' : 'text-dark'}`}>{stat.value}</h3>
-                    <span className={`small mb-1 fw-semibold ${stat.change.startsWith('+') ? 'trend-up' : 'trend-down'}`}>
-                      {stat.change}
-                    </span>
+                  <div className="icon-box" style={{ background: `${stat.color}15`, border: `1px solid ${stat.color}20` }}>
+                    <Icon icon={stat.icon} fontSize={28} style={{ color: stat.color }} />
                   </div>
+
+                  <div>
+                    <p className="text-muted small mb-1 fw-bold text-uppercase" style={{ letterSpacing: '0.5px' }}>{stat.title}</p>
+                    <div className="d-flex align-items-end gap-2 flex-wrap">
+
+                      {/* Tushum uchun qisqartirilgan raqam + Tooltip */}
+                      {stat.id === 4 ? (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={<Tooltip id={`tooltip-income`}>{stat.fullValue}</Tooltip>}
+                        >
+                          <h3 className={`fw-bold mb-0 ${!theme ? 'text-white' : 'text-dark'}`}
+                            style={{ fontSize: '1.2rem', cursor: 'pointer' }}>
+                            {stat.value}
+                          </h3>
+                        </OverlayTrigger>
+                      ) : (
+                        /* Boshqa kartochkalar (Lead, O'quvchi, Guruh) */
+                        <h3 className={`fw-bold mb-0 ${!theme ? 'text-white' : 'text-dark'}`}
+                          style={{ fontSize: '1.8rem' }}>
+                          {stat.value}
+                        </h3>
+                      )}
+
+                      <span className="small mb-1 fw-semibold text-primary">
+                        {stat.change}
+                      </span>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
+        {/* 3. Pastki qism: O'quvchilar va Tezkor amallar */}
         <div className="row p-3">
-          <div className="row col-lg-12 gap-3">
+          <div className="row col-lg-12 gap-3 mb-4">
+            {/* Oxirgi o'quvchilar */}
             <div className="card card-body col-lg-4 glass-card border-0" style={{ minHeight: '500px' }}>
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                   <h5 className={`fw-bold mb-1 ${!theme ? 'text-white' : 'text-dark'}`}>Oxirgi o'quvchilar</h5>
-                  <p className="text-muted small mb-0">Oxirgi 12 soat ichida qo'shilganlar</p>
+                  <p className="text-muted small mb-0">Yaqinda qo'shilganlar</p>
                 </div>
                 <button
                   className="btn btn-sm btn-link text-primary text-decoration-none fw-bold"
                   onClick={() => navigate('/students')}
                 >
-                  Hammasini ko'rish
+                  Barchasi
                 </button>
               </div>
 
@@ -238,80 +236,65 @@ const Home = () => {
                     className="student-item d-flex align-items-center mb-2"
                     key={student.id}
                     onClick={() => navigate(`/students/${student.id}`)}
+                    style={{ cursor: 'pointer' }}
                   >
-                    <div
-                      className={`avatar me-3 rounded-circle d-flex align-items-center justify-content-center border 
-                      ${!theme ? 'bg-dark border-secondary' : 'bg-light border-light'}`
-                      }
-                      style={{ width: '45px', height: '45px' }}
-                    >
+                    <div className={`avatar me-3 rounded-circle d-flex align-items-center justify-content-center border 
+                      ${!theme ? 'bg-dark border-secondary' : 'bg-light border-light'}`}
+                      style={{ width: '45px', height: '45px', flexShrink: 0 }}>
                       <Icon icon="ph:user-duotone" fontSize={22} className="text-muted" />
                     </div>
-                    <div className="flex-grow-1">
-                      <div className={`fw-semibold ${!theme ? 'text-white' : 'text-dark'}`}>{student.first_name} {student.last_name}</div>
+                    <div className="flex-grow-1 overflow-hidden">
+                      <div className={`fw-semibold text-truncate ${!theme ? 'text-white' : 'text-dark'}`}>
+                        {student.first_name} {student.last_name}
+                      </div>
                       <div className="text-muted small">{student.phone}</div>
                     </div>
                     <div className="text-end d-none d-sm-block">
-                      <div className="small text-muted mb-1">{student.created_at?.split('T')[1].slice(0, 5)}</div>
-                      <span
-                        className={`badge rounded-pill px-3 
-                        ${student.is_active === true ? 'bg-success' : 'bg-danger'} bg-opacity-10 
-                        ${student.is_active === true ? 'text-success' : 'text-danger'}`
-                        }
-                      >
-                        {student.is_active === true ? 'Faol' : 'Faol emas'}
+                      <span className={`badge rounded-pill px-3 ${student.is_active ? 'bg-success' : 'bg-danger'} bg-opacity-10 ${student.is_active ? 'text-success' : 'text-danger'}`}>
+                        {student.is_active ? 'Faol' : 'Nofaol'}
                       </span>
                     </div>
                   </div>
                 )) : (
                   <div className="text-center py-4">
-                    <Icon icon="ph:users-duotone" fontSize={24} className="text-muted" />
-                    <div className="text-muted small">Hech qanday talaba topilmadi</div>
+                    <Icon icon="ph:users-duotone" fontSize={32} className="text-muted mb-2" />
+                    <div className="text-muted small">Hozircha ma'lumot yo'q</div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* 4. O'ng taraf - Tezkor Tugmalar */}
+            {/* Tezkor Amallar */}
             <div className="card glass-card p-4 border-0 col-lg-4" style={{ height: '500px' }}>
               <h5 className={`fw-bold mb-4 ${!theme ? 'text-white' : 'text-dark'}`}>Tezkor amallar</h5>
               <div className="d-grid gap-3">
-                <button
-                  className="action-btn"
-                  onClick={() => setLeadModal(true)}
-                >
+                <button className="action-btn" onClick={() => setLeadModal(true)}>
                   <div className="p-2 rounded-3 bg-primary bg-opacity-10">
                     <Icon icon="ph:plus-circle-duotone" className="text-primary" fontSize={22} />
                   </div>
                   <div>
                     <div className="fw-bold small">Yangi Lead</div>
-                    <div className="text-muted" style={{ fontSize: '11px' }}>Leadlar bo'limi</div>
+                    <div className="text-muted" style={{ fontSize: '11px' }}>Lead qo'shish</div>
                   </div>
                 </button>
 
-                <button
-                  className="action-btn"
-                  onClick={() => setStudentModal(true)}
-                >
+                <button className="action-btn" onClick={() => setStudentModal(true)}>
                   <div className="p-2 rounded-3 bg-warning bg-opacity-10">
                     <Icon icon="ci:user-add" className="text-warning" fontSize={22} />
                   </div>
                   <div>
                     <div className="fw-bold small">Yangi o'quvchi</div>
-                    <div className="text-muted" style={{ fontSize: '11px' }}>O'quvchilar bo'limi</div>
+                    <div className="text-muted" style={{ fontSize: '11px' }}>Ro'yxatga olish</div>
                   </div>
                 </button>
 
-                <button
-                  className="action-btn"
-                  onClick={() => setGroupModal(true)}
-                >
+                <button className="action-btn" onClick={() => setGroupModal(true)}>
                   <div className="p-2 rounded-3 bg-danger bg-opacity-10">
                     <Icon icon="ph:users-three-duotone" className="text-danger" fontSize={22} />
                   </div>
                   <div>
                     <div className="fw-bold small">Yangi guruh</div>
-                    <div className="text-muted" style={{ fontSize: '11px' }}>Guruhlar bo'limi</div>
+                    <div className="text-muted" style={{ fontSize: '11px' }}>O'quv guruhini ochish</div>
                   </div>
                 </button>
 
@@ -327,85 +310,43 @@ const Home = () => {
               </div>
             </div>
           </div>
-          
-          {/* darslar jadvali */}
-          <Lessons theme={theme} upcomingLessons={upcomingLessons} setScheduleModal={setScheduleModal} />
 
+          <Lessons theme={theme} upcomingLessons={upcomingLessons} setScheduleModal={setScheduleModal} />
         </div>
       </div>
-
-
-
-
 
       <style>
         {`
         .glass-card {
-          background: ${!theme ? "rgba(30, 41, 59, 0.7)" : "#f5f5f5"};
+          background: ${!theme ? "rgba(30, 41, 59, 0.7)" : "#ffffff"};
           backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid ${!theme ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"};
+          border: 1px solid ${!theme ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.08)"};
           border-radius: 20px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: ${!theme ? "0 4px 6px -1px rgba(0, 0, 0, 0.2)" : "0 4px 6px -1px rgba(0, 0, 0, 0.05)"};
+          box-shadow: ${!theme ? "0 10px 15px -3px rgba(0,0,0,0.3)" : "0 10px 15px -3px rgba(0,0,0,0.05)"};
         }
         
-        .stat-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-          border-color: ${!theme ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
-        }
+        .stat-card:hover { transform: translateY(-5px); transition: all 0.3s; }
 
-        .icon-box {
-          width: 54px;
-          height: 54px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 14px;
-          margin-bottom: 1.5rem;
-        }
+        .icon-box { width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 14px; margin-bottom: 1.5rem; }
 
         .action-btn {
-          background: ${!theme ? "rgba(15, 23, 42, 0.6)" : "rgba(248, 250, 252, 1)"};
+          background: ${!theme ? "rgba(15, 23, 42, 0.6)" : "#f8fafc"};
           border: 1px solid ${!theme ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"};
           color: ${!theme ? "#f1f5f9" : "#1e293b"};
-          padding: 1rem;
-          border-radius: 15px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          transition: all 0.2s;
-          text-align: left;
-          width: 100%;
+          padding: 1rem; border-radius: 15px; display: flex; align-items: center; gap: 12px; transition: all 0.2s; width: 100%;
         }
 
         .action-btn:hover {
           background: ${!theme ? "rgba(30, 41, 59, 0.8)" : "#fff"};
-          border-color: rgba(99, 102, 241, 0.3);
           transform: translateX(8px);
-          color: ${!theme ? "#fff" : "#6366f1"};
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          color: #6366f1;
         }
 
-        .student-item {
-          padding: 12px;
-          border-radius: 12px;
-          transition: background 0.2s;
-          border-bottom: 1px solid ${!theme ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.03)"};
-        }
+        .student-item:hover { background: ${!theme ? "rgba(255, 255, 255, 0.03)" : "#f1f5f9"}; border-radius: 12px; }
 
-        .student-item:hover {
-          background: ${!theme ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.02)"};
-        }
-
-        .trend-up { color: #10b981; }
-        .trend-down { color: #f43f5e; }
-        
         .welcome-title {
           background: ${!theme ? "linear-gradient(to right, #fff, #94a3b8)" : "linear-gradient(to right, #1e293b, #64748b)"};
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
       `}
       </style>

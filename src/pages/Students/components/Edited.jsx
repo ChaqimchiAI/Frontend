@@ -10,66 +10,59 @@ const Edited = ({
     theme,
     textColor
 }) => {
+
+    // Rasm tanlanganda uni ham obyekt, ham preview URL sifatida saqlash
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // 1. Faylni o'zini saqlash (Serverga yuborish uchun)
+            handleChange("image", file);
+            
+            // 2. Preview uchun vaqtinchalik URL yaratish
+            const previewUrl = URL.createObjectURL(file);
+            handleChange("image_preview", previewUrl);
+        }
+    };
+
     return (
         <Row className="gy-4">
             <Col md={4}>
-                <Input
-                    label="Ism"
-                    value={student?.first_name || ""}
-                    onChange={(e) => handleChange("first_name", e.target.value)}
-                />
+                <Input label="Ism" value={student?.first_name || ""} onChange={(e) => handleChange("first_name", e.target.value)} />
             </Col>
             <Col md={4}>
-                <Input
-                    label="Familiya"
-                    value={student?.last_name || ""}
-                    onChange={(e) => handleChange("last_name", e.target.value)}
-                />
+                <Input label="Familiya" value={student?.last_name || ""} onChange={(e) => handleChange("last_name", e.target.value)} />
             </Col>
             <Col md={4}>
-                <Input
-                    label="Telefon raqam"
-                    value={student?.phone || ""}
-                    onChange={(e) => handleChange("phone", e.target.value)}
-                />
+                <Input label="Telefon raqam" value={student?.phone || ""} onChange={(e) => handleChange("phone", e.target.value)} />
+            </Col>
+            
+            <Col md={4}>
+                <Input label="Sharifi" value={student?.middle_name || ""} onChange={(e) => handleChange("middle_name", e.target.value)} />
             </Col>
             <Col md={4}>
-                <Input
-                    label="Sharifi"
-                    value={student?.middle_name || ""}
-                    onChange={(e) => handleChange("middle_name", e.target.value)}
-                />
+                <Input label="Tug'ilgan sanasi" type="date" value={student?.date_of_birth || ""} onChange={(e) => handleChange("date_of_birth", e.target.value)} />
             </Col>
+            
             <Col md={4}>
-                <Input
-                    label="Tug'ilgan sanasi"
-                    type="date"
-                    value={student?.date_of_birth || ""}
-                    onChange={(e) => handleChange("date_of_birth", e.target.value)}
-                />
+                <div className="d-flex align-items-end gap-3">
+                    <div className="flex-grow-1">
+                        <Input
+                            label="Rasm yuklash"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                    </div>
+                </div>
             </Col>
-            <Col md={4}>
-                <Input
-                    label="Rasm yuklash"
-                    type="file"
-                    onChange={(e) => handleChange("image", e.target.files[0])}
-                />
+
+            <Col md={6}>
+                <Input label="Ota-onasining ismi" placeholder="Ism..." value={student?.parent_name || ""} onChange={(e) => handleChange("parent_name", e.target.value)} />
             </Col>
             <Col md={6}>
-                <Input
-                    label="Ota-onasining ismi"
-                    placeholder="Ism..."
-                    value={student?.parent_name || ""}
-                    onChange={(e) => handleChange("parent_name", e.target.value)}
-                />
+                <Input label="Ota-onasining telefoni" value={student?.parent_phone || ""} onChange={(e) => handleChange("parent_phone", e.target.value)} />
             </Col>
-            <Col md={6}>
-                <Input
-                    label="Ota-onasining telefoni"
-                    value={student?.parent_phone || ""}
-                    onChange={(e) => handleChange("parent_phone", e.target.value)}
-                />
-            </Col>
+            
             <Col md={12}>
                 <label className={`form-label ${textColor}`}>Izoh</label>
                 <textarea
@@ -81,10 +74,7 @@ const Edited = ({
             </Col>
 
             <div className="mt-5 d-flex justify-content-end">
-                <Button
-                    className="btn btn-sm px-4 py-2 fw-bold me-2 delete-button"
-                    onClick={() => setDeleteStudent(true)}
-                >
+                <Button className="btn btn-sm px-4 py-2 fw-bold me-2 delete-button" onClick={() => setDeleteStudent(true)}>
                     O'chirish
                 </Button>
                 <Button
