@@ -13,7 +13,7 @@ const DeleteStudentModal = ({
             anima={deleteStudent}
             close={setDeleteStudent}
             width="30%"
-            zIndex={100}
+            zIndex={1000}
         >
             <p className="fs-4">Haqiqatdan o'chirishni istaysizmi?</p>
 

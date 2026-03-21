@@ -3,7 +3,7 @@ import api from "../api/axios";
 
 export const useStudentTransactions = (studentId, filters) => {
   return useQuery({
-    queryKey: ["studentTransactions", studentId, filters],
+    queryKey: ["student-transactions", studentId, filters], // queryKey nomi billing bilan bir xil bo'lishi shart
     queryFn: async () => {
       const response = await api.get(`/billings/students/${studentId}/transactions/`, {
         params: filters,

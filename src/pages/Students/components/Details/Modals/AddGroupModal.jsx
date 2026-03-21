@@ -16,36 +16,41 @@ const AddGroupModal = ({
             anima={addStudentGroup}
             close={setAddStudentGroup}
             width="30%"
-            zIndex={100}
+            // Eng yuqori qatlamda turishi uchun
+            zIndex={9999} 
         >
-            <select
-                value={selectedGroup}
-                onChange={(e) => setSelectedGroup(e.target.value)}
-                required
-                className="form-select"
-                disabled={addingStudentGroup}
-            >
-                <option value="" hidden>Guruhni tanlang</option>
-                {(groupsData?.results || groupsData || []).map((group) => (
-                    <option key={group.id} value={group.id}>
-                        {group.name}
-                    </option>
-                ))}
-            </select>
-            <div className="mt-2 d-flex align-items-center gap-2 justify-content-end">
-                <Button
-                    className="btn btn-sm px-4 py-2 text-black border-0"
-                    style={{ background: "#f9fafb" }}
-                    onClick={() => setAddStudentGroup(false)}
+            <div className="p-2">
+                <label className="mb-2 small fw-bold">Guruhni tanlang</label>
+                <select
+                    value={selectedGroup}
+                    onChange={(e) => setSelectedGroup(e.target.value)}
+                    className="form-select shadow-sm"
+                    disabled={addingStudentGroup}
                 >
-                    Orqaga
-                </Button>
-                <Button
-                    className="btn btn-sm save-button"
-                    onClick={handleAddStudentGroup}
-                >
-                    {addingStudentGroup ? <Spinner animation="border" size="sm" /> : "Qo'shish"}
-                </Button>
+                    <option value="" hidden>Tanlang...</option>
+                    {(groupsData?.results || groupsData || []).map((group) => (
+                        <option key={group.id} value={group.id}>
+                            {group.name}
+                        </option>
+                    ))}
+                </select>
+                
+                <div className="mt-4 d-flex gap-2 justify-content-end">
+                    <Button
+                        variant="light"
+                        className="px-4 border"
+                        onClick={() => setAddStudentGroup(false)}
+                    >
+                        Bekor qilish
+                    </Button>
+                    <Button
+                        className="save-button px-4"
+                        onClick={handleAddStudentGroup}
+                        disabled={addingStudentGroup || !selectedGroup}
+                    >
+                        {addingStudentGroup ? <Spinner size="sm" /> : "Qo'shish"}
+                    </Button>
+                </div>
             </div>
         </Modal>
     );
