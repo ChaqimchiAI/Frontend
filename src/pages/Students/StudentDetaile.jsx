@@ -189,10 +189,10 @@ const StudentDetaile = () => {
 
     withdrawStudentTransaction(body, {
       onSuccess: (res) => {
-        setNotif({ 
-          show: true, 
-          type: "success", 
-          message: `To'lov muvaffaqiyatli yechildi: ${Number(res.amount).toLocaleString()} so'm` 
+        setNotif({
+          show: true,
+          type: "success",
+          message: `To'lov muvaffaqiyatli yechildi: ${Number(res.amount).toLocaleString()} so'm`
         });
         setModal(null);
         setComment("");
@@ -200,11 +200,11 @@ const StudentDetaile = () => {
       },
       onError: (err) => {
         console.error("Billing Error:", err);
-        
+
         // Backenddan kelayotgan strukturaga mos xato xabarini olish
         // Sizning holatingizda: err.response.data.data.error
         const backendError = err.response?.data?.data?.error;
-        
+
         let errorMsg = "Xatolik yuz berdi!";
 
         if (Array.isArray(backendError)) {
@@ -215,9 +215,9 @@ const StudentDetaile = () => {
           errorMsg = err.response.data.message;
         }
 
-        setNotif({ 
-          show: true, 
-          type: "error", 
+        setNotif({
+          show: true,
+          type: "error",
           message: errorMsg // Toastda aynan o'sha "allaqachon yechilgan" xabari chiqadi
         });
       }
@@ -238,15 +238,36 @@ const StudentDetaile = () => {
 
   const handleSaveStudent = () => {
     const formData = new FormData();
+
     Object.keys(student).forEach((key) => {
-      if (key === "save") return;
-      if (key === "image" && student[key] instanceof File) formData.append("image", student[key]);
-      else formData.append(key, student[key] ?? "");
+      // 1. Keraksiz vaqtinchalik maydonlarni o'chirib tashlaymiz
+      if (key === "save" || key === "image_preview") return;
+
+      // 2. Rasm bilan ishlash mantiqi
+      if (key === "image") {
+        // FAQAT yangi rasm tanlangan bo'lsa (File obyekti bo'lsa) qo'shamiz
+        if (student[key] instanceof File) {
+          formData.append("image", student[key]);
+        }
+        // Agar student[key] string (URL) bo'lsa, hech narsa qilmaymiz (append qilmaymiz)
+      }
+      // 3. Boshqa barcha maydonlar
+      else {
+        // Null bo'lsa bo'sh string yuboramiz
+        formData.append(key, student[key] ?? "");
+      }
     });
+
+    // 4. API so'rovi
     updateStudentData({ id, data: formData }, {
       onSuccess: () => {
-        setNotif({ show: true, type: "success", message: "Saqlandi!" });
+        setNotif({ show: true, type: "success", message: "Muvaffaqiyatli saqlandi!" });
         setStudent(prev => ({ ...prev, save: false }));
+        // Agar rasm yangilangan bo'lsa, preview URLni tozalab yuborsak ham bo'ladi
+      },
+      onError: (err) => {
+        console.error("Xatolik tafsiloti:", err.response?.data);
+        setNotif({ show: true, type: "error", message: "Xatolik yuz berdi!" });
       }
     });
   };
@@ -282,9 +303,9 @@ const StudentDetaile = () => {
       {modal &&
         <Modal
           title={
-            modal === "payment" ? "Kassa: Balansni to'ldirish" : 
-            modal === "payout" ? "Kassa: Pulni naqd qaytarish (Payout)" : 
-            "Guruh to'lovini yechish (Withdraw)"
+            modal === "payment" ? "Kassa: Balansni to'ldirish" :
+              modal === "payout" ? "Kassa: Pulni naqd qaytarish (Payout)" :
+                "Guruh to'lovini yechish (Withdraw)"
           }
           anima={modal}
           close={setModal}
@@ -371,7 +392,7 @@ const StudentDetaile = () => {
         <Modal title="Chegirma qo'shish" anima={showAddDiscount} close={setShowAddDiscount} width="35%" zIndex={9999}>
           <Row>
             <Col md={8}><Input label="Summa" value={discount.amount} onChange={(e) => setDiscount({ ...discount, amount: e.target.value.replace(/\D/g, '') })} placeholder="Summa" containerClassName="mt-2" /></Col>
-            <Col md={4}><ReactSelect label="Muddat" value={discount.total_uses ? { value: discount.total_uses, label: `${discount.total_uses} oy` } : null} options={Array.from({length: 12}, (_, i) => ({value: (i+1).toString(), label: `${i+1} oy`}))} onChange={(e) => setDiscount({ ...discount, total_uses: e.value })} containerClassName="mt-2" /></Col>
+            <Col md={4}><ReactSelect label="Muddat" value={discount.total_uses ? { value: discount.total_uses, label: `${discount.total_uses} oy` } : null} options={Array.from({ length: 12 }, (_, i) => ({ value: (i + 1).toString(), label: `${i + 1} oy` }))} onChange={(e) => setDiscount({ ...discount, total_uses: e.value })} containerClassName="mt-2" /></Col>
           </Row>
           <label className="mt-2">Izoh</label>
           <textarea className="form-control" rows="3" value={discount.comment} onChange={(e) => setDiscount({ ...discount, comment: e.target.value })}></textarea>
