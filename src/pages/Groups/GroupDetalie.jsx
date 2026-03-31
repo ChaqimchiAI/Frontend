@@ -3,12 +3,13 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useTheme } from "../../Context/Context"
 import Back from "../../components/Ui/Back";
-import { Card, Dropdown, Nav, Spinner, Tab } from "react-bootstrap";
+import { Card, Dropdown, Nav, Spinner, Tab, Badge} from "react-bootstrap";
 import Modal from "../../components/Ui/Modal";
 import StudentsTable from "./Components/StudentsTable";
 import AttendenceTable from "./Components/AttendenceTable";
 import Schedule from "./Components/Schedule";
 import { useNotification } from "../../Context/NotificationContext";
+import GroupBillingTable from "./Components/GroupBillingTable";
 
 import { useDeleteGroup, useEditGroup, useGroup, useGroupSchedule, useGroupStudents } from "../../data/queries/group.queries"
 import { useRoomsData } from "../../data/queries/room.queries"
@@ -16,6 +17,9 @@ import { useTeachersData } from "../../data/queries/teachers.queries"
 import { useCourses } from "../../data/queries/courses.queries"
 import { useLeads } from "../../data/queries/leads.queries";
 // import { useStudentsData } from "../../data/queries/students.queries";
+
+import { useGroupFinanceReport } from "../../data/queries/billing.queries";
+import dayjs from "dayjs";
 
 import { useGroupAttendances, useStudentAttendances, useAttendances, useCreateAttendance } from "../../data/queries/attendances.queries";
 
@@ -74,6 +78,10 @@ const GroupDetalie = () => {
      const [searchLead, setSearchLead] = useState(leadsData)
      const [changeGroupDate, setChangeGroupDate] = useState({})
      const [currentSchedule, setCurrentSchedule] = useState({})
+
+     const [financeMonth, setFinanceMonth] = useState(dayjs().format("YYYY-MM"));
+
+     const { data: financeData, isLoading: financeLoading } = useGroupFinanceReport(id, financeMonth);
 
 
      const { setNotif } = useNotification()
@@ -377,7 +385,7 @@ const GroupDetalie = () => {
                <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="d-flex flex-column gap-2">
                     {/* Tabs Navigaye */}
                     <div
-                         style={{ padding: "8px", background: theme ? "#f1f1f1" : "#111c2d", borderRadius: "8px", width: "365px" }}
+                         style={{ padding: "8px", background: theme ? "#f1f1f1" : "#111c2d", borderRadius: "8px", width: "470px" }}
                     >
                          <Nav variant="pills">
                               <Nav.Item>
@@ -423,6 +431,22 @@ const GroupDetalie = () => {
                                    >
                                         <Icon icon="ion:calendar-outline" width="18" height="18" className="me-2" />
                                         Jadval
+                                   </Nav.Link>
+                              </Nav.Item>
+                              {/* YANGI MOLIYA TABI */}
+                              <Nav.Item>
+                                   <Nav.Link
+                                        eventKey="finance"
+                                        style={{
+                                             cursor: "pointer",
+                                             background: activeTab === "finance" && !theme ? "#15263a" : activeTab === "finance" && theme ? "#fff" : "transparent",
+                                             color: activeTab === "finance" && !theme ? "#fff" : theme ? "#000" : "#fff",
+                                             borderRadius: "8px",
+                                             fontSize: "14px"
+                                        }}
+                                   >
+                                        <Icon icon="solar:wallet-money-bold" width="18" height="18" className="me-2" />
+                                        Moliya
                                    </Nav.Link>
                               </Nav.Item>
                          </Nav>
@@ -497,6 +521,36 @@ const GroupDetalie = () => {
                                    </Card.Body>
                               </Card>
                          </Tab.Pane>
+                         <Tab.Pane eventKey="finance">
+                              <Card>
+                                   <Card.Body>
+                                        <div className="d-flex align-items-center justify-content-between mb-3">
+                                             <h5 className="fs-4 fw-medium">
+                                                  <Icon icon="solar:bill-list-bold" width="20" height="20" color="#00c8ff" className="me-2" />
+                                                  Guruh billing hisoboti
+                                             </h5>
+
+                                             {/* Oy tanlash filtri */}
+                                             <div className="d-flex gap-2 align-items-center">
+                                                  <span className="small opacity-75">Hisob oyi:</span>
+                                                  <input 
+                                                       type="month" 
+                                                       className={`form-control form-control-sm ${!theme ? 'bg-dark text-white border-secondary' : ''}`}
+                                                       value={financeMonth}
+                                                       onChange={(e) => setFinanceMonth(e.target.value)}
+                                                       style={{ width: "160px", borderRadius: "8px" }}
+                                                  />
+                                             </div>
+                                        </div>
+
+                                        {financeLoading ? (
+                                             <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>
+                                        ) : (
+                                             <GroupBillingTable financeData={financeData} theme={theme} />
+                                        )}
+                                   </Card.Body>
+                              </Card>
+                         </Tab.Pane>
                     </Tab.Content>
                </Tab.Container>
 
@@ -510,9 +564,10 @@ const GroupDetalie = () => {
                          }
                     `}
                </style>
-               
+
           </div >
      )
 }
+
 
 export default GroupDetalie

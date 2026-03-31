@@ -106,3 +106,17 @@ export const useVoidTransaction = (studentId) => {
         },
     });
 };
+
+export const useGroupFinanceReport = (groupId, month) => {
+    return useQuery({
+        queryKey: ["group-finance", groupId, month],
+        queryFn: async () => {
+            const { data } = await api.get(`/billings/group-finance-report/`, {
+                params: { group_id: groupId, month: month }
+            });
+            // Siz yuborgan strukturaga ko'ra: data.data ni qaytaramiz
+            return data.data; 
+        },
+        enabled: !!groupId && !!month,
+    });
+};
