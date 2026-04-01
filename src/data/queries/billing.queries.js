@@ -18,10 +18,13 @@ export const useBillingStats = () => {
     });
 };
 
-export const useDebtorsStudents = ({ page, ordering } = {}) => {
+// TO'G'RILANGAN VARIANT
+export const useDebtorsStudents = (params = {}) => {
     return useQuery({
-        queryKey: ["debtors-students", page, ordering],
-        queryFn: () => getDebtorsStudents({ page, ordering }),
+        // queryKey ichiga butun params obyektini qo'yamiz (page, ordering, limit)
+        // Shunda xohlagan biri o'zgarsa, avtomat API chaqiriladi
+        queryKey: ["debtors-students", params], 
+        queryFn: () => getDebtorsStudents(params),
     });
 };
 

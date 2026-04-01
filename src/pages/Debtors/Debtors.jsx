@@ -11,29 +11,34 @@ const Debtors = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  // 1. Students.jsx dagi kabi filtrlar va pagination state
+  // 1. FILTRLAR: Limit endi state ichida va API ga yuboriladi
   const [filters, setFilters] = useState({
     page: 1,
     limit: Number(localStorage.getItem("debtorsLimit")) || 10,
     ordering: "balance",
   });
 
+  // 2. API SO'ROVI: Hamma filtrlar (limit ham!) birga ketadi
   const { data: response, isLoading } = useDebtorsStudents(filters);
 
-  // 2. Response strukturasi: data.data ichidan count va results keladi
   const debtorsData = response?.results || [];
   const totalCount = response?.total_debtors || 0;
   const totalDebtSum = response?.total_debt_sum || 0;
+
+  // 3. LIMIT O'ZGARISHI: LocalStorage ga saqlaymiz va sahifani 1-ga qaytaramiz
+  const handleLimitChange = (newLimit) => {
+    localStorage.setItem("debtorsLimit", newLimit);
+    setFilters(prev => ({ 
+      ...prev, 
+      limit: Number(newLimit), 
+      page: 1 
+    }));
+  };
 
   const orderingStatuses = [
     { key: "balance", label: "Qarz: Yuqoridan pastga" },
     { key: "-balance", label: "Qarz: Pastdan yuqoriga" },
   ];
-
-  const handleLimitChange = (newLimit) => {
-    localStorage.setItem("debtorsLimit", newLimit);
-    setFilters(prev => ({ ...prev, limit: newLimit, page: 1 }));
-  };
 
   const formatMoney = (val) => Math.abs(Number(val) || 0).toLocaleString("uz-UZ");
 
@@ -44,7 +49,7 @@ const Debtors = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2 className="fw-bold mb-0">Qarzdorlik Nazorati</h2>
-          <p className="text-muted small mt-1">Jami {totalCount} ta o'quvchida qarzdorlik mavjud</p>
+          <p className="text-muted small mt-1">Jami {totalCount} ta qarzdor aniqlangan</p>
         </div>
       </div>
 
@@ -65,21 +70,20 @@ const Debtors = () => {
         </div>
       </div>
 
-      {/* DataTable: Students.jsx mantiqi bilan */}
+      {/* DataTable: Limit endi ishlaydi! */}
       {isLoading ? (
         <div className="text-center py-5"><Spinner animation="border" variant="danger" /></div>
       ) : (
         <DataTable
           data={debtorsData}
           totalCount={totalCount}
-          // №, O'quvchi, Telefon, Filial, Balans, Amal
           columns={["№", "O'quvchi", "Telefon / Filial", "Qarzdorlik", ""]}
           
-          // PAGINATIONNI STUDENTS.JSX DAGIDEK ULIYMIZ
+          // PAGINATION & LIMIT SOZLAMALARI
           page={filters.page}
-          limit={filters.limit}
+          limit={filters.limit} // DataTable ichidagi tanlangan limit
           onPageChange={(e, v) => setFilters(p => ({ ...p, page: v }))}
-          onEntriesChange={handleLimitChange}
+          onEntriesChange={handleLimitChange} // Mana shu funksiya limitni o'zgartiradi
           
           searchKeys={["first_name", "last_name", "phone"]}
           filter={
@@ -97,7 +101,7 @@ const Debtors = () => {
               return (
                 <tr 
                   key={debtor.id} 
-                  className="align-middle" 
+                  className="align-middle border-bottom" 
                   onClick={() => navigate(`/students/${debtor.id}`)}
                   style={{ cursor: "pointer" }}
                 >
@@ -109,24 +113,24 @@ const Debtors = () => {
                              width: "35px", height: "35px", 
                              background: isCritical ? "#dc354515" : "#0d6efd15", 
                              color: isCritical ? "#dc3545" : "#0d6efd",
-                             fontSize: "13px"
+                             fontSize: "12px", border: "1px solid"
                            }}>
                         {debtor.first_name?.[0]}
                       </div>
-                      <div className="fw-bold" style={{ fontSize: "14px" }}>
+                      <div className="fw-bold" style={{ fontSize: "13.5px" }}>
                         {debtor.first_name} {debtor.last_name}
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div className="fw-medium" style={{ fontSize: "13px" }}>{debtor.phone || "—"}</div>
-                    <div className="small text-muted">{debtor.branch_name}</div>
+                    <div className="fw-medium" style={{ fontSize: "12px" }}>{debtor.phone || "—"}</div>
+                    <div className="small text-muted" style={{ fontSize: "11px" }}>{debtor.branch_name}</div>
                   </td>
                   <td>
-                    <div className="fw-bold text-danger" style={{ fontSize: "15px" }}>
+                    <div className="fw-bold text-danger" style={{ fontSize: "14px" }}>
                       -{formatMoney(debtor.balance)}
                     </div>
-                    {isCritical && <span className="badge bg-danger p-1" style={{ fontSize: '9px' }}>KRITIK</span>}
+                    {isCritical && <span className="badge bg-danger p-1" style={{ fontSize: '8px' }}>KRITIK</span>}
                   </td>
                   <td className="text-end pe-3">
                     <Icon icon="solar:alt-arrow-right-linear" className="text-muted opacity-50" width="18" />
