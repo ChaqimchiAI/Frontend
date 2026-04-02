@@ -55,7 +55,7 @@ const SelectDay = ({ data, setData, field }) => {
                             style={{ width: "42px" }}
                         >
                             <span className="text-muted mb-1" style={{ fontSize: '10px', fontWeight: 'bold' }}>
-                                {day.code}
+                                {day.full_name}
                             </span>
                             <div
                                 className={`rounded-circle d-flex align-items-center justify-content-center shadow-sm`}
