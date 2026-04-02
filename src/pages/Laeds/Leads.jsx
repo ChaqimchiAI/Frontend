@@ -55,42 +55,40 @@ const Leads = () => {
 
      // lead malumotlarini o'zgartirish
      const changeLeadsData = (e) => {
-          e.preventDefault()
+          e.preventDefault();
 
-          if (!(
-               changeData.first_name ||
-               changeData.last_name ||
-               changeData.phone ||
-               changeData.week_days
-          )) {
-               setNotif({ show: true, type: "warn", message: "Asosiy joylarni to'ldiring!" })
-               return
+          // Faqat Ism va Telefon majburiy, Kurs va O'qituvchi ixtiyoriy bo'ldi
+          if (!changeData.first_name || !changeData.phone) {
+               setNotif({ show: true, type: "warn", message: "Ism va Telefon raqam majburiy!" });
+               return;
           }
 
           const dataToSend = {
                first_name: changeData.first_name,
-               last_name: changeData.last_name,
+               last_name: changeData.last_name || "",
                phone: changeData.phone,
-               course: Number(changeData.course.id || changeData.course),
-               teacher: Number(changeData.teacher),
-               week_days: changeData.week_days.map(d => d?.id || d)
-          }
+               // MUHIM: Kurs ixtiyoriy. Agar tanlanmagan bo'lsa null yuboramiz
+               course: (changeData.course?.id || changeData.course) ? Number(changeData.course?.id || changeData.course) : null,
+               teacher: changeData.teacher ? Number(changeData.teacher?.id || changeData.teacher) : null,
+               week_days: (changeData.week_days || []).map(d => d?.id || d),
+               comment: changeData.comment || ""
+          };
 
           editLead(
                { id: changeData.id, data: dataToSend },
                {
                     onSuccess: () => {
-                         setNotif({ show: true, type: "success", message: "Ma'lumotlar yangilandi!" })
-                         setOpemModal(false)
-                         setChangeData({})
+                         setNotif({ show: true, type: "success", message: "Ma'lumotlar yangilandi!" });
+                         setOpemModal(false);
+                         setChangeData({});
                     },
                     onError: (err) => {
-                         console.error(err)
-                         setNotif({ show: true, type: "error", message: "Xatolik yuz berdi!" })
+                         console.error(err);
+                         setNotif({ show: true, type: "error", message: "Xatolik! Ma'lumotlarni tekshiring." });
                     }
                }
-          )
-     }
+          );
+     };
 
      return (
           <>
@@ -134,31 +132,13 @@ const Leads = () => {
                                              required
                                              id="course"
                                              className="form-select"
-                                             value={changeData.course.id}
+                                             value={changeData.course?.id}
                                              onChange={(e) => setChangeData({ ...changeData, course: e.target.value })}
                                         >
                                              <option hidden>Kurs tanlash</option>
 
                                              {coursesData.map(c => (
                                                   <option value={c.id}>{c.name}</option>
-                                             ))}
-                                        </select>
-                                   </div>
-                                   <div className="d-flex flex-column mt-3">
-                                        <label htmlFor="teacher" className="form-label">
-                                             O'qituvchisi
-                                        </label>
-                                        <select
-                                             required
-                                             id="teacher"
-                                             className="form-select"
-                                             value={changeData.teacher}
-                                             onChange={(e) => setChangeData({ ...changeData, teacher: e.target.value })}
-                                        >
-                                             <option hidden>O'qituvchi tanlash</option>
-
-                                             {teacherData.map(c => (
-                                                  <option value={c.id}>{c.first_name} &nbsp; {c.last_name}</option>
                                              ))}
                                         </select>
                                    </div>

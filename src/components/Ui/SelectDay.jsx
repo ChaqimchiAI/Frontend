@@ -1,121 +1,90 @@
-import { useEffect, useState } from "react";
-
-const d = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"];
+import { useQuery } from "@tanstack/react-query";
+import api from "../../data/api/axios"; // Axios instansingni ulab qo'y
 
 const SelectDay = ({ data, setData, field }) => {
-    const daysValue = data?.[field] || [];
+    // 1. Hafta kunlarini bazadan olish
+    const { data: weekdaysData, isLoading } = useQuery({
+        queryKey: ["weekdays"],
+        queryFn: () => api.get("/core/weekdays/").then(res => res.data.data.results)
+    });
 
-    const [mode, setMode] = useState("");
+    const days = weekdaysData || [];
+    // Tanlangan kunlar ID lari (Normalize)
+    const selectedIds = (data?.[field] || []).map(item => (typeof item === 'object' ? item?.id : item));
 
-    // hozirgi tanlangan holatni aniqlash
-    const findCurrentDays = () => {
-        if (!daysValue?.length) return "";
-
-        const getIds = (arr) => arr.map(item => (typeof item === 'object' ? item?.id : item));
-        const ids = getIds(daysValue);
-
-        const equals = (arr1, arr2) =>
-            arr1.length === arr2.length && arr1.every(v => arr2.includes(v));
-
-        if (equals(ids, [1, 3, 5])) return "t";
-        if (equals(ids, [2, 4, 6])) return "j";
-
-        return "b";
+    // 2. Kunni tanlash/o'chirish
+    const toggleDay = (id) => {
+        const newDays = selectedIds.includes(id)
+            ? selectedIds.filter(d => d !== id)
+            : [...selectedIds, id].sort((a, b) => a - b);
+        setData({ ...data, [field]: newDays });
     };
 
-    // mode ni avtomatik sinxron qilish
-    useEffect(() => {
-        if (daysValue?.length === 0) {
-            if (mode !== "b") {
-                setMode("");
-            }
-        } else {
-            setMode(findCurrentDays());
-        }
-    }, [daysValue, mode]);
-
-    const changeDays = (id, isChecked) => {
-        setData(prev => {
-            const currentDays = Array.isArray(prev[field]) ? prev[field] : [];
-            // Normalize to numbers just in case
-            const currentIds = currentDays.map(item => (typeof item === 'object' ? item.id : item));
-
-            const filtered = currentIds.filter(item => item !== id);
-
-            return {
-                ...prev,
-                [field]: isChecked ? [...filtered, id] : filtered
-            };
-        });
+    // 3. Shablollar (Toq, Juft, Istalgan)
+    const applyTemplate = (type) => {
+        let newSelection = [];
+        if (type === 'toq') newSelection = [1, 3, 5];
+        if (type === 'juft') newSelection = [2, 4, 6];
+        if (type === 'all') newSelection = [1, 2, 3, 4, 5, 6, 7];
+        if (type === 'clear') newSelection = [];
+        
+        setData({ ...data, [field]: newSelection });
     };
 
-    const selectDays = (value) => {
-        if (value === "t") {
-            setData(prev => ({
-                ...prev,
-                [field]: [1, 3, 5]
-            }));
-        }
-        if (value === "j") {
-            setData(prev => ({
-                ...prev,
-                [field]: [2, 4, 6]
-            }));
-        }
-        if (value === "b") {
-            setData(prev => ({
-                ...prev,
-                [field]: []
-            }));
-        }
-        setMode(value)
-    }
-    
+    if (isLoading) return <div className="small text-muted">Kunlar yuklanmoqda...</div>;
+
     return (
-        <>
+        <div className="select-day-wrapper p-2 border rounded bg-light-subtle">
+            {/* Tezkor tanlash tugmalari */}
+            <div className="d-flex flex-wrap gap-1 mb-3">
+                <button type="button" onClick={() => applyTemplate('toq')} className="btn btn-outline-primary btn-sm py-1 px-2" style={{fontSize: '11px'}}>Toq</button>
+                <button type="button" onClick={() => applyTemplate('juft')} className="btn btn-outline-primary btn-sm py-1 px-2" style={{fontSize: '11px'}}>Juft</button>
+                <button type="button" onClick={() => applyTemplate('all')} className="btn btn-outline-success btn-sm py-1 px-2" style={{fontSize: '11px'}}>Istalgan kun</button>
+                <button type="button" onClick={() => applyTemplate('clear')} className="btn btn-outline-danger btn-sm py-1 px-2" style={{fontSize: '11px'}}>Tozalash</button>
+            </div>
 
-
-            {mode !== "b" ? (
-                <select
-                    className="form-select"
-                    value={mode}
-                    onChange={(e) => selectDays(e.target.value)}
-                >
-                    <option hidden value="">Kun tanlash</option>
-                    <option value="t">Toq kunlar (Du,Cho,Ju)</option>
-                    <option value="j">Juft kunlar (Se,Pay,Sha)</option>
-                    <option value="b">Boshqa kunlar</option>
-                </select>
-            ) : (
-                <div className="d-flex flex-column align-items-start ms-3">
-                    <div className="d-flex flex-wrap gap-2">
-                        {d.map((day, i) => {
-                            const dayId = i + 1;
-                            return (
-                                <label key={dayId} className="d-flex align-items-center gap-1">
-                                    {day}
-                                    <input
-                                        type="checkbox"
-                                        checked={daysValue.some(item => (typeof item === 'object' ? item.id : item) === dayId)}
-                                        onChange={(e) =>
-                                            changeDays(dayId, e.target.checked)
-                                        }
-                                    />
-                                </label>
-                            );
-                        })}
-                    </div>
-
-                    <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary mt-2"
-                        onClick={() => { setMode(""), setData(prev => ({ ...prev, [field]: [] })) }}
-                    >
-                        Ortga
-                    </button>
+            {/* Kunlar ro'yxati (Checkbox/Badge style) */}
+            <div className="d-flex flex-wrap gap-2 justify-content-start">
+                {days.map((day) => {
+                    const isActive = selectedIds.includes(day.id);
+                    return (
+                        <div
+                            key={day.id}
+                            onClick={() => toggleDay(day.id)}
+                            className="d-flex flex-column align-items-center cursor-pointer"
+                            style={{ width: "42px" }}
+                        >
+                            <span className="text-muted mb-1" style={{ fontSize: '10px', fontWeight: 'bold' }}>
+                                {day.code}
+                            </span>
+                            <div
+                                className={`rounded-circle d-flex align-items-center justify-content-center shadow-sm`}
+                                style={{
+                                    width: "32px",
+                                    height: "32px",
+                                    border: `2px solid ${isActive ? '#0085db' : '#dee2e6'}`,
+                                    background: isActive ? '#0085db' : 'transparent',
+                                    color: isActive ? '#fff' : '#6c757d',
+                                    fontSize: "11px",
+                                    fontWeight: "600",
+                                    transition: "0.2s all ease"
+                                }}
+                            >
+                                {day.order}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            
+            {selectedIds.length > 0 && (
+                <div className="mt-2 text-center border-top pt-1">
+                    <span className="text-primary fw-bold" style={{fontSize: '11px'}}>
+                        {selectedIds.length} kun tanlandi
+                    </span>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

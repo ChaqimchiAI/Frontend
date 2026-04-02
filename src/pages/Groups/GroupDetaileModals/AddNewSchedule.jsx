@@ -29,20 +29,49 @@ const AddNewSchedule = ({
         is_active: true
     })
 
+    const validateSchedule = () => {
+        // 1. O'qituvchi
+        if (!newSchedlueItems.teacher) {
+            setNotif({ show: true, type: 'warn', message: "O'qituvchini tanlash majburiy!" });
+            return false;
+        }
+        
+        // 2. Xona
+        if (!newSchedlueItems.room) {
+            setNotif({ show: true, type: 'warn', message: "Xonani tanlash majburiy!" });
+            return false;
+        }
+
+        // 3. Haftaning kunlari (Massiv bo'sh emasligini tekshiramiz)
+        if (!newSchedlueItems.days_of_week?.length) {
+            setNotif({ show: true, type: 'warn', message: "Hafta kunlarini belgilang!" });
+            return false;
+        }
+
+        // 4. Boshlanish va tugash vaqti
+        if (!newSchedlueItems.begin_time) {
+            setNotif({ show: true, type: 'warn', message: "Dars boshlanish vaqtini kiriting!" });
+            return false;
+        }
+        if (!newSchedlueItems.end_time) {
+            setNotif({ show: true, type: 'warn', message: "Dars tugash vaqtini kiriting!" });
+            return false;
+        }
+
+        // 5. Boshlanish sanasi
+        if (!newSchedlueItems.start_date) {
+            setNotif({ show: true, type: 'warn', message: "Guruh boshlanish sanasini kiriting!" });
+            return false;
+        }
+
+        return true; // Hamma narsa joyida bo'lsa true qaytadi
+    };
+
     const handleAddNewSchedule = (e) => {
         e.preventDefault()
 
-        if (
-            !newSchedlueItems.begin_time ||
-            !newSchedlueItems.end_time ||
-            !newSchedlueItems.start_date ||
-            !newSchedlueItems.days_of_week?.length ||
-            !newSchedlueItems.room ||
-            !newSchedlueItems.teacher
-        ) {
-            setNotif({ show: true, type: 'warn', message: "Barcha maydonlarni to'ldiring!" })
-            return
-        }
+        if (!validateSchedule()) return;
+
         if (!id || id === 'undefined') {
             setNotif({ show: true, type: 'error', message: "Guruh IDsi topilmadi. Sahifani yangilang." });
             return;
@@ -97,9 +126,9 @@ const AddNewSchedule = ({
                 <div className="mt-3">
                     <label className="form-label">Dars kunlari</label>
                     <SelectDay 
-                        data={addSchedule}
-                        setData={setAddSchedule}
-                        field="days_of_week"
+                        data={newSchedlueItems}      
+                        setData={setNewSchedlueItems} 
+                        field="days_of_week" 
                     />
                 </div>
 
