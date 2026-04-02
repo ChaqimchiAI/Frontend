@@ -124,3 +124,11 @@ export const useDeleteLead = () => {
     },
   });
 };
+
+
+export const useLeadsSources = () => {
+    return useQuery({
+        queryKey: ["leads-sources"],
+        queryFn: () => api.get("/leads/sources/").then(res => res.data)
+    });
+};

@@ -1,383 +1,301 @@
-import { Card, Spinner } from "react-bootstrap"
-import { Icon } from "@iconify/react"
+import { Card, Spinner, Form } from "react-bootstrap";
+import { Icon } from "@iconify/react";
 import { useState } from "react";
 import { Input } from "../../components/Ui/Input";
-import { useNotification } from "../../Context/NotificationContext"
-import Modal from "../../components/Ui/Modal"
+import { useNotification } from "../../Context/NotificationContext";
+import Modal from "../../components/Ui/Modal";
 
-// API malumotlarini olish
-import { useEditLead, useLeads, useLeadsStats } from "../../data/queries/leads.queries"
+// API Queries
+import { 
+    useEditLead, 
+    useLeads, 
+    useLeadsStats, 
+    useLeadsSources // Manbalar uchun yangi query
+} from "../../data/queries/leads.queries";
 import { useTeachersData } from "../../data/queries/teachers.queries";
 import { useCourses } from "../../data/queries/courses.queries";
+
+// Components
 import NewLead from "./components/NewLead";
 import LeadsLists from "./components/LeadsLists";
 import SelectDay from "../../components/Ui/SelectDay";
 
+// Sening statik ranglar xaritang
+const LeadSourceColors = {
+    "Instagram": "#ec4899",
+    "Telegram": "#06b6d4",
+    "Facebook": "#10b981",
+    "Tavsiya": "#f59e0b",
+    "Banner": "#2f871c",
+};
+
 const Leads = () => {
+    const { setNotif } = useNotification();
+    const [filters, setFilters] = useState({
+        page: 1,
+        limit: 10,
+        status: "",
+        start_date: "",
+        end_date: "",
+        period: "",
+        search: ""
+    });
 
-     const [filters, setFilters] = useState({
-          page: 1,
-          limit: 10,
-          status: "",
-          start_date: "",
-          end_date: "",
-          period: "",
-          search: ""
-     });
+    // ─── DATA FETCHING ───
+    const { data, isLoading, error } = useLeads(filters);
+    const { data: stats } = useLeadsStats(filters);
+    const { data: courses } = useCourses();
+    const { data: teachers } = useTeachersData();
+    const { data: sources } = useLeadsSources(); // Backenddan manbalarni olamiz
 
-     // lidlarni royxati
-     const { data, isLoading, error } = useLeads(filters);
-     const leads = data?.results || [];
-     const totalCount = data?.count || 0;
+    const leads = data?.results || [];
+    const totalCount = data?.count || 0;
+    const coursesData = courses?.results || [];
+    const teacherData = teachers?.results || [];
+    const sourcesData = sources?.results || []; // [ {id: 1, name: "Instagram"}, ... ]
 
-     // lidlar boyicha statistika 
-     const { data: stats } = useLeadsStats(filters)
+    // ─── MUTATIONS ───
+    const { mutate: editLead, isPending: editLeadPending } = useEditLead();
 
-     // lidlarni o'zgartirish
-     const { mutate: editLead, isPending: editLeadPending } = useEditLead()
+    // ─── LOCAL STATES ───
+    const [opemModal, setOpemModal] = useState(false);
+    const [show, setShow] = useState(false);
+    const [changeData, setChangeData] = useState({});
 
-     // guruhlarni olish
-     const { data: teachers } = useTeachersData()
-     const teacherData = teachers?.results
+    if (isLoading) return <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>;
+    if (error) return <div className="p-4 text-danger text-center">Xatolik yuz berdi: {error.message}</div>;
 
-     // kurslarni olish
-     const { data: courses } = useCourses()
-     const coursesData = courses?.results
+    // ─── HANDLERS ───
+    const changeLeadsData = (e) => {
+        e.preventDefault();
 
-     const [opemModal, setOpemModal] = useState(false)
-     const [show, setShow] = useState(false)
-     const [changeData, setChangeData] = useState({})
+        // Faqat eng muhim maydonlar majburiy
+        if (!changeData.first_name || !changeData.phone) {
+            setNotif({ show: true, type: "warn", message: "Ism va Telefon raqam majburiy!" });
+            return;
+        }
 
-     const { setNotif } = useNotification()
+        const dataToSend = {
+            first_name: changeData.first_name,
+            last_name: changeData.last_name || "",
+            phone: changeData.phone,
+            // Kurs: ID yuboramiz, bo'sh bo'lsa null
+            course: (changeData.course?.id || changeData.course) ? Number(changeData.course?.id || changeData.course) : null,
+            // MANBA: ID yuboramiz (Backend 400 bermasligi uchun)
+            source: (changeData.source?.id || changeData.source) ? Number(changeData.source?.id || changeData.source) : null,
+            teacher: (changeData.teacher?.id || changeData.teacher) ? Number(changeData.teacher?.id || changeData.teacher) : null,
+            // Hafta kunlari: ID massiviga aylantiramiz
+            week_days: (changeData.week_days || []).map(d => (typeof d === 'object' ? d.id : d)),
+            comment: changeData.comment || "",
+            parent_name: changeData.parent_name || "",
+            parent_phone: changeData.parent_phone || ""
+        };
 
-     if (isLoading) return <div>Loading...</div>
-     if (error) return <div style={{ color: "red" }}>Xatolik: {error.message}</div>
+        editLead(
+            { id: changeData.id, data: dataToSend },
+            {
+                onSuccess: () => {
+                    setNotif({ show: true, type: "success", message: "Lid muvaffaqiyatli yangilandi!" });
+                    setOpemModal(false);
+                    setChangeData({});
+                },
+                onError: (err) => {
+                    console.error(err);
+                    const msg = err.response?.data?.data?.source?.[0] || "Xatolik yuz berdi!";
+                    setNotif({ show: true, type: "error", message: msg });
+                }
+            }
+        );
+    };
 
-     // lead malumotlarini o'zgartirish
-     const changeLeadsData = (e) => {
-          e.preventDefault();
+    return (
+        <>
+            {/* ─── EDIT MODAL ─── */}
+            {opemModal && (
+                <Modal
+                    title={`${changeData?.first_name || "Lid"} tahrirlash`}
+                    close={() => { setOpemModal(false); setChangeData({}); }}
+                    anima={opemModal}
+                    width="60%"
+                    zIndex={100}
+                >
+                    <Form onSubmit={changeLeadsData} className="px-2">
+                        <div className="row g-4 mt-1">
+                            {/* Chap Ustun: Shaxsiy ma'lumotlar */}
+                            <div className="col-md-6 border-end">
+                                <h6 className="fw-bold text-primary mb-3">Asosiy ma'lumotlar</h6>
+                                <Input
+                                    label="Ism *"
+                                    value={changeData?.first_name || ""}
+                                    onChange={(e) => setChangeData({ ...changeData, first_name: e.target.value })}
+                                    required
+                                />
+                                <Input
+                                    label="Familya"
+                                    value={changeData?.last_name || ""}
+                                    onChange={(e) => setChangeData({ ...changeData, last_name: e.target.value })}
+                                />
+                                <Input
+                                    label="Telefon raqam *"
+                                    value={changeData?.phone || ""}
+                                    onChange={(e) => setChangeData({ ...changeData, phone: e.target.value })}
+                                    required
+                                />
 
-          // Faqat Ism va Telefon majburiy, Kurs va O'qituvchi ixtiyoriy bo'ldi
-          if (!changeData.first_name || !changeData.phone) {
-               setNotif({ show: true, type: "warn", message: "Ism va Telefon raqam majburiy!" });
-               return;
-          }
+                                <div className="mt-3">
+                                    <label className="form-label small fw-bold">Kurs (Ixtiyoriy)</label>
+                                    <select
+                                        className="form-select"
+                                        value={changeData?.course?.id || changeData?.course || ""}
+                                        onChange={(e) => setChangeData({ ...changeData, course: e.target.value })}
+                                    >
+                                        <option value="">Kurs tanlanmagan</option>
+                                        {coursesData.map(c => (
+                                            <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-          const dataToSend = {
-               first_name: changeData.first_name,
-               last_name: changeData.last_name || "",
-               phone: changeData.phone,
-               // MUHIM: Kurs ixtiyoriy. Agar tanlanmagan bo'lsa null yuboramiz
-               course: (changeData.course?.id || changeData.course) ? Number(changeData.course?.id || changeData.course) : null,
-               teacher: changeData.teacher ? Number(changeData.teacher?.id || changeData.teacher) : null,
-               week_days: (changeData.week_days || []).map(d => d?.id || d),
-               comment: changeData.comment || ""
-          };
+                                <div className="mt-3">
+                                    <label className="form-label small fw-bold">Kelgan joyi (Manba)</label>
+                                    {/* Rangli badge-lar - Sening ranglaring backend nomlari bilan bog'landi */}
+                                    <div className="d-flex flex-wrap gap-1 mb-2">
+                                        {sourcesData.map(s => (
+                                            <span 
+                                                key={s.id}
+                                                className={`badge cursor-pointer p-1 ${(changeData.source?.id || changeData.source) == s.id ? 'ring-2 border border-dark scale-110' : 'opacity-75'}`}
+                                                style={{ 
+                                                    background: LeadSourceColors[s.name] || "#6c757d", 
+                                                    fontSize: '10px',
+                                                    transition: '0.2s'
+                                                }}
+                                                onClick={() => setChangeData({ ...changeData, source: s.id })}
+                                            >
+                                                {s.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <select
+                                        className="form-select"
+                                        value={changeData?.source?.id || changeData?.source || ""}
+                                        onChange={(e) => setChangeData({ ...changeData, source: e.target.value })}
+                                    >
+                                        <option value="">Manbani tanlang</option>
+                                        {sourcesData.map(s => (
+                                            <option key={s.id} value={s.id}>{s.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
 
-          editLead(
-               { id: changeData.id, data: dataToSend },
-               {
-                    onSuccess: () => {
-                         setNotif({ show: true, type: "success", message: "Ma'lumotlar yangilandi!" });
-                         setOpemModal(false);
-                         setChangeData({});
-                    },
-                    onError: (err) => {
-                         console.error(err);
-                         setNotif({ show: true, type: "error", message: "Xatolik! Ma'lumotlarni tekshiring." });
-                    }
-               }
-          );
-     };
+                            {/* O'ng Ustun: Dars va Ota-ona */}
+                            <div className="col-md-6">
+                                <h6 className="fw-bold text-primary mb-3">Dars va Aloqa</h6>
+                                
+                                <div className="mb-3">
+                                    <label className="form-label small fw-bold">Hafta kunlari</label>
+                                    <SelectDay
+                                        data={changeData}
+                                        setData={setChangeData}
+                                        field="week_days"
+                                    />
+                                </div>
 
-     return (
-          <>
-               {/* Ma'lumotni tahrirlash uchun modal */}
-               {opemModal &&
-                    <Modal
-                         title={`${changeData?.first_name} ning ma'lumotlarini yangilash!`}
-                         close={setOpemModal}
-                         anima={opemModal}
-                         width="50%"
-                         zIndex={100}
-                    >
-                         <div className="d-flex justify-content-between gap-3 mt-2">
-                              <div className="d-flex flex-column w-50">
-                                   <span className="fw-bold align-self-end text-white-50">
-                                        Asosiy
-                                   </span>
-                                   <Input
-                                        label="Ism"
-                                        defaultValue={changeData?.first_name}
-                                        onChange={(e) => setChangeData({ ...changeData, first_name: e.target.value })}
-                                        required
-                                   />
-                                   <Input
-                                        label="Familya"
-                                        defaultValue={changeData?.last_name}
-                                        onChange={(e) => setChangeData({ ...changeData, last_name: e.target.value })}
-                                        required
-                                   />
-                                   <Input
-                                        label="Telifon raqam"
-                                        defaultValue={changeData?.phone}
-                                        onChange={(e) => setChangeData({ ...changeData, phone: e.target.value })}
-                                        required
-                                   />
-                                   <div className="d-flex flex-column">
-                                        <label htmlFor="course" className="form-label">
-                                             Kurs
-                                        </label>
-                                        <select
-                                             required
-                                             id="course"
-                                             className="form-select"
-                                             value={changeData.course?.id}
-                                             onChange={(e) => setChangeData({ ...changeData, course: e.target.value })}
-                                        >
-                                             <option hidden>Kurs tanlash</option>
+                                <Input
+                                    label="Ota-onasi ismi"
+                                    value={changeData?.parent_name || ""}
+                                    onChange={(e) => setChangeData({ ...changeData, parent_name: e.target.value })}
+                                />
+                                <Input
+                                    label="Ota-onasi telefoni"
+                                    value={changeData?.parent_phone || ""}
+                                    onChange={(e) => setChangeData({ ...changeData, parent_phone: e.target.value })}
+                                />
 
-                                             {coursesData.map(c => (
-                                                  <option value={c.id}>{c.name}</option>
-                                             ))}
-                                        </select>
-                                   </div>
-                                   <div className="d-flex flex-column mt-3">
-                                        <label htmlFor="time" className="form-label">
-                                             Vaqti
-                                        </label>
+                                <div className="mt-3">
+                                    <label className="form-label small fw-bold">Izoh</label>
+                                    <textarea
+                                        className="form-control"
+                                        rows="3"
+                                        placeholder="Lid bo'yicha qo'shimcha eslatmalar..."
+                                        style={{ resize: "none" }}
+                                        value={changeData?.comment || ""}
+                                        onChange={(e) => setChangeData({ ...changeData, comment: e.target.value })}
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </div>
 
-                                        <SelectDay
-                                             data={changeData}
-                                             setData={setChangeData}
-                                             field="week_days"
-                                        />
+                        {/* Modal Footer */}
+                        <div className="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary px-4 py-2"
+                                onClick={() => { setOpemModal(false); setChangeData({}); }}
+                            >
+                                Bekor qilish
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn btn-primary px-5 py-2 fw-bold"
+                                disabled={editLeadPending}
+                            >
+                                {editLeadPending ? <Spinner size="sm" animation="border" /> : "Saqlash"}
+                            </button>
+                        </div>
+                    </Form>
+                </Modal>
+            )}
 
-                                   </div>
-                              </div>
-                              <div
-                                   style={{ width: "1px", height: "auto", background: "#2b364cff" }}
-                              >
+            {/* ─── MAIN UI ─── */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 className="fw-bold mb-0">Lidlar</h4>
+                    <p className="text-muted small">Barcha potentsial o'quvchilar ro'yxati</p>
+                </div>
+                <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => setShow(true)}>
+                    <Icon icon="qlementine-icons:plus-16" width="18" />
+                    Yangi lid qo'shish
+                </button>
+            </div>
 
-                              </div>
-                              <div className="d-flex flex-column w-50">
-                                   <span className="fw-bold align-self-end text-white-50">
-                                        Boshqa
-                                   </span>
-                                   <Input
-                                        label="Ota-onasi"
-                                        defaultValue={changeData?.parent_name}
-                                        onChange={(e) => setChangeData({ ...changeData, parent_name: e.target.value })}
-                                   />
-                                   <Input
-                                        label="Ota-onasi telifon raqami"
-                                        defaultValue={changeData?.parent_phone}
-                                        onChange={(e) => setChangeData({ ...changeData, parent_phone: e.target.value })}
-                                   />
-                                   <div className="d-flex flex-column">
-                                        <label htmlFor="desc" className="form-label">Izoh</label>
-                                        <textarea
-                                             id="desc"
-                                             placeholder="Izoh"
-                                             className="form-control"
-                                             style={{ resize: "none", height: "130px" }}
-                                             defaultValue={changeData.comment}
-                                             onChange={(e) => setChangeData({ ...changeData, comment: e.target.value })}
-                                        ></textarea>
-                                   </div>
-                              </div>
-
-                         </div>
-                         <div className="d-flex justify-content-end gap-2 mt-4">
-                              <button
-                                   type="button"
-                                   className="btn btn-sm py-2 px-4"
-                                   style={{ background: "#e5e5e5", color: "#000" }}
-                                   onClick={() => setOpemModal(false)}
-                              >
-                                   Orqaga
-                              </button>
-                              <button
-                                   type="submit"
-                                   className="btn btn-sm py-2 px-4"
-                                   style={{ background: "#0085db", color: "#fff" }}
-                                   onClick={changeLeadsData}
-                              >
-                                   {editLeadPending ? <Spinner size="sm" type="border" /> : "Saqlash"}
-                              </button>
-                         </div>
-                    </Modal>
-               }
-
-               {show && <NewLead setNotif={setNotif} setShow={setShow} show={show} />}
-
-               <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mx-1 pb-3">
-                    <div className="d-flex flex-column gap-1">
-                         <h4 className="fs-6">Lidlar ro'yhati</h4>
-                         <span className="text-muted">Barcha lidlar ma'lumotlari</span>
+            {/* Stats Cards */}
+            <div className="row g-3 mb-4">
+                {[
+                    { label: "Jami Lidlar", val: stats?.display_count, color: "#0095db", icon: "charm:person" },
+                    { label: "Guruhga qo'shildi", val: stats?.statuses?.registered, color: "#198754", icon: "prime:check-square" },
+                    { label: "Yangi Lidlar", val: stats?.new_leads_count, color: "#00676f", icon: "qlementine-icons:plus-16" },
+                    { label: "Bugungilar", val: stats?.today_count, color: "#9647fd", icon: "pajamas:calendar" }
+                ].map((item, i) => (
+                    <div className="col-md-3" key={i}>
+                        <Card className="border-0 shadow-sm">
+                            <Card.Body className="d-flex justify-content-between align-items-center p-3">
+                                <div>
+                                    <div className="text-muted small fw-bold">{item.label}</div>
+                                    <h3 className="fw-bold mb-0 mt-1" style={{ color: item.color }}>{item.val || 0}</h3>
+                                </div>
+                                <div className="p-2 rounded-3" style={{ background: `${item.color}15`, color: item.color }}>
+                                    <Icon icon={item.icon} width="24" />
+                                </div>
+                            </Card.Body>
+                        </Card>
                     </div>
-                    <button
-                         className="btn btn-sm fs-3 px-4 text-white"
-                         style={{ background: "#0085db", padding: "10px 20px" }}
-                         onClick={() => setShow(true)}
-                    >
-                         <Icon icon="qlementine-icons:plus-16" width="15" height="15" />
-                         &nbsp;
-                         Yangi lid qo'shish
-                    </button>
-               </div>
+                ))}
+            </div>
 
+            <LeadsLists
+                leads={leads}
+                stats={stats}
+                totalCount={totalCount}
+                filters={filters}
+                setFilters={setFilters}
+                setOpemModal={setOpemModal}
+                setChangeData={setChangeData}
+            />
 
-               <div className="row gap-3 px-3">
-                    <Card className="col lidCard">
-                         <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
-                              <div className="d-flex flex-column gap-1">
-                                   <span className="text-muted">
-                                        Jami Lidlar
-                                   </span>
-                                   <span
-                                        className="fs-8"
-                                        style={{ color: "#0095db", fontWeight: "900" }}
-                                   >
-                                        {stats?.display_count || 0}
-                                   </span>
-                              </div>
-                              <span
-                                   style={{
-                                        width: "50px",
-                                        height: "50px",
-                                        background: "#0095db30",
-                                        color: "#0095db",
-                                        borderRadius: "10px"
-                                   }}
-                                   className="d-flex justify-content-center align-items-center"
-                              >
-                                   <Icon icon="charm:person" width="25" height="25" />
-                              </span>
-                         </Card.Body>
-                    </Card>
-                    <Card className="col lidCard">
-                         <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
-                              <div className="d-flex flex-column gap-1">
-                                   <span className="text-muted">
-                                        Guruhga qo'shilgan
-                                   </span>
-                                   <span
-                                        className="fs-8 text-success"
-                                        style={{ fontWeight: "900" }}
-                                   >
-                                        {stats?.statuses?.registered || 0}
-                                   </span>
-                              </div>
-                              <span
-                                   style={{
-                                        width: "50px",
-                                        height: "50px",
-                                        background: "#0095db30",
-                                        // color: "#0095db",
-                                        borderRadius: "10px"
-                                   }}
-                                   className="d-flex justify-content-center align-items-center text-success bg-success-subtle"
-                              >
-                                   <Icon icon="prime:check-square" width="25" height="25" className="fw-bold" />
-                              </span>
-                         </Card.Body>
-                    </Card>
-                    <Card className="col lidCard">
-                         <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
-                              <div className="d-flex flex-column gap-1">
-                                   <span className="text-muted">
-                                        Yangi Lidlar
-                                   </span>
-                                   <span
-                                        className="fs-8"
-                                        style={{ color: "#00676f", fontWeight: "900" }}
-                                   >
-                                        {stats?.new_leads_count || 0}
-                                   </span>
-                              </div>
-                              <span
-                                   style={{
-                                        width: "50px",
-                                        height: "50px",
-                                        background: "#00676f30",
-                                        color: "#00676f",
-                                        borderRadius: "10px"
-                                   }}
-                                   className="d-flex justify-content-center align-items-center"
-                              >
-                                   <Icon icon="qlementine-icons:plus-16" width="25" height="25" />
-                              </span>
-                         </Card.Body>
-                    </Card>
-                    <Card className="col lidCard">
-                         <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
-                              <div className="d-flex flex-column">
-                                   <span className="text-muted">
-                                        Bugun Qo'shilganlar
-                                   </span>
-                                   <span
-                                        className="fs-8"
-                                        style={{ color: "#9647fd", fontWeight: "900" }}
-                                   >
-                                        {stats?.today_count || 0}
-                                   </span>
-                              </div>
-                              <span
-                                   style={{
-                                        width: "50px",
-                                        height: "50px",
-                                        borderRadius: "10px",
-                                        background: "#9647fd30",
-                                        color: "#9647fd"
-                                   }}
-                                   className="d-flex justify-content-center align-items-center"
-                              >
-                                   <Icon icon="pajamas:calendar" width="25" height="25" />
-                              </span>
-                         </Card.Body>
-                    </Card>
-                    <Card className="col lidCard">
-                         <Card.Body className="d-flex justify-content-between align-items-center px-2 py-3">
-                              <div className="d-flex flex-column gap-1">
-                                   <span className="text-muted">
-                                        Bekor Qilingan
-                                   </span>
-                                   <span
-                                        className="fs-8"
-                                        style={{ color: "#dc4041", fontWeight: "900" }}
-                                   >
-                                        {stats?.statuses?.lost || 0}
-                                   </span>
-                              </div>
-                              <span
-                                   style={{
-                                        width: "50px",
-                                        height: "50px",
-                                        borderRadius: "10px",
-                                        color: "#dc4041",
-                                        background: "#dc404130"
-                                   }}
-                                   className="d-flex justify-content-center align-items-center"
-                              >
-                                   <Icon icon="material-symbols:person-cancel-outline-rounded" width="25" height="25" />
-                              </span>
-                         </Card.Body>
-                    </Card>
-               </div>
+            {show && <NewLead setNotif={setNotif} setShow={setShow} show={show} />}
+        </>
+    );
+};
 
-               {/* Lidlar ro'yhati */}
-               <LeadsLists
-                    leads={leads}
-                    stats={stats}
-                    totalCount={totalCount}
-                    filters={filters}
-                    setFilters={setFilters}
-                    setOpemModal={setOpemModal}
-                    setChangeData={setChangeData}
-               />
-          </>
-     )
-}
-
-export default Leads
+export default Leads;
