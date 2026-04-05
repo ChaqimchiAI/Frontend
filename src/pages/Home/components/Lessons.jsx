@@ -1,407 +1,243 @@
+import { useState, useMemo } from "react";
 import './Lessons.css'
-
 import { useTodayLessons } from "../../../data/queries/group.queries"
 import { useRoomsData } from "../../../data/queries/room.queries"
-import { Icon } from '@iconify/react'
+import { Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 
-const times = [
-    "06:00 - 06:30",
-    "06:30 - 07:00",
-    "07:00 - 07:30",
-    "07:30 - 08:00",
-    "08:00 - 08:30",
-    "08:30 - 09:00",
-    "09:00 - 09:30",
-    "09:30 - 10:00",
-    "10:00 - 10:30",
-    "10:30 - 11:00",
-    "11:00 - 11:30",
-    "11:30 - 12:00",
-    "12:00 - 12:30",
-    "12:30 - 13:00",
-    "13:00 - 13:30",
-    "13:30 - 14:00",
-    "14:00 - 14:30",
-    "14:30 - 15:00",
-    "15:00 - 15:30",
-    "15:30 - 16:00",
-    "16:00 - 16:30",
-    "16:30 - 17:00",
-    "17:00 - 17:30",
-    "17:30 - 18:00",
-    "18:00 - 18:30",
-    "18:30 - 19:00",
-    "19:00 - 19:30",
-    "19:30 - 20:00",
-    "20:00 - 20:30",
-    "20:30 - 21:00",
-    "21:00 - 21:30",
-    "21:30 - 22:00",
-]
-
-const shortDays = [
-    "Yak",
-    "Du",
-    "Se",
-    "Chor",
-    "Pa",
-    "Ju",
-    "Sha"
-]
-
-// Mock darslar ma'lumotlari
-const mockLessons = [
-    {
-        id: 1,
-        name: "AN Arab tili T(10:00)",
-        teacher: "Diyora Madimova",
-        room: "London",
-        startTime: "9:00",
-        endTime: "11:30",
-        students: 75,
-        maxStudents: 26,
-        color: "#00c853"
-    },
-    {
-        id: 2,
-        name: "YK Fizika T (12:00)",
-        teacher: "Yaxshilik Karimov",
-        room: "Payme",
-        startTime: "12:00",
-        endTime: "13:30",
-        students: 4,
-        maxStudents: 40,
-        color: "#ffd600"
-    },
-    {
-        id: 3,
-        name: "ZK Arab tili T(10:00)",
-        teacher: "Zaynabxon Karimova",
-        room: "Tokio",
-        startTime: "10:00",
-        endTime: "11:30",
-        students: 13,
-        maxStudents: 38,
-        color: "#00bcd4"
-    },
-    {
-        id: 4,
-        name: "MA Arab tili T(10:00)",
-        teacher: "Muslimaxon Abduvali...",
-        room: "Tashkent",
-        startTime: "10:00",
-        endTime: "11:30",
-        students: 138,
-        maxStudents: 100,
-        color: "#00bcd4"
-    },
-    {
-        id: 5,
-        name: "DE Rus tili T(09:00) Kids",
-        teacher: "Dilnoza Elxonova",
-        room: "Moscow",
-        startTime: "09:00",
-        endTime: "10:30",
-        students: 38,
-        maxStudents: 40,
-        color: "#e91e63"
-    },
-    {
-        id: 6,
-        name: "DE Rus tili T(10:30)B1",
-        teacher: "Dilnoza Elxonova",
-        room: "Moscow",
-        startTime: "10:30",
-        endTime: "12:00",
-        students: 74,
-        maxStudents: 27,
-        color: "#e91e63"
-    },
-    {
-        id: 7,
-        name: "ZA Elementary T(08:30...)",
-        teacher: "Zulfizar Akramjonova",
-        room: "Harvard",
-        startTime: "08:30",
-        endTime: "10:00",
-        students: 58,
-        maxStudents: 40,
-        color: "#4caf50"
-    },
-    {
-        id: 8,
-        name: "GX Elementary T(08:3...)",
-        teacher: "Gulbanom Xabibuallayeva",
-        room: "Michigan",
-        startTime: "08:30",
-        endTime: "10:00",
-        students: 77,
-        maxStudents: 134,
-        color: "#4caf50"
-    },
-    {
-        id: 9,
-        name: "GX Level 2 T(10:00) Ne...",
-        teacher: "Gulbanom Xabibuallayeva",
-        room: "Michigan",
-        startTime: "10:30",
-        endTime: "12:00",
-        students: 71,
-        maxStudents: 133,
-        color: "#9c27b0"
-    },
-    {
-        id: 10,
-        name: "OFN Rus tili T(14:00)",
-        teacher: "Og'abey Nosirov",
-        room: "MIT",
-        startTime: "14:00",
-        endTime: "15:30",
-        students: 84,
-        maxStudents: 77,
-        color: "#f44336"
-    },
-    {
-        id: 11,
-        name: "OA Matem T(14:00)",
-        teacher: "Olimpon Abduhonnon",
-        room: "Workly",
-        startTime: "13:00",
-        endTime: "15:30",
-        students: 130,
-        maxStudents: 118,
-        color: "#ff9800"
-    },
-    {
-        id: 12,
-        name: "AN Arab tili T(14:00)",
-        teacher: "Aziza Ne'matova",
-        room: "Cambridge",
-        startTime: "14:00",
-        endTime: "15:30",
-        students: 49,
-        maxStudents: 65,
-        color: "#00c853"
-    },
-    {
-        id: 13,
-        name: "ZK Arab tili T(14:00)",
-        teacher: "Zaynabxon Karimova",
-        room: "Workly",
-        startTime: "15:30",
-        endTime: "17:00",
-        students: 118,
-        maxStudents: 77,
-        color: "#00bcd4"
-    },
-    {
-        id: 14,
-        name: "MA Arab tili T(14:00)",
-        teacher: "Muslimaxon Abduvali...",
-        room: "Payme",
-        startTime: "14:00",
-        endTime: "15:30",
-        students: 20,
-        maxStudents: 25,
-        color: "#00bcd4"
-    },
-    {
-        id: 15,
-        name: "DE Rus tili T(14:00) pa...",
-        teacher: "Dilnoza Elxonova",
-        room: "Moscow",
-        startTime: "14:00",
-        endTime: "15:30",
-        students: 18,
-        maxStudents: 26,
-        color: "#e91e63"
-    },
-    {
-        id: 16,
-        name: "ZA Elementary T(14:00...)",
-        teacher: "Zulfizar Akramjonova",
-        room: "Michigan",
-        startTime: "14:00",
-        endTime: "15:30",
-        students: 21,
-        maxStudents: 25,
-        color: "#4caf50"
-    },
-]
-
-const ROW_HEIGHT = 28
-
-// Vaqtni minutga aylantirish (masalan "10:00" -> 600)
-const timeToMinutes = (time) => {
-    const [h, m] = time.split(":").map(Number)
-    return h * 60 + m
-}
-
-// Dars qaysi vaqt slotida boshlanishini aniqlash
-const getTimeSlotIndex = (startTime) => {
-    const minutes = timeToMinutes(startTime)
-    const baseMinutes = timeToMinutes("06:00")
-    return Math.floor((minutes - baseMinutes) / 30)
-}
-
-// Dars nechta slot egallashini aniqlash
-const getRowSpan = (startTime, endTime) => {
-    const startMin = timeToMinutes(startTime)
-    const endMin = timeToMinutes(endTime)
-    return Math.ceil((endMin - startMin) / 30)
-}
+const shortDays = ["Yak", "Du", "Se", "Chor", "Pa", "Ju", "Sha"];
+const pastelColors = ["#b2dfdb", "#c8e6c9", "#ffe082", "#b3e5fc", "#ffcdd2", "#e1bee7", "#f0f4c3"];
 
 const Lessons = ({ theme }) => {
+    const [selectedDay, setSelectedDay] = useState(new Date().getDay());
+    const [intervalMinutes, setIntervalMinutes] = useState(120); // Screenshot o'lchami 2 soat (120 min)
 
-    const { data: todayLessons } = useTodayLessons()
-    const { data: rooms } = useRoomsData()
-    const roomsData = rooms?.results
+    const targetDateString = useMemo(() => {
+        const today = new Date();
+        const diff = selectedDay - today.getDay();
+        const targetDate = new Date(today);
+        targetDate.setDate(today.getDate() + diff);
+        const yyyy = targetDate.getFullYear();
+        const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(targetDate.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }, [selectedDay]);
 
-    // Har bir xona va vaqt slot uchun darsni topish
-    const getLessonForCell = (roomName, timeIndex) => {
-        return todayLessons?.find(lesson => {
-            const startTime = lesson.begin_time || lesson.startTime
-            if (!startTime) return false;
-            const lessonStart = getTimeSlotIndex(startTime)
-            const rName = lesson.room?.name || lesson.roomName || lesson.room
-            return rName === roomName && lessonStart === timeIndex
-        })
-    }
+    const { data: todayLessons, isLoading: lessonsLoading } = useTodayLessons(targetDateString);
+    const { data: rooms, isLoading: roomsLoading } = useRoomsData();
 
-    // Bu hujayra dars bilan band ekanligini tekshirish (rowSpan tufayli)
-    const isCellOccupied = (roomName, timeIndex) => {
-        return todayLessons?.some(lesson => {
-            const startTime = lesson.begin_time || lesson.startTime
-            const endTime = lesson.end_time || lesson.endTime
-            if (!startTime || !endTime) return false;
-            const lessonStart = getTimeSlotIndex(startTime)
-            const span = getRowSpan(startTime, endTime)
-            const rName = lesson.room?.name || lesson.roomName || lesson.room
-            return rName === roomName && timeIndex > lessonStart && timeIndex < lessonStart + span
-        })
-    }
+    const roomsData = rooms?.results || [];
+    const lessonsData = Array.isArray(todayLessons) ? todayLessons : (todayLessons?.results || []);
+
+    const timeLabels = useMemo(() => {
+        const labels = [];
+        let currentMins = 8 * 60; // 08:00 dan boshlanadi
+        const endMins = 20 * 60; // Rasmdagi kabi 20:00
+        while (currentMins <= endMins) {
+            const hStr = Math.floor(currentMins / 60).toString().padStart(2, '0');
+            const mStr = (currentMins % 60).toString().padStart(2, '0');
+            labels.push(`${hStr}:${mStr}`);
+            currentMins += intervalMinutes;
+        }
+        return labels;
+    }, [intervalMinutes]);
+
+    const getMinutesFrom8 = (time) => {
+        if (!time) return -1;
+        const [h, m] = time.split(":").map(Number);
+        return (h * 60 + m) - (8 * 60);
+    };
+
+    const getTimeIndex = (time, interval) => {
+        const mins = getMinutesFrom8(time);
+        if (mins < 0) return -1;
+        return Math.floor(mins / interval);
+    };
+
+    const getColSpan = (start, end, interval) => {
+        if (!start || !end) return 1;
+        const duration = getMinutesFrom8(end) - getMinutesFrom8(start);
+        return Math.max(1, Math.ceil(duration / interval));
+    };
+
+    const getCardColor = (groupId) => {
+        if (!groupId) return "#e0e0e0";
+        return pastelColors[(typeof groupId === 'number' ? groupId : Array.from(String(groupId)).reduce((s, c) => s + c.charCodeAt(0), 0)) % pastelColors.length];
+    };
+
+    // Har bir xonadagi darslar usma-ust tushib qolmasligi uchun "Tracks" hisoblaymiz (Robbit mantig'i)
+    const getRoomTracks = (room) => {
+        const roomLessons = lessonsData.filter(l => {
+            const rId = l.room?.id || l.room;
+            return rId === room.id || rId === room.name;
+        });
+
+        // Vaqtga ko'ra tartiblaymiz
+        roomLessons.sort((a, b) => getMinutesFrom8(a.begin_time) - getMinutesFrom8(b.begin_time));
+
+        const tracks = [];
+        roomLessons.forEach(lesson => {
+            const startIdx = getTimeIndex(lesson.begin_time?.slice(0, 5), intervalMinutes);
+            const span = getColSpan(lesson.begin_time?.slice(0, 5), lesson.end_time?.slice(0, 5), intervalMinutes);
+            const endIdx = startIdx + span;
+
+            let placed = false;
+            for (let t = 0; t < tracks.length; t++) {
+                const track = tracks[t];
+                const lastLesson = track[track.length - 1];
+                const lastStartIdx = getTimeIndex(lastLesson.begin_time?.slice(0, 5), intervalMinutes);
+                const lastSpan = getColSpan(lastLesson.begin_time?.slice(0, 5), lastLesson.end_time?.slice(0, 5), intervalMinutes);
+                const lastEndIdx = lastStartIdx + lastSpan;
+
+                if (startIdx >= lastEndIdx) {
+                    track.push(lesson);
+                    placed = true;
+                    break;
+                }
+            }
+            if (!placed) {
+                tracks.push([lesson]);
+            }
+        });
+
+        return tracks.length > 0 ? tracks : [[]]; // Eng kamida 1 xil bo'sh qator yaratiladi
+    };
+
+    if (lessonsLoading || roomsLoading) return <div className="text-center py-5"><Spinner animation="border" /></div>;
 
     return (
-        <div className="card col-lg-12 glass-card p-4 border-0 mb-4">
-            <div className="mb-4">
-                <h5 className={`fw-bold mb-1 ${!theme ? 'text-white' : 'text-dark'}`}>Darslar jadvali</h5>
-                <p className="text-muted small mb-0">Bugungi darslar jadvali</p>
-            </div>
-
-            <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex gap-2 mb-3">
-                    {shortDays.map((day, index) => (
-                        <button
-                            key={index}
-                            className={`btn px-3 py-1 fs-2 ${theme ? 'btn-outline-dark' : 'btn-outline-light'}`}
-                        >
+        <div className={`card border-0 shadow-sm ${!theme ? 'bg-dark text-white' : 'bg-white'}`} style={{ borderRadius: '12px', overflow: 'hidden' }}>
+            <div className={`d-flex justify-content-between align-items-center mb-3 p-3 pb-0 ${!theme ? 'bg-dark' : 'bg-white'}`}>
+                <div className="d-flex gap-2">
+                    {shortDays.map((day, i) => (
+                        <button key={i} onClick={() => setSelectedDay(i)} 
+                                className={`btn btn-sm shadow-sm ${selectedDay === i ? 'btn-primary fw-bold text-white' : (!theme ? 'btn-secondary text-light border-secondary' : 'btn-light text-muted border')}`}
+                                style={{ borderRadius: '6px', minWidth: '40px' }}>
                             {day}
                         </button>
                     ))}
                 </div>
-
                 
+                <select 
+                    className={`form-select form-select-sm shadow-sm fw-medium border-0 ${!theme ? 'bg-secondary text-white' : 'bg-light text-dark'}`}
+                    style={{ width: '120px', borderRadius: '6px' }}
+                    value={intervalMinutes}
+                    onChange={(e) => setIntervalMinutes(Number(e.target.value))}
+                >
+                    <option value={60}>1 soat</option>
+                    <option value={90}>1.5 soat</option>
+                    <option value={120}>2 soat</option>
+                </select>
             </div>
 
-            <div className="lesson-table-wrapper">
-                <table
-                    className="lesson-table"
-                    style={{
-                        minWidth: roomsData?.length > 8
-                            ? `${100 + roomsData.length * 150}px`
-                            : '100%'
-                    }}
-                >
-                    <thead className='position-sticky t0' style={{ background: theme ? '#fff' : '#1a2536' }}>
+            <div className="lesson-table-wrapper px-3 pb-3" style={{ overflowX: 'auto' }}>
+                <table className="robbit-table w-100">
+                    <thead>
                         <tr>
-                            <th className='position-sticky l0' style={{ zIndex: 101, background: theme ? '#fff' : '#1a2536' }}></th>
-                            {roomsData?.map(r =>
-                                <th key={r.id}>{r.name}</th>
-                            )}
+                            <th className={`sticky-col border-left-0 border-top-0 ${!theme ? 'bg-dark border-secondary' : 'bg-white'}`} style={{ minWidth: '150px' }}></th>
+                            {timeLabels.slice(0, -1).map((time, i) => (
+                                <th key={i} className={`time-header text-center py-3 fw-bold ${!theme ? 'bg-dark text-white border-secondary' : 'bg-white text-dark'}`}>
+                                    {time}-{timeLabels[i + 1]}
+                                </th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {times.map((time, index) => (
-                            <tr key={index}>
-                                <td className='time-td position-sticky l0' style={{ background: theme ? '#fff' : '#1a2536' }}>{time}</td>
-                                {roomsData?.map(r => {
-                                    if (isCellOccupied(r.name, index)) {
-                                        return null
-                                    }
+                        {roomsData.map((room) => {
+                            const tracks = getRoomTracks(room);
+                            return tracks.map((trackLessons, trackIdx) => (
+                                <tr key={`${room.id}-${trackIdx}`}>
+                                    {trackIdx === 0 && (
+                                        <td rowSpan={tracks.length} className={`room-name-td sticky-col px-3 align-middle fw-bold ${!theme ? 'bg-dark text-light border-secondary' : 'bg-white text-secondary border'}`}>
+                                            {room.name}
+                                        </td>
+                                    )}
+                                    {timeLabels.slice(0, -1).map((time, slotIdx) => {
+                                        const occupiedByLesson = trackLessons.find(l => {
+                                            const startIdx = getTimeIndex(l.begin_time?.slice(0, 5), intervalMinutes);
+                                            const span = getColSpan(l.begin_time?.slice(0, 5), l.end_time?.slice(0, 5), intervalMinutes);
+                                            return slotIdx > startIdx && slotIdx < startIdx + span;
+                                        });
 
-                                    const lesson = getLessonForCell(r.name, index)
+                                        if (occupiedByLesson) return null;
 
-                                    if (lesson) {
-                                        const startTime = lesson.begin_time?.slice(0, 5) || lesson.startTime
-                                        const endTime = lesson.end_time?.slice(0, 5) || lesson.endTime
-                                        const span = getRowSpan(startTime, endTime)
-                                        const cardHeight = span * ROW_HEIGHT - 4
+                                        const lessonStartsHere = trackLessons.find(l => 
+                                            getTimeIndex(l.begin_time?.slice(0, 5), intervalMinutes) === slotIdx
+                                        );
 
-                                        const teacherName = lesson.teacher?.first_name 
-                                            ? `${lesson.teacher.first_name} ${lesson.teacher.last_name}`
-                                            : lesson.teacher || "Noma'lum"
-                                        const groupName = lesson.group?.name || lesson.group_name || lesson.name || "Noma'lum"
-                                        const roomName = lesson.room?.name || lesson.roomName || lesson.room || "Noma'lum"
-                                        const studentsCount = lesson.group?.students_count ?? lesson.students ?? 0
-                                        const courseName = lesson.group?.course?.name || lesson.course || "Noma'lum"
-
-                                        return (
-                                            <td key={r.id} rowSpan={span} className="lesson-cell">
-                                                <div className="position-relative d-flex align-items-center justify-content-center">
-                                                    <div className="lesson-info fs-1 d-flex flex-column align-items-start">
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>Guruh:</span>
-                                                            <span>{groupName}</span>
-                                                        </p>
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>Xona:</span>
-                                                            <span>{roomName}</span>
-                                                        </p>
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>Dars vaqti:</span>
-                                                            <span>{startTime} - {endTime}</span>
-                                                        </p>
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>O'qituvchi:</span>
-                                                            <span>{teacherName}</span>
-                                                        </p>
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>Kurs: </span>
-                                                            <span>{courseName}</span>
-                                                        </p>
-                                                        <p className="d-flex align-items-center justify-content-between w-100 m-0 pb-1">
-                                                            <span>Sana:</span>
-                                                            <span>{lesson.date || "Bugun"}</span>
-                                                        </p>
+                                        if (lessonStartsHere) {
+                                            const span = getColSpan(lessonStartsHere.begin_time?.slice(0, 5), lessonStartsHere.end_time?.slice(0, 5), intervalMinutes);
+                                            
+                                            const renderTooltip = (props) => (
+                                                <Tooltip id={`tooltip-${lessonStartsHere.id}`} {...props}>
+                                                    <div className="text-start" style={{ fontSize: '12px' }}>
+                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>Guruh:</strong> {lessonStartsHere.group?.name || "Noma'lum"}</div>
+                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>O'qituvchi:</strong> {lessonStartsHere.teacher?.first_name || ""} {lessonStartsHere.teacher?.last_name || ""}</div>
+                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>Vaqt:</strong> {lessonStartsHere.begin_time?.slice(0, 5)} - {lessonStartsHere.end_time?.slice(0, 5)}</div>
+                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>Xona:</strong> {lessonStartsHere.room?.name || "Noma'lum"}</div>
+                                                        <div><strong style={{color: '#ffc107'}}>Holati:</strong> {lessonStartsHere.status || "Noma'lum"}</div>
                                                     </div>
-                                                    <div
-                                                        className="lesson-card"
-                                                        style={{
-                                                            backgroundColor: (lesson.color || '#6366f1') + '80',
-                                                            height: `${cardHeight}px`
-                                                        }}
-                                                    >
-                                                        <div className="lesson-card-name">{groupName}</div>
-                                                        <div className="lesson-card-teacher">{teacherName}</div>
-                                                        <div className="lesson-card-room">Xona: {roomName}</div>
-                                                        <div className="lesson-card-stats d-flex justify-content-center">
-                                                            <span>👤 {studentsCount}/{r.capacity || r.max_capacity || 0}</span>
+                                                </Tooltip>
+                                            );
+
+                                            return (
+                                                <td key={slotIdx} colSpan={span} className={`p-1 align-top ${!theme ? 'border-secondary' : 'border'}`}>
+                                                    <OverlayTrigger placement="top" overlay={renderTooltip}>
+                                                        <div className="robbit-card w-100 h-100 shadow-sm"
+                                                             style={{ backgroundColor: getCardColor(lessonStartsHere.group?.id || lessonStartsHere.id), borderRadius: '8px' }}>
+                                                            <div className="teacher-name fw-bolder" style={{ color: '#102a43', fontSize: '13px' }}>
+                                                                {lessonStartsHere.teacher?.first_name} {lessonStartsHere.teacher?.last_name ? lessonStartsHere.teacher.last_name[0] + '.' : ''}
+                                                            </div>
+                                                            <div className="group-name" style={{ color: '#0056b3', fontSize: '12px', fontWeight: '600' }}>
+                                                                {lessonStartsHere.group?.name || 'Guruh nomi'}
+                                                            </div>
+                                                            <div className="lesson-time fw-bold mt-auto pt-1" style={{ color: '#333', fontSize: '11.5px', opacity: '0.85' }}>
+                                                                {lessonStartsHere.begin_time?.slice(0,5)}-{lessonStartsHere.end_time?.slice(0,5)}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        )
-                                    }
+                                                    </OverlayTrigger>
+                                                </td>
+                                            );
+                                        }
 
-                                    return <td key={r.id} className="empty-cell">—</td>
-                                })}
-                            </tr>
-                        ))}
+                                        return <td key={slotIdx} className={`empty-cell ${!theme ? 'border-secondary bg-dark' : 'border bg-white'}`}></td>;
+                                    })}
+                                </tr>
+                            ));
+                        })}
                     </tbody>
                 </table>
             </div>
-        </div>
-    )
-}
 
-export default Lessons
+            <style>{`
+                .robbit-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+                .robbit-table th, .robbit-table td { border: 1px solid #dee2e6; min-width: 155px; }
+                .robbit-table td { height: 105px; }
+                
+                .sticky-col { position: sticky; left: 0; z-index: 5; box-shadow: 2px 0 6px rgba(0,0,0,0.03); border-right-width: 2px !important; }
+                .time-header { font-size: 13.5px; border-bottom-width: 2px !important; }
+                
+                .robbit-card { 
+                    padding: 8px 12px; 
+                    display: flex; 
+                    flex-direction: column; 
+                    overflow: hidden;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                    cursor: pointer;
+                }
+                .robbit-card:hover {
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+                    transform: translateY(-2px);
+                    z-index: 2;
+                    position: relative;
+                }
+                .robbit-card .teacher-name, .robbit-card .group-name {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            `}</style>
+        </div>
+    );
+};
+
+export default Lessons;

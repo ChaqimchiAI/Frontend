@@ -197,9 +197,9 @@ export const useGroupStudentStatusChange = () => {
   });
 };
 
-export const useTodayLessons = () =>
+export const useTodayLessons = (date) =>
   useQuery({
-    queryKey: ["groups", "today-lessons"],
-    queryFn: getTodayLessons,
+    queryKey: ["groups", "today-lessons", date],
+    queryFn: () => getTodayLessons(date),
     initialData: []
   });

@@ -66,5 +66,5 @@ export const addLeadToGroup = ({ id, group_id }) =>
 export const groupStudentStatusChange = ({ student_id, group_id, status }) =>
     api.patch(`/groups/${group_id}/students/${student_id}/`, { status }).then(res => res.data.data);
 
-export const getTodayLessons = () =>
-    api.get("/groups/today-lessons/").then(res => res.data.data);
+export const getTodayLessons = (date) =>
+    api.get("/groups/today-lessons/", { params: { date } }).then(res => res.data.data || res.data);
