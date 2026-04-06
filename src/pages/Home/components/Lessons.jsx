@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import './Lessons.css'
 import { useTodayLessons } from "../../../data/queries/group.queries"
 import { useRoomsData } from "../../../data/queries/room.queries"
@@ -8,8 +8,20 @@ const shortDays = ["Yak", "Du", "Se", "Chor", "Pa", "Ju", "Sha"];
 const pastelColors = ["#b2dfdb", "#c8e6c9", "#ffe082", "#b3e5fc", "#ffcdd2", "#e1bee7", "#f0f4c3"];
 
 const Lessons = ({ theme }) => {
-    const [selectedDay, setSelectedDay] = useState(new Date().getDay());
-    const [intervalMinutes, setIntervalMinutes] = useState(120); // Screenshot o'lchami 2 soat (120 min)
+    const [selectedDay, setSelectedDay] = useState(new Date().getDay());// 1. Initial qiymatni localStorage dan olamiz
+    const [intervalMinutes, setIntervalMinutes] = useState(() => {
+        return Number(localStorage.getItem('time_interval')) || 90;
+    });
+
+    // 2. intervalMinutes o'zgarganda uni localStorage ga yozamiz
+    useEffect(() => {
+        localStorage.setItem('time_interval', intervalMinutes.toString());
+    }, [intervalMinutes]);
+
+    // 3. Select yoki Input o'zgarganda shunchaki set qilish kifoya
+    const handleIntervalChange = (newVal) => {
+        setIntervalMinutes(Number(newVal));
+    };
 
     const targetDateString = useMemo(() => {
         const today = new Date();
@@ -64,7 +76,7 @@ const Lessons = ({ theme }) => {
         return pastelColors[(typeof groupId === 'number' ? groupId : Array.from(String(groupId)).reduce((s, c) => s + c.charCodeAt(0), 0)) % pastelColors.length];
     };
 
-    // Har bir xonadagi darslar usma-ust tushib qolmasligi uchun "Tracks" hisoblaymiz (Robbit mantig'i)
+    // Har bir xonadagi darslar usma-ust tushib qolmasligi uchun "Tracks" hisoblaymiz
     const getRoomTracks = (room) => {
         const roomLessons = lessonsData.filter(l => {
             const rId = l.room?.id || l.room;
@@ -109,15 +121,15 @@ const Lessons = ({ theme }) => {
             <div className={`d-flex justify-content-between align-items-center mb-3 p-3 pb-0 ${!theme ? 'bg-dark' : 'bg-white'}`}>
                 <div className="d-flex gap-2">
                     {shortDays.map((day, i) => (
-                        <button key={i} onClick={() => setSelectedDay(i)} 
-                                className={`btn btn-sm shadow-sm ${selectedDay === i ? 'btn-primary fw-bold text-white' : (!theme ? 'btn-secondary text-light border-secondary' : 'btn-light text-muted border')}`}
-                                style={{ borderRadius: '6px', minWidth: '40px' }}>
+                        <button key={i} onClick={() => setSelectedDay(i)}
+                            className={`btn btn-sm shadow-sm ${selectedDay === i ? 'btn-primary fw-bold text-white' : (!theme ? 'btn-secondary text-light border-secondary' : 'btn-light text-muted border')}`}
+                            style={{ borderRadius: '6px', minWidth: '40px' }}>
                             {day}
                         </button>
                     ))}
                 </div>
-                
-                <select 
+
+                <select
                     className={`form-select form-select-sm shadow-sm fw-medium border-0 ${!theme ? 'bg-secondary text-white' : 'bg-light text-dark'}`}
                     style={{ width: '120px', borderRadius: '6px' }}
                     value={intervalMinutes}
@@ -160,21 +172,21 @@ const Lessons = ({ theme }) => {
 
                                         if (occupiedByLesson) return null;
 
-                                        const lessonStartsHere = trackLessons.find(l => 
+                                        const lessonStartsHere = trackLessons.find(l =>
                                             getTimeIndex(l.begin_time?.slice(0, 5), intervalMinutes) === slotIdx
                                         );
 
                                         if (lessonStartsHere) {
                                             const span = getColSpan(lessonStartsHere.begin_time?.slice(0, 5), lessonStartsHere.end_time?.slice(0, 5), intervalMinutes);
-                                            
+
                                             const renderTooltip = (props) => (
                                                 <Tooltip id={`tooltip-${lessonStartsHere.id}`} {...props}>
                                                     <div className="text-start" style={{ fontSize: '12px' }}>
-                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>Guruh:</strong> {lessonStartsHere.group?.name || "Noma'lum"}</div>
-                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>O'qituvchi:</strong> {lessonStartsHere.teacher?.first_name || ""} {lessonStartsHere.teacher?.last_name || ""}</div>
-                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>Vaqt:</strong> {lessonStartsHere.begin_time?.slice(0, 5)} - {lessonStartsHere.end_time?.slice(0, 5)}</div>
-                                                        <div className="mb-1"><strong style={{color: '#ffc107'}}>Xona:</strong> {lessonStartsHere.room?.name || "Noma'lum"}</div>
-                                                        <div><strong style={{color: '#ffc107'}}>Holati:</strong> {lessonStartsHere.status || "Noma'lum"}</div>
+                                                        <div className="mb-1"><strong style={{ color: '#ffc107' }}>Guruh:</strong> {lessonStartsHere.group?.name || "Noma'lum"}</div>
+                                                        <div className="mb-1"><strong style={{ color: '#ffc107' }}>O'qituvchi:</strong> {lessonStartsHere.teacher?.first_name || ""} {lessonStartsHere.teacher?.last_name || ""}</div>
+                                                        <div className="mb-1"><strong style={{ color: '#ffc107' }}>Vaqt:</strong> {lessonStartsHere.begin_time?.slice(0, 5)} - {lessonStartsHere.end_time?.slice(0, 5)}</div>
+                                                        <div className="mb-1"><strong style={{ color: '#ffc107' }}>Xona:</strong> {lessonStartsHere.room?.name || "Noma'lum"}</div>
+                                                        <div><strong style={{ color: '#ffc107' }}>Holati:</strong> {lessonStartsHere.status || "Noma'lum"}</div>
                                                     </div>
                                                 </Tooltip>
                                             );
@@ -183,7 +195,7 @@ const Lessons = ({ theme }) => {
                                                 <td key={slotIdx} colSpan={span} className={`p-1 align-top ${!theme ? 'border-secondary' : 'border'}`}>
                                                     <OverlayTrigger placement="top" overlay={renderTooltip}>
                                                         <div className="robbit-card w-100 h-100 shadow-sm"
-                                                             style={{ backgroundColor: getCardColor(lessonStartsHere.group?.id || lessonStartsHere.id), borderRadius: '8px' }}>
+                                                            style={{ backgroundColor: getCardColor(lessonStartsHere.group?.id || lessonStartsHere.id), borderRadius: '8px' }}>
                                                             <div className="teacher-name fw-bolder" style={{ color: '#102a43', fontSize: '13px' }}>
                                                                 {lessonStartsHere.teacher?.first_name} {lessonStartsHere.teacher?.last_name ? lessonStartsHere.teacher.last_name[0] + '.' : ''}
                                                             </div>
@@ -191,7 +203,7 @@ const Lessons = ({ theme }) => {
                                                                 {lessonStartsHere.group?.name || 'Guruh nomi'}
                                                             </div>
                                                             <div className="lesson-time fw-bold mt-auto pt-1" style={{ color: '#333', fontSize: '11.5px', opacity: '0.85' }}>
-                                                                {lessonStartsHere.begin_time?.slice(0,5)}-{lessonStartsHere.end_time?.slice(0,5)}
+                                                                {lessonStartsHere.begin_time?.slice(0, 5)}-{lessonStartsHere.end_time?.slice(0, 5)}
                                                             </div>
                                                         </div>
                                                     </OverlayTrigger>
