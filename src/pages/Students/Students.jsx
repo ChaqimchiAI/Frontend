@@ -24,7 +24,7 @@ const Students = () => {
   const [filters, setFilters] = useState({
     page: 1,
     limit: Number(localStorage.getItem("studentLimit")) || 10,
-    has_debt: false,
+    has_debt: "",
     start_date: "",
     end_date: "",
     search: "",
@@ -103,8 +103,14 @@ const Students = () => {
           filter={
             <StatusDropdown
               statuses={statuses}
-              currentItem={statuses.find(s => s.key === (filters.has_debt === "" ? "all" : filters.has_debt))}
-              setCurrentItem={(item) => handleFilterChange("has_debt", item.key)}
+              // Agar filters.has_debt bo'sh bo'lsa, "all" kalitli statusni qidiramiz
+              currentItem={
+                statuses.find(s => s.key === (filters.has_debt === "" ? "all" : filters.has_debt)) || statuses[0]
+              }
+              setCurrentItem={(item) =>
+                // Agar "all" tanlansa, filtrni bo'sh ("") yuboramiz, aks holda o'zini
+                handleFilterChange("has_debt", item.key === "all" ? "" : item.key)
+              }
               style={{ width: "110px", padding: "9px" }}
             />
           }
