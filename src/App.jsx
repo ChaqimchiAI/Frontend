@@ -21,6 +21,12 @@ import Debtors from "./pages/Debtors/Debtors";
 import { ThemeProvider, useTheme } from "./Context/Context";
 import { NotificationProvider } from "./Context/NotificationContext";
 import Statistics from "./pages/Statistics/Statistics";
+import ArchiveGroups from "./pages/Archive/ArchiveGroups";
+import ArchiveStudents from "./pages/Archive/ArchiveStudents";
+import ArchiveLeads from "./pages/Archive/ArchiveLeads";
+import ArchiveGroupDetail from "./pages/Archive/ArchiveGroupDetail";
+import ArchiveStudentDetail from "./pages/Archive/ArchiveStudentDetail";
+import ArchiveLeadDetail from "./pages/Archive/ArchiveLeadDetail";
 
 
 function App() {
@@ -61,6 +67,12 @@ function App() {
                 <Route path="teachers/:id" element={<TeacherDetaile />} />
                 <Route path="students/:id" element={<StudentDetaile />} />
                 <Route path="leads/:id" element={<LeadDetail />} />
+                <Route path="archive/groups" element={<ArchiveGroups />} />
+                <Route path="archive/students" element={<ArchiveStudents />} />
+                <Route path="archive/leads" element={<ArchiveLeads />} />
+                <Route path="archive/groups/:id" element={<ArchiveGroupDetail />} />
+                <Route path="archive/students/:id" element={<ArchiveStudentDetail />} />
+                <Route path="archive/leads/:id" element={<ArchiveLeadDetail />} />
               </Route>
             </Route>
 

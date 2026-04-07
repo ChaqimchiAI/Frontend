@@ -7,6 +7,7 @@ import { useState } from "react";
 
 const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
   const [menegment, setMenegment] = useState(false)
+  const [arxiv, setArxiv] = useState(false)
   const [mouseMove, setMouseMove] = useState(false)
   const navigate = useNavigate();
 
@@ -17,7 +18,10 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
       onMouseMove={() => setMouseMove(true)}
       onMouseLeave={() => {
         setMouseMove(false);
-        if (!togglebar) setMenegment(false);
+        if (!togglebar) {
+          setMenegment(false);
+          setArxiv(false);
+        }
       }}
     >
       <div style={{ flex: "1 1 auto", minHeight: 0, display: "flex", flexDirection: "column" }}>
@@ -179,6 +183,42 @@ const Menu = ({ employee, toggleTheme, togglebar, setMedia }) => {
                             <li className="sidebar-item px-lg-13">
                               <Link to="/courses" className="sidebar-link">
                                 <span className="hide-menu">Kurslar</span>
+                              </Link>
+                            </li>
+                          </ul>
+                        )}
+                      </li>
+
+                      <li className="sidebar-item">
+                        <span
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setArxiv(!arxiv)
+                          }}
+                          className={`sidebar-link secondary-hover-bg ${togglebar || mouseMove || arxiv ? 'has-arrow' : ""}`}
+                          aria-expanded={arxiv}
+                        >
+                          <span className="aside-icon p-2 bg-secondary-subtle rounded-1">
+                            <Icon icon="mingcute:archive-fill" className="fs-6" />
+                          </span>
+                          {togglebar || mouseMove ? <span className="hide-menu ps-1">Arxiv</span> : ''}
+                        </span>
+
+                        {arxiv && (
+                          <ul>
+                            <li className="sidebar-item px-lg-13">
+                              <Link to="/archive/groups" className="sidebar-link">
+                                <span className="hide-menu">Guruhlar</span>
+                              </Link>
+                            </li>
+                            <li className="sidebar-item px-lg-13">
+                              <Link to="/archive/students" className="sidebar-link">
+                                <span className="hide-menu">O'quvchilar</span>
+                              </Link>
+                            </li>
+                            <li className="sidebar-item px-lg-13">
+                              <Link to="/archive/leads" className="sidebar-link">
+                                <span className="hide-menu">Lidlar</span>
                               </Link>
                             </li>
                           </ul>
