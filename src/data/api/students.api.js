@@ -1,7 +1,7 @@
 import api from "./axios"
 
 export const getStudents = (params) =>
-    api.get("/students/", { params }).then(res => res.data.data)
+    api.get("/students/", { params }).then(res => res.data)
 
 export const getStudent = (id) =>
     api.get(`/students/${id}/`).then(res => res.data.data)

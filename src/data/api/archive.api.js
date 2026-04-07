@@ -6,7 +6,7 @@ import api from "./axios";
 
 // Ro'yxat (finished + paused guruhlar)
 export const getArchiveGroups = (params) =>
-    api.get("/archives/groups/", { params }).then(res => res.data.data);
+    api.get("/archives/groups/", { params }).then(res => res.data);
 
 // Detail
 export const getArchiveGroup = (id) =>
@@ -30,7 +30,7 @@ export const addStudentToArchiveGroup = ({ id, student_id, comment }) =>
 
 // Ro'yxat
 export const getArchiveStudents = (params) =>
-    api.get("/archives/students/", { params }).then(res => res.data.data);
+    api.get("/archives/students/", { params }).then(res => res.data);
 
 // Detail
 export const getArchiveStudent = (id) =>
@@ -46,7 +46,7 @@ export const getArchiveStudentEnrollmentHistory = (id) =>
 
 // Ro'yxat
 export const getArchiveLeads = (params) =>
-    api.get("/archives/leads/", { params }).then(res => res.data.data);
+    api.get("/archives/leads/", { params }).then(res => res.data);
 
 // Detail
 export const getArchiveLead = (id) =>
