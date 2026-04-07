@@ -2,74 +2,18 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Spinner, Button, Nav } from "react-bootstrap";
 import { Icon } from "@iconify/react";
-import { useStudent } from "../../data/queries/students.queries";
+import { useArchiveStudent, useArchiveStudentEnrollmentHistory } from "../../data/queries/archive.queries";
 import { useTheme } from "../../Context/Context";
-import { useGroups } from "../../data/queries/group.queries";
-import { useCourses } from "../../data/queries/courses.queries";
-import StudentsGroups from "../Students/components/StudentsGroups";
-import StudentAttendances from "../Students/components/Details/StudentAttendances";
-import StudentDiscounts from "../Students/components/Details/StudentDiscounts";
-import StudentTransactions from "../Students/components/Details/StudentTransactions";
 
 const ArchiveStudentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  const { data: currentStudent, isLoading, error } = useStudent(id);
-  const { data: groupsData } = useGroups();
-  const { data: courses } = useCourses();
-  const coursesData = courses?.results;
+  const { data: currentStudent, isLoading, error } = useArchiveStudent(id);
+  const { data: historyData, isLoading: historyLoading } = useArchiveStudentEnrollmentHistory(id);
 
   const [activeTab, setActiveTab] = useState("profile");
-
-  const [totalToPay, setTotalToPay] = useState(0);
-  const [remainingLessons, setRemainingLessons] = useState(0);
-
-  useEffect(() => {
-    const allGroups = groupsData?.results || groupsData;
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-
-    if (Array.isArray(allGroups) && coursesData && currentStudent?.groups) {
-      const dayMap = {
-        'dushanba': 1, 'Du': 1, 'seshanba': 2, 'Se': 2,
-        'chorshanba': 3, 'Cho': 3, 'payshanba': 4, 'Pay': 4,
-        'juma': 5, 'Ju': 5, 'shanba': 6, 'Sha': 6, 'yakshanba': 0, 'Ya': 0
-      };
-      let totalCoursePrice = 0;
-      let totalLessonsThisMonth = 0;
-      let balance = Number(currentStudent.balance?.split?.(".")?.[0] || currentStudent.balance || 0);
-
-      currentStudent.groups.forEach(studentGroup => {
-        const foundGroup = allGroups.find(g => g.id === studentGroup.group_id);
-        if (foundGroup) {
-          const foundCourse = coursesData.find(c => c.course === foundGroup.course || c.name === foundGroup.course_name);
-          if (foundCourse) {
-            const price = Number(foundCourse.price?.split?.(".")?.[0] || foundCourse.price || 0);
-            totalCoursePrice += price;
-            if (foundGroup?.schedule_items?.active?.length > 0) {
-              const lastActive = foundGroup.schedule_items.active.at(-1);
-              if (lastActive?.days_of_week) {
-                const dayIndices = lastActive.days_of_week.map(d => dayMap[d.code]);
-                let count = 0;
-                for (let i = 1; i <= lastDate; i++) {
-                  if (dayIndices.includes(new Date(year, month, i).getDay())) count++;
-                }
-                totalLessonsThisMonth += count;
-              }
-            }
-          }
-        }
-      });
-
-      const debt = totalCoursePrice - balance;
-      setTotalToPay(debt > 0 ? debt : 0);
-      const lessonPrice = totalCoursePrice > 0 ? totalCoursePrice / (totalLessonsThisMonth || 12) : 0;
-      setRemainingLessons(lessonPrice > 0 ? Math.floor(balance / lessonPrice) : 0);
-    }
-  }, [groupsData, coursesData, currentStudent]);
 
   const cardBg = !theme ? "#15263a" : "#f6f9fb";
   const textColor = !theme ? "text-white" : "text-black";
@@ -79,9 +23,7 @@ const ArchiveStudentDetail = () => {
   const TABS = [
     { key: "profile",     label: "Profil",        icon: "solar:user-id-bold" },
     { key: "guruhlar",    label: "Guruhlar",       icon: "solar:users-group-two-rounded-bold" },
-    { key: "davomat",     label: "Davomat",        icon: "solar:calendar-mark-bold" },
-    { key: "chegirma",    label: "Chegirma",       icon: "solar:tag-price-bold" },
-    { key: "to'lovlar",   label: "To'lovlar tarixi", icon: "solar:bill-list-bold" },
+    { key: "tarix",       label: "Guruh tarixi",   icon: "solar:history-bold" },
   ];
 
   if (isLoading) return (
@@ -126,7 +68,6 @@ const ArchiveStudentDetail = () => {
               {currentStudent?.phone}
             </p>
 
-            {/* Balance */}
             <div className="mb-3 p-2 rounded-3" style={{ background: `${balanceColor}15` }}>
               <span className="small opacity-75 d-block" style={{ color: textColor }}>Joriy Balans</span>
               <span className="fw-bold fs-5" style={{ color: balanceColor }}>
@@ -139,20 +80,14 @@ const ArchiveStudentDetail = () => {
                 <Icon icon="solar:map-point-bold-duotone" width="18" style={{ color: "#00d2ff" }} />
                 <span className={`small ${textColor}`}>{currentStudent?.address || "Manzil ko'rsatilmagan"}</span>
               </div>
-              <div className="d-flex align-items-center gap-2">
+              <div className="d-flex align-items-center gap-2 mb-2">
                 <Icon icon="solar:user-id-bold-duotone" width="18" style={{ color: "#00d2ff" }} />
                 <span className={`small ${textColor}`}>ID: {currentStudent?.id}</span>
               </div>
-            </div>
-
-            {/* Stats row */}
-            <div className="d-flex gap-2 flex-wrap mt-3 pt-3 border-top border-secondary border-opacity-10">
-              <span className="badge py-2 px-2 fw-normal text-white" style={{ backgroundColor: "#0085db", fontSize: "12px" }}>
-                Qolgan darslar: {remainingLessons}
-              </span>
-              <span className="badge py-2 px-2 fw-normal text-white" style={{ backgroundColor: "#0085db", fontSize: "12px" }}>
-                To'lanishi kerak: {Number(totalToPay).toLocaleString("uz-UZ")}
-              </span>
+              <div className="d-flex align-items-center gap-2 mb-2">
+                <Icon icon="solar:buildings-bold-duotone" width="18" style={{ color: "#00d2ff" }} />
+                <span className={`small ${textColor}`}>{currentStudent?.branch_name || "Filial ko'rsatilmagan"}</span>
+              </div>
             </div>
           </Card>
         </Col>
@@ -167,14 +102,16 @@ const ArchiveStudentDetail = () => {
                     key={key}
                     onClick={() => setActiveTab(key)}
                     className={`px-0 py-3 text-capitalize ${activeTab === key ? "text-primary border-bottom border-2 border-primary" : "text-muted opacity-75"}`}
-                    style={{ fontSize: "14px" }}
+                    style={{ fontSize: "14px", cursor: "pointer" }}
                   >
                     {label}
                   </Nav.Link>
                 ))}
               </Nav>
             </div>
+            
             <Card.Body className="p-4 mt-2">
+              {/* PROFIL TAB */}
               {activeTab === "profile" && (
                 <div>
                   <h5 className={`fw-bold mb-4 ${textColor}`}>Shaxsiy Ma'lumotlar</h5>
@@ -193,33 +130,102 @@ const ArchiveStudentDetail = () => {
                       </Col>
                     ))}
                   </Row>
-                  <div className="mt-3 p-3 rounded-3" style={{ background: !theme ? "#1a2d45" : "#fff", border: "1px solid #dee2e6" }}>
-                    <span className="text-muted small d-block mb-1">Arxiv sababi (tizim statusi)</span>
-                    <span className={`fw-medium ${textColor}`}>Arxivlangan</span>
+                  <div className="mt-4">
+                    <h6 className={`fw-bold mb-2 ${textColor}`}>O'quvchi holati</h6>
+                    <span className={`badge ${currentStudent?.is_active ? "bg-success" : "bg-danger"}`}>
+                      {currentStudent?.is_active ? "Faol (Hozir o'qiydi)" : "Nofaol (Arxivlangan)"}
+                    </span>
                   </div>
                 </div>
               )}
+              
+              {/* GURUHLAR TAB */}
               {activeTab === "guruhlar" && (
-                <StudentsGroups student={currentStudent} theme={theme} textColor={textColor} navigate={navigate} />
+                <div>
+                  <h5 className={`fw-bold mb-4 ${textColor}`}>O'qiydigan/O'qigan Guruhlari</h5>
+                  {currentStudent?.groups?.length === 0 ? (
+                    <p className="text-muted">Hech qanday guruhga biriktirilmagan</p>
+                  ) : (
+                    <table className="table table-hover align-middle">
+                      <thead>
+                        <tr>
+                          <th>Guruh</th>
+                          <th>Kurs</th>
+                          <th>Holati</th>
+                          <th>Qo'shilgan sana</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentStudent?.groups?.map(g => (
+                          <tr key={g.group_id}>
+                            <td className="fw-bold text-primary cursor-pointer" onClick={() => navigate(`/archive/groups/${g.group_id}`)}>
+                              {g.group_name}
+                            </td>
+                            <td>{g.course_name}</td>
+                            <td>
+                              <span className={`badge ${g.status === 'active' ? 'bg-success' : g.status === 'finished' ? 'bg-secondary' : 'bg-danger'}`}>
+                                {g.status}
+                              </span>
+                            </td>
+                            <td>{g.joined_date || "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               )}
-              {activeTab === "davomat" && (
-                <StudentAttendances textColor={textColor} />
+              
+              {/* TARIX TAB (Yangi qo'shilgan) */}
+              {activeTab === "tarix" && (
+                <div>
+                  <h5 className={`fw-bold mb-4 ${textColor}`}>
+                    <Icon icon="solar:history-bold" className="me-2" />
+                    Guruh Tarixi
+                  </h5>
+                  {historyLoading ? (
+                    <div className="text-center py-4"><Spinner animation="border" size="sm" /></div>
+                  ) : historyData?.length === 0 ? (
+                    <p className="text-muted">Hech qanday tarix mavjud emas.</p>
+                  ) : (
+                    <div className="table-responsive">
+                      <table className="table table-hover align-middle">
+                        <thead>
+                          <tr>
+                            <th>Sana</th>
+                            <th>Guruh</th>
+                            <th>Harakat</th>
+                            <th>Izoh</th>
+                            <th>Xodim</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {historyData.map(h => (
+                            <tr key={h.id}>
+                              <td>{new Date(h.date).toLocaleString()}</td>
+                              <td className="fw-bold cursor-pointer text-primary" onClick={() => navigate(`/archive/groups/${h.group_id}`)}>
+                                {h.group_name}
+                              </td>
+                              <td>
+                                <span className={`badge ${
+                                  h.action === "join" ? "bg-success" : 
+                                  h.action === "leave" ? "bg-danger" : 
+                                  h.action === "finished" ? "bg-info text-dark" : "bg-secondary"
+                                }`}>
+                                  {h.action_display}
+                                </span>
+                              </td>
+                              <td><span className="small text-muted">{h.comment || "—"}</span></td>
+                              <td><span className="small">{h.created_by_name || "Tizim"}</span></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               )}
-              {activeTab === "chegirma" && (
-                <StudentDiscounts
-                  currentStudent={currentStudent}
-                  setShowAddDiscount={() => {}}
-                  textColor={textColor}
-                  statusStyle={() => {}}
-                  openDropdown={null}
-                  setOpenDropdown={() => {}}
-                  statusChange={() => {}}
-                  readOnly
-                />
-              )}
-              {activeTab === "to'lovlar" && (
-                <StudentTransactions studentId={id} textColor={textColor} />
-              )}
+
             </Card.Body>
           </Card>
         </Col>

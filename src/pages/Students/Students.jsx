@@ -28,6 +28,7 @@ const Students = () => {
     start_date: "",
     end_date: "",
     search: "",
+    is_active: true,
   });
 
   const { data: students, isLoading, error } = useStudentsData(filters);

@@ -1,119 +1,169 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
+import { Spinner } from "react-bootstrap";
 import DataTable from "../../components/Ui/DataTable";
-import StatusDropdown from "../../components/Ui/StatusFilter";
-import { useTheme } from "../../Context/Context";
+import { useArchiveGroups } from "../../data/queries/archive.queries";
 
-const mockArchivedGroups = [
-  { id: 1, name: "Frontend G1", course_name: "Frontend", status: "Yopilgan", start_date: "2024-01-10", end_date: "2024-09-10", students_count: 15, teacher: "Alisher Aliyev", rating: 4.8 },
-  { id: 2, name: "Backend G3", course_name: "Python Backend", status: "To'xtatilgan", start_date: "2024-02-15", end_date: "2024-04-20", students_count: 8, teacher: "Sardor Karimov", rating: 4.2 },
-  { id: 3, name: "Dizayn G2", course_name: "UI/UX", status: "Muzlatilgan", start_date: "2024-11-05", end_date: "2025-02-05", students_count: 12, teacher: "Malika opa", rating: 4.9 },
+const tabFilters = [
+  { key: "all",      label: "Barchasi",       icon: "solar:archive-bold-duotone" },
+  { key: "finished", label: "Tugallangan",     icon: "ph:check-circle-bold" },
+  { key: "paused",   label: "To'xtatilgan",   icon: "ph:pause-circle-bold" },
 ];
 
-const statuses = [
-  { key: "all", label: "Hammasi" },
-  { key: "Yopilgan", label: "Yopilgan" },
-  { key: "To'xtatilgan", label: "To'xtatilgan" },
-  { key: "Muzlatilgan", label: "Muzlatilgan" },
-];
+const statusConfig = {
+  finished: { label: "Tugallangan", bg: "bg-success-subtle", text: "text-success", border: "border-success-subtle", icon: "ph:check-circle" },
+  paused:   { label: "To'xtatilgan", bg: "bg-warning-subtle", text: "text-warning", border: "border-warning-subtle", icon: "ph:pause-circle" },
+};
 
 const ArchiveGroups = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
+  const [filters, setFilters] = useState({ page: 1, limit: 20, status: "", search: "" });
 
-  const [filters, setFilters] = useState({
-    page: 1,
-    limit: 10,
-    status: "",
-    search: "",
-  });
+  const handleTabChange = (key) =>
+    setFilters(prev => ({ ...prev, status: key === "all" ? "" : key, page: 1 }));
 
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value === "all" ? "" : value,
-      page: 1
-    }));
+  const handleFilterChange = (key, value) =>
+    setFilters(prev => ({ ...prev, [key]: value === "all" ? "" : value, page: 1 }));
+
+  const queryParams = {
+    ...(filters.search && { search: filters.search }),
+    ...(filters.status && { status: filters.status }),
+    page: filters.page,
+    limit: filters.limit,
   };
 
-  const filteredData = mockArchivedGroups.filter(
-    (g) => (filters.status === "" || g.status === filters.status) &&
-           (filters.search === "" ||
-            g.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-            g.course_name.toLowerCase().includes(filters.search.toLowerCase()))
-  );
+  const { data, isLoading, isError } = useArchiveGroups(queryParams);
+  const groups     = data?.results ?? [];
+  const totalCount = data?.count  ?? 0;
+  const pageCount  = Math.ceil(totalCount / filters.limit);
+  const activeTab  = filters.status || "all";
 
   return (
     <div className="card card-body">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      {/* Header */}
+      <div className="d-flex align-items-center gap-3 mb-4">
+        <div
+          className="rounded-3 d-flex align-items-center justify-content-center"
+          style={{ width: "48px", height: "48px", background: "linear-gradient(135deg, #0981c2, #00c8ff)", flexShrink: 0 }}
+        >
+          <Icon icon="solar:archive-bold-duotone" width="24" color="#fff" />
+        </div>
         <div>
           <h2 className="fw-bold mb-0">Arxiv: Guruhlar</h2>
-          <p className="text-muted small mt-1">Yopilgan yoki vaqtincha to'xtatilgan guruhlar tarixi</p>
+          <p className="text-muted small mb-0">Yopilgan yoki vaqtincha to'xtatilgan guruhlar tarixi</p>
+        </div>
+        <div className="ms-auto">
+          <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">
+            <Icon icon="solar:archive-bold-duotone" className="me-1" />{totalCount} ta guruh
+          </span>
         </div>
       </div>
 
-      <DataTable
-        data={filteredData}
-        columns={["№", "Guruh nomi", "Kurs / O'qituvchi", "O'qish davri", "O'quvchilar soni", "Status", "Harakatlar"]}
-        onPageChange={(e, v) => setFilters(p => ({ ...p, page: v }))}
-        onSearch={(v) => handleFilterChange("search", v)}
-        // we map it internally, so we don't pass searchKeys to standard datatable for direct filtering on initial load. Since it is mocked we do pre-filter and pass directly
-        filter={
-          <StatusDropdown
-            statuses={statuses}
-            currentItem={
-              statuses.find(s => s.key === (filters.status === "" ? "all" : filters.status)) || statuses[0]
-            }
-            setCurrentItem={(item) =>
-              handleFilterChange("status", item.key === "all" ? "" : item.key)
-            }
-            style={{ width: "160px", padding: "9px" }}
-          />
-        }
-      >
-        {(currentData) =>
-          currentData.map((group, index) => (
-            <tr
-              key={group.id}
-              className="border-bottom"
-              onClick={() => navigate(`/archive/groups/${group.id}`)}
-              style={{ cursor: "pointer" }}
-            >
-              <td className="text-muted">{(filters.page - 1) * filters.limit + index + 1}</td>
-              <td>
-                <div className="fw-bold">{group.name}</div>
-              </td>
-              <td>
-                <div className="fw-medium">{group.course_name}</div>
-                <div className="small text-muted">{group.teacher}</div>
-              </td>
-              <td className="small">{group.start_date} - {group.end_date}</td>
-              <td className="fw-bold">{group.students_count} ta</td>
-              <td>
-                <span className={`badge ${
-                  group.status === "Yopilgan" ? "bg-danger" :
-                  group.status === "Muzlatilgan" ? "bg-info" : "bg-warning text-dark"
-                } border`}>
-                  {group.status}
-                </span>
-              </td>
-              <td>
-                <button
-                  className="btn btn-sm btn-light border"
-                  title="Detallar"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/archive/groups/${group.id}`)
+      {/* Status Tabs */}
+      <div className="mb-4 border-bottom">
+        <ul className="nav nav-tabs border-0" style={{ gap: "4px" }}>
+          {tabFilters.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <li className="nav-item" key={tab.key}>
+                <span
+                  onClick={() => handleTabChange(tab.key)}
+                  className={`nav-link border-0 pb-3 d-flex align-items-center gap-2 fw-medium`}
+                  style={{
+                    cursor: "pointer",
+                    color: isActive ? "#0981c2" : "",
+                    borderBottom: isActive ? "3px solid #00c8ff" : "3px solid transparent",
+                    borderRadius: 0,
+                    transition: "all 0.2s ease",
+                    fontSize: "14px",
                   }}
                 >
-                  Ko'rish
-                </button>
-              </td>
-            </tr>
-          ))
-        }
-      </DataTable>
+                  <Icon icon={tab.icon} width="16" />
+                  {tab.label}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      {isLoading && <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>}
+      {isError && <div className="alert alert-danger rounded-3">Ma'lumot yuklanmadi. Internetni tekshiring.</div>}
+
+      {!isLoading && !isError && (
+        <DataTable
+          data={groups}
+          columns={["№", "Guruh", "O'qituvchi", "O'quv davri", "O'quvchilar", "Holati"]}
+          onPageChange={(_, v) => setFilters(p => ({ ...p, page: v }))}
+          onSearch={(v) => handleFilterChange("search", v)}
+          pageCount={pageCount}
+          currentPage={filters.page}
+        >
+          {(currentData) =>
+            currentData.map((group, index) => {
+              const cfg = statusConfig[group.status] || { label: group.status, bg: "bg-secondary-subtle", text: "text-secondary", border: "border-secondary-subtle", icon: "ph:circle" };
+              return (
+                <tr
+                  key={group.id}
+                  className="border-bottom"
+                  onClick={() => navigate(`/archive/groups/${group.id}`)}
+                  style={{ cursor: "pointer", transition: "background-color 0.2s" }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 200, 255, 0.04)"}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                >
+                  <td className="text-muted" style={{ verticalAlign: "middle" }}>
+                    {(filters.page - 1) * filters.limit + index + 1}
+                  </td>
+                  <td style={{ verticalAlign: "middle" }}>
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center text-white"
+                        style={{ background: "linear-gradient(45deg, #6f42c1, #a366ff)", width: "40px", height: "40px", flexShrink: 0, fontSize: "15px", fontWeight: "bold" }}
+                      >
+                        {group.name?.charAt(0)?.toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="fw-bold">{group.name}</div>
+                        <div className="small text-muted d-flex align-items-center gap-1">
+                          <Icon icon="simple-line-icons:diamond" width="12" />
+                          {group.course_name || "—"}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ verticalAlign: "middle" }}>
+                    <div className="d-flex align-items-center gap-2">
+                      <Icon icon="mage:user" width="16" className="text-muted" />
+                      <span>{group.teacher_name || "—"}</span>
+                    </div>
+                  </td>
+                  <td style={{ verticalAlign: "middle" }}>
+                    <div className="small d-flex flex-column">
+                      <span className="d-flex align-items-center gap-1 text-success">
+                        <Icon icon="solar:calendar-add-linear" width="13" />{group.started_date || "—"}
+                      </span>
+                      <span className="d-flex align-items-center gap-1 text-danger mt-1">
+                        <Icon icon="solar:calendar-remove-linear" width="13" />{group.ended_date || "—"}
+                      </span>
+                    </div>
+                  </td>
+                  <td style={{ verticalAlign: "middle" }}>
+                    <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1">
+                      <Icon icon="radix-icons:people" className="me-1" />{group.students_count} ta
+                    </span>
+                  </td>
+                  <td style={{ verticalAlign: "middle" }}>
+                    <span className={`badge ${cfg.bg} ${cfg.text} border ${cfg.border} rounded-pill px-3 py-2`}>
+                      <Icon icon={cfg.icon} className="me-1" />{cfg.label}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })
+          }
+        </DataTable>
+      )}
     </div>
   );
 };

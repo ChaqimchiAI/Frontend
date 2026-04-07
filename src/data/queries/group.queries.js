@@ -14,6 +14,7 @@ import {
   addStudentToGroup,
   addLeadToGroup,
   getGroupStudents,
+  getGroupStudentsHistory,
   groupStudentStatusChange,
   getTodayLessons
 } from "../api/groups.api";
@@ -21,10 +22,10 @@ import {
 // ================= GROUPS =================
 
 // LIST
-export const useGroups = () =>
+export const useGroups = (params) =>
   useQuery({
-    queryKey: ["groups", "list"],
-    queryFn: getGroupsData,
+    queryKey: ["groups", "list", params],
+    queryFn: () => getGroupsData(params),
     initialData: []
   });
 
@@ -156,6 +157,15 @@ export const useGroupStudents = (id) =>
   useQuery({
     queryKey: ["groups", "students", id],
     queryFn: () => getGroupStudents(id),
+    enabled: !!id,
+    initialData: []
+  });
+
+// HISTORY LIST (INACTIVE STUDENTS)
+export const useGroupStudentsHistory = (id) =>
+  useQuery({
+    queryKey: ["groups", "students", "history", id],
+    queryFn: () => getGroupStudentsHistory(id),
     enabled: !!id,
     initialData: []
   });

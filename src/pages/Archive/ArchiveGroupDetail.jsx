@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, Nav, Tab, Spinner } from "react-bootstrap";
+import { Card, Nav, Tab, Spinner, Dropdown } from "react-bootstrap";
 import { Icon } from "@iconify/react";
 import { useTheme } from "../../Context/Context";
 import Back from "../../components/Ui/Back";
@@ -10,8 +10,9 @@ import dayjs from "dayjs";
 import AttendenceTable from "../Groups/Components/AttendenceTable";
 import Schedule from "../Groups/Components/Schedule";
 import GroupBillingTable from "../Groups/Components/GroupBillingTable";
+import ArchiveAddStudentModal from "./ArchiveAddStudentModal";
 
-import { useGroup, useGroupStudents, useGroupSchedule } from "../../data/queries/group.queries";
+import { useArchiveGroup, useArchiveGroupStudents, usePatchArchiveGroupStatus } from "../../data/queries/archive.queries";
 import { useGroupFinanceReport } from "../../data/queries/billing.queries";
 
 /* ─────────────────────────────────────────────
@@ -56,7 +57,7 @@ const ArchiveStudentsTable = ({ students }) => {
               <td>{index + 1}</td>
               <td
                 className="cursor-pointer text-primary fw-medium"
-                onClick={() => navigate(`/students/${student.student_id}`)}
+                onClick={() => navigate(`/archive/students/${student.student_id}`)}
               >
                 {student.first_name} {student.last_name}
               </td>
@@ -88,21 +89,22 @@ const ArchiveGroupDetail = () => {
 
   const [activeTab, setActiveTab] = useState("students");
   const [financeMonth, setFinanceMonth] = useState(dayjs().format("YYYY-MM"));
+  const [showAddStudent, setShowAddStudent] = useState(false);
 
-  const { data: currentGroup } = useGroup(id);
-  const { data: studentsData } = useGroupStudents(id);
-  const { data: schedule_items } = useGroupSchedule(id);
+  const { data: currentGroup, isLoading: groupLoading } = useArchiveGroup(id);
+  const { data: studentsData } = useArchiveGroupStudents(id);
   const { data: financeData, isLoading: financeLoading } = useGroupFinanceReport(id, financeMonth);
+  const { mutate: patchStatus, isPending: patchingStatus } = usePatchArchiveGroupStatus();
 
-  const Status = (s) => {
-    if (s === "active")   return "Faol";
-    if (s === "finished") return "Tugallangan";
-    if (s === "waiting")  return "Kutilmoqda";
-    if (s === "paused")   return "To'xtatilgan";
-    return "▬";
+  const handleStatusChange = (newStatus) => {
+    patchStatus({ id, status: newStatus }, {
+      onSuccess: () => setNotif({ show: true, type: "success", message: "Status o'zgardi" }),
+      onError: (err) => setNotif({ show: true, type: "error", message: err?.response?.data?.message || "Xatolik" })
+    });
   };
 
-  const t = currentGroup?.schedule_items?.active?.at(-1);
+  const schedule_items = currentGroup?.schedule_items;
+  const t = schedule_items?.active?.at(-1) || schedule_items?.history?.at(-1);
 
   const TABS = [
     { key: "students",   label: "O'quvchilar", icon: "radix-icons:people" },
@@ -111,9 +113,13 @@ const ArchiveGroupDetail = () => {
     { key: "finance",    label: "Moliya",       icon: "solar:wallet-money-bold" },
   ];
 
+  if (groupLoading) {
+    return <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>;
+  }
+
   return (
     <div>
-      <Back />
+      <Back go="/archive/groups" />
 
       {/* Header */}
       <div className="d-flex w-100 justify-content-between align-items-start mb-4">
@@ -127,15 +133,33 @@ const ArchiveGroupDetail = () => {
           <div>
             <h3 className="lh-1 d-flex align-items-center gap-3 mb-1">
               {currentGroup?.name}
-              <span
-                className="fs-6 px-2 py-1 text-capitalize rounded-3 border"
-                style={{ color: !theme ? "#fff" : "#000" }}
-              >
-                {Status(currentGroup?.status)}
-              </span>
+              
+              <Dropdown>
+                <Dropdown.Toggle 
+                  variant="outline-secondary" 
+                  size="sm" 
+                  className="d-flex align-items-center gap-2"
+                  disabled={patchingStatus}
+                >
+                  {patchingStatus && <Spinner animation="border" size="sm" />}
+                  {currentGroup?.status === "finished" ? "Tugallangan" : currentGroup?.status === "paused" ? "To'xtatilgan" : currentGroup?.status}
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => handleStatusChange("active")}>Faol (Arxivdan chiqarish)</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleStatusChange("paused")}>To'xtatilgan</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleStatusChange("finished")}>Tugallangan</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </h3>
-            <span className="text-muted small">Arxivlangan guruh — faqat ko'rish rejimida</span>
+            <span className="text-muted small">Arxivlangan guruh ko'rinishi</span>
           </div>
+        </div>
+        
+        {/* Qo'shish */}
+        <div>
+          <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => setShowAddStudent(true)}>
+            <Icon icon="lucide:user-plus" width="18" /> O'quvchi qo'shish
+          </button>
         </div>
       </div>
 
@@ -278,6 +302,15 @@ const ArchiveGroupDetail = () => {
           </Tab.Pane>
         </Tab.Content>
       </Tab.Container>
+
+      {showAddStudent && (
+        <ArchiveAddStudentModal 
+           showModal={showAddStudent} 
+           setShowModal={setShowAddStudent}
+           setNotif={setNotif}
+           groupId={id}
+        />
+      )}
     </div>
   );
 };

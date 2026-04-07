@@ -3,8 +3,8 @@ import api from "./axios";
 // ================= GROUPS =================
 
 // LIST
-export const getGroupsData = () =>
-    api.get("/groups/").then(res => res.data.data);
+export const getGroupsData = (params) =>
+    api.get("/groups/", { params }).then(res => res.data.data);
 
 // DETAIL
 export const getGroup = (id) =>
@@ -53,7 +53,11 @@ export const deleteGroupSchedule = ({ id, scheduleId }) =>
 
 // Get celected groups students
 export const getGroupStudents = (id) =>
-    api.get(`/groups/${id}/students/`).then(res => res.data.data);
+    api.get(`/groups/${id}/students/`).then(res => res.data.data || res.data);
+
+// Get archived/inactive students from a group
+export const getGroupStudentsHistory = (id) =>
+    api.get(`/groups/${id}/students/history/`).then(res => res.data.data || res.data);
 
 // Add a student to a group
 export const addStudentToGroup = ({ id, student_id }) =>

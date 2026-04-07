@@ -11,7 +11,7 @@ import Schedule from "./Components/Schedule";
 import { useNotification } from "../../Context/NotificationContext";
 import GroupBillingTable from "./Components/GroupBillingTable";
 
-import { useDeleteGroup, useEditGroup, useGroup, useGroupSchedule, useGroupStudents } from "../../data/queries/group.queries"
+import { useDeleteGroup, useEditGroup, useGroup, useGroupSchedule, useGroupStudents, useGroupStudentsHistory } from "../../data/queries/group.queries"
 import { useRoomsData } from "../../data/queries/room.queries"
 import { useTeachersData } from "../../data/queries/teachers.queries"
 import { useCourses } from "../../data/queries/courses.queries"
@@ -22,6 +22,7 @@ import { useGroupFinanceReport } from "../../data/queries/billing.queries";
 import dayjs from "dayjs";
 
 import { useGroupAttendances, useStudentAttendances, useAttendances, useCreateAttendance } from "../../data/queries/attendances.queries";
+import GroupStudentsHistoryTable from "./Components/GroupStudentsHistoryTable";
 
 import EditGroup from "./GroupDetaileModals/EditGroup";
 import AddNewStudents from "./GroupDetaileModals/AddNewStudents";
@@ -60,6 +61,9 @@ const GroupDetalie = () => {
 
      // guruhdagi o'quvchilarni olish
      const { data: studentsData } = useGroupStudents(id)
+
+     // guruhdan chiqib ketganlarni olish
+     const { data: historyStudents } = useGroupStudentsHistory(id);
 
      // =========== Edited ============
 
@@ -385,7 +389,7 @@ const GroupDetalie = () => {
                <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k)} className="d-flex flex-column gap-2">
                     {/* Tabs Navigaye */}
                     <div
-                         style={{ padding: "8px", background: theme ? "#f1f1f1" : "#111c2d", borderRadius: "8px", width: "470px" }}
+                         style={{ padding: "8px", background: theme ? "#f1f1f1" : "#111c2d", borderRadius: "8px", width: "fit-content" }}
                     >
                          <Nav variant="pills">
                               <Nav.Item>
@@ -403,6 +407,7 @@ const GroupDetalie = () => {
                                         O'quvchilar
                                    </Nav.Link>
                               </Nav.Item>
+
                               <Nav.Item>
                                    <Nav.Link
                                         eventKey="attendence"
@@ -454,26 +459,44 @@ const GroupDetalie = () => {
 
                     <Tab.Content className="mt-3">
                          <Tab.Pane eventKey="students">
-                              {/* O'quvchilar ro'yxati shu yerda bo'ladi */}
                               <Card>
                                    <Card.Body>
-                                        <div className="d-flex align-items-center justify-content-between">
-                                             <h5 className="fs-4 fw-medium">
-                                                  <Icon icon="radix-icons:people" width="20" height="20" color="#00c8ff" className="me-2" />
-                                                  O'quvchilar ro'yxati
-                                             </h5>
+                                        <Tab.Container defaultActiveKey="active_students">
+                                             <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                                                  <Nav variant="pills" className="gap-2">
+                                                       <Nav.Item>
+                                                            <Nav.Link eventKey="active_students" className="px-4 py-2" style={{ borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}>
+                                                                 <Icon icon="radix-icons:people" className="me-2" />
+                                                                 Faol o'quvchilar
+                                                            </Nav.Link>
+                                                       </Nav.Item>
+                                                       <Nav.Item>
+                                                            <Nav.Link eventKey="history_students" className="px-4 py-2" style={{ borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}>
+                                                                 <Icon icon="ic:round-history" className="me-2" />
+                                                                 Tarix
+                                                            </Nav.Link>
+                                                       </Nav.Item>
+                                                  </Nav>
 
-                                             <button
-                                                  className="btn btn-sm fs-3 py-2"
-                                                  style={{ background: "#0881c2", color: "#fff" }}
-                                                  onClick={() => setAddNewUser(true)}
-                                             >
-                                                  <Icon icon="prime:user-plus" width="20" height="20" className="me-2" />
-                                                  O'quvchi qo'shish
-                                             </button>
-                                        </div>
+                                                  <button
+                                                       className="btn btn-sm fs-3 py-2"
+                                                       style={{ background: "#0881c2", color: "#fff" }}
+                                                       onClick={() => setAddNewUser(true)}
+                                                  >
+                                                       <Icon icon="prime:user-plus" width="20" height="20" className="me-2" />
+                                                       O'quvchi qo'shish
+                                                  </button>
+                                             </div>
 
-                                        <StudentsTable currentStudents={studentsData} groupId={id} setNotif={setNotif} />
+                                             <Tab.Content>
+                                                  <Tab.Pane eventKey="active_students">
+                                                       <StudentsTable currentStudents={studentsData} groupId={id} setNotif={setNotif} />
+                                                  </Tab.Pane>
+                                                  <Tab.Pane eventKey="history_students">
+                                                       <GroupStudentsHistoryTable historyStudents={historyStudents} groupId={id} setNotif={setNotif} />
+                                                  </Tab.Pane>
+                                             </Tab.Content>
+                                        </Tab.Container>
                                    </Card.Body>
                               </Card>
                          </Tab.Pane>

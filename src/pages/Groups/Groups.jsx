@@ -12,8 +12,8 @@ const Groups = () => {
 
   const { theme } = useTheme()
 
-  // Guruhlarni chaqirish
-  const { data: groupsData, isLoading: groupsLoading } = useGroups()
+  // Faqat faol guruhlarni olish
+  const { data: groupsData, isLoading: groupsLoading } = useGroups({ status: "active" })
   if (groupsLoading) return <div>Loading...</div>
 
   const { setNotif } = useNotification()
