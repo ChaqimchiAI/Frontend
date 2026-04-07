@@ -7,17 +7,28 @@ import StatusDropdown from "../../components/Ui/StatusFilter";
 import { useArchiveStudents } from "../../data/queries/archive.queries";
 import StudentGroupsModal from "./Components/StudentGroupsModal";
 
-const statuses = [
-  { key: "all",   label: "Barchasi" },
-  { key: "true",  label: "Faol" },
-  { key: "false", label: "Nofaol" },
+const tabList = [
+  { key: "all",      label: "Barchasi",       icon: "solar:users-group-rounded-broken",         color: "primary" },
+  { key: "left",     label: "Tark etganlar",  icon: "material-symbols:door-open-outline",        color: "danger"  },
+  { key: "frozen",   label: "Muzlatilganlar", icon: "material-symbols:ac-unit",                  color: "warning" },
+  { key: "finished", label: "Tugallanganlar", icon: "material-symbols:check-circle-outline",     color: "success" },
+  { key: "no_group", label: "Guruhsiz",       icon: "solar:user-minus-rounded-broken",           color: "secondary" },
 ];
+
+const colorMap = {
+  primary:   { bg: "#e8f4ff", border: "#b6d9ff", text: "#0981c2",  activeBg: "#0981c2",  activeText: "#fff" },
+  danger:    { bg: "#fff0f0", border: "#ffc0c0", text: "#c0392b",  activeBg: "#c0392b",  activeText: "#fff" },
+  warning:   { bg: "#fff8e6", border: "#ffe4a0", text: "#9a6200",  activeBg: "#e6a817",  activeText: "#fff" },
+  success:   { bg: "#edfff4", border: "#b4f0cb", text: "#1a7a42",  activeBg: "#198754",  activeText: "#fff" },
+  secondary: { bg: "#f3f4f6", border: "#d1d5db", text: "#4b5563",  activeBg: "#4b5563",  activeText: "#fff" },
+};
 
 const ArchiveStudents = () => {
   const navigate = useNavigate();
 
-  const [filters, setFilters] = useState({ page: 1, limit: 20, is_active: "false", search: "" });
+  const [filters, setFilters] = useState({ page: 1, limit: 20, is_active: "", search: "" });
   const [modalStudentId, setModalStudentId] = useState(null);
+  const activeTab = filters.group_status || "all";
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({
@@ -25,6 +36,10 @@ const ArchiveStudents = () => {
       [key]: value === "all" ? "" : value,
       page: 1
     }));
+  };
+
+  const handleTabChange = (key) => {
+    setFilters(prev => ({ ...prev, group_status: key === "all" ? "" : key, page: 1 }));
   };
 
   const queryParams = {
@@ -43,39 +58,51 @@ const ArchiveStudents = () => {
 
   return (
     <div className="card card-body">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      {/* Header */}
+      <div className="d-flex align-items-center gap-3 mb-4">
+        <div
+          className="rounded-3 d-flex align-items-center justify-content-center"
+          style={{ width: "48px", height: "48px", background: "linear-gradient(135deg, #0981c2, #00c8ff)", flexShrink: 0 }}
+        >
+          <Icon icon="solar:users-group-rounded-bold-duotone" width="24" color="#fff" />
+        </div>
         <div>
           <h2 className="fw-bold mb-0">Arxiv: O'quvchilar</h2>
-          <p className="text-muted small mt-1">Markazni tark etgan yoki bitirgan o'quvchilar tarixi</p>
+          <p className="text-muted small mb-0">Markazni tark etgan, bitirgan yoki muzlatilgan o'quvchilar</p>
+        </div>
+        <div className="ms-auto">
+          <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">
+            <Icon icon="solar:users-group-rounded-broken" className="me-1" />{totalCount} ta o'quvchi
+          </span>
         </div>
       </div>
 
-      <div className="mb-4 border-bottom">
-        <ul className="nav nav-tabs border-0" style={{ gap: "20px" }}>
-          {[
-            { key: "all", label: "Barchasi", icon: "radix-icons:people" },
-            { key: "left", label: "Tark etganlar", icon: "material-symbols:door-open-outline" },
-            { key: "frozen", label: "Muzlatilganlar", icon: "material-symbols:ac-unit" },
-            { key: "finished", label: "Tugallanganlar", icon: "material-symbols:check-circle-outline" },
-          ].map((tab) => (
-            <li className="nav-item" key={tab.key} style={{ cursor: "pointer" }}>
-              <span
-                className={`nav-link border-0 pb-3 fs-6 d-flex align-items-center gap-2 ${
-                  (filters.group_status || "all") === tab.key ? "text-primary fw-bold" : "text-muted"
-                }`}
-                style={{
-                  borderBottom: (filters.group_status || "all") === tab.key ? "3px solid #00c8ff !important" : "3px solid transparent !important",
-                  borderRadius: 0,
-                  transition: "all 0.3s ease"
-                }}
-                onClick={() => handleFilterChange("group_status", tab.key)}
-              >
-                <Icon icon={tab.icon} width="18" />
-                {tab.label}
-              </span>
-            </li>
-          ))}
-        </ul>
+      {/* Pill Tabs */}
+      <div className="d-flex flex-wrap gap-2 mb-4">
+        {tabList.map((tab) => {
+          const c = colorMap[tab.color];
+          const isActive = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => handleTabChange(tab.key)}
+              className="btn d-flex align-items-center gap-2 fw-medium"
+              style={{
+                background:   isActive ? c.activeBg : c.bg,
+                color:        isActive ? c.activeText : c.text,
+                border:       `1.5px solid ${isActive ? c.activeBg : c.border}`,
+                borderRadius: "50px",
+                fontSize:     "13px",
+                padding:      "6px 16px",
+                transition:   "all 0.2s ease",
+                boxShadow:    isActive ? `0 2px 8px ${c.activeBg}55` : "none",
+              }}
+            >
+              <Icon icon={tab.icon} width="16" />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {isLoading && <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>}
@@ -90,14 +117,6 @@ const ArchiveStudents = () => {
           onSearch={(v) => handleFilterChange("search", v)}
           pageCount={pageCount}
           currentPage={filters.page}
-          filter={
-            <StatusDropdown
-              statuses={statuses}
-              currentItem={statuses.find(s => s.key === (filters.is_active === "" ? "all" : filters.is_active)) || statuses[0]}
-              setCurrentItem={(item) => handleFilterChange("is_active", item.key)}
-              style={{ width: "160px", padding: "9px" }}
-            />
-          }
         >
           {(currentData) =>
             currentData.map((student, index) => (

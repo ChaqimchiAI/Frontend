@@ -28,7 +28,7 @@ const Students = () => {
     start_date: "",
     end_date: "",
     search: "",
-    is_active: true,
+    has_active_group: true,
   });
 
   const { data: students, isLoading, error } = useStudentsData(filters);
