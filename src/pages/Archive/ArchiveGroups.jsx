@@ -96,9 +96,13 @@ const ArchiveGroups = () => {
           data={groups}
           columns={["№", "Guruh", "O'qituvchi", "O'quv davri", "O'quvchilar", "Holati"]}
           onPageChange={(_, v) => setFilters(p => ({ ...p, page: v }))}
+          onEntriesChange={(limit) => setFilters(p => ({ ...p, limit, page: 1 }))}
           onSearch={(v) => handleFilterChange("search", v)}
           pageCount={pageCount}
           currentPage={filters.page}
+          entries={filters.limit}
+          countOptions={[20, 40, 60, 80, 100]}
+          totalCount={totalCount}
         >
           {(currentData) =>
             currentData.map((group, index) => {

@@ -18,17 +18,32 @@ function DataTable({
      onSearch,
      searchKeys = [],
      countOptions = [10, 25, 50, 100],
-     storageKey = "dataTableLimit" // Har xil jadvallar uchun turli key ishlatish imkoni
+     storageKey = "dataTableLimit", // Har xil jadvallar uchun turli key ishlatish imkoni
+     currentPage: currentPageProp,
+     entries: entriesProp,
 }) {
      const { theme } = useTheme();
      const [searchQuery, setSearchQuery] = useState("");
      
-     // 1. Initial stateni LocalStorage'dan olamiz
-     const [entries, setEntries] = useState(() => {
-          return Number(localStorage.getItem(storageKey)) || countOptions[0];
-     });
-     
-     const [currentPage, setCurrentPage] = useState(1);
+     const isEntriesControlled = typeof entriesProp === "number";
+     const initialEntries = Number(localStorage.getItem(storageKey)) || countOptions[0];
+     const [entries, setEntries] = useState(initialEntries);
+     const entriesValue = isEntriesControlled ? entriesProp : entries;
+
+     const isPageControlled = typeof currentPageProp === "number";
+     const [currentPage, setCurrentPage] = useState(currentPageProp ?? 1);
+
+     useEffect(() => {
+          if (isEntriesControlled && entriesProp !== entries) {
+               setEntries(entriesProp);
+          }
+     }, [entriesProp, entries, isEntriesControlled]);
+
+     useEffect(() => {
+          if (isPageControlled && currentPageProp !== currentPage) {
+               setCurrentPage(currentPageProp);
+          }
+     }, [currentPageProp, currentPage, isPageControlled]);
 
      const isServerSide = totalCount !== undefined;
 
@@ -47,24 +62,28 @@ function DataTable({
 
      /* 📄 PAGINATION */
      const total = isServerSide ? totalCount : filteredData.length;
-     const pagesCount = Math.ceil(total / entries);
+     const pagesCount = Math.ceil(total / entriesValue);
 
-     const indexOfLast = currentPage * entries;
-     const indexOfFirst = indexOfLast - entries;
+     const indexOfLast = currentPage * entriesValue;
+     const indexOfFirst = indexOfLast - entriesValue;
 
      const currentData = isServerSide ? data : filteredData?.slice(indexOfFirst, indexOfLast);
 
      // 2. Entries o'zgarganda ham statega, ham LocalStoragega yozamiz
      const handleEntriesChange = (e) => {
           const newLimit = Number(e);
-          setEntries(newLimit);
-          localStorage.setItem(storageKey, newLimit); // Saqlash
+          if (!isEntriesControlled) {
+               setEntries(newLimit);
+               localStorage.setItem(storageKey, newLimit); // Saqlash
+          }
           setCurrentPage(1);
           if (onEntriesChange) onEntriesChange(newLimit);
      };
 
      const handlePageChangeInternal = (e, value) => {
-          setCurrentPage(value);
+          if (!isPageControlled) {
+               setCurrentPage(value);
+          }
           if (onPageChange) onPageChange(e, value);
      };
 
@@ -131,7 +150,7 @@ function DataTable({
                          <div className="d-flex align-items-center gap-2">
                               <EntriesSelect
                                    options={countOptions}
-                                   value={entries}
+                                   value={entriesValue}
                                    onChange={handleEntriesChange}
                               />
                               <Pagination
